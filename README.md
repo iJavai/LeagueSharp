@@ -1,4 +1,0 @@
-LeagueSharp
-===========
-
-Assemblies WIP
