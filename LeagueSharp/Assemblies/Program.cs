@@ -8,7 +8,6 @@ namespace Assemblies {
         public static Champion champion;
         public static Menu menu;
 
-
         private static void Main(string[] args) {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
