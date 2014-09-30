@@ -5,7 +5,9 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal class Ezreal : Champion {
         public Ezreal() {
-            if (player.ChampionName != "Ezreal") { return; }
+            if (player.ChampionName != "Ezreal") {
+                return;
+            }
             loadMenu();
             loadSpells();
 
@@ -50,37 +52,35 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            if (player.IsDead ) return;
+            if (player.IsDead) return;
 
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useWC").GetValue<bool>())
                         castLineSkillShot(W, SimpleTs.DamageType.Magical);
-                    if (menu.Item("useRAOE").GetValue<bool>())
+                    if (menu.Item("useRAOE").GetValue<bool>() &&
+                        Utility.CountEnemysInRange(450) >= menu.Item("rAmount").GetValue<Slider>().Value) {
                         AOEUltimate();
+                    }
+                    if (menu.Item("useRC").GetValue<bool>()) {
+                        Obj_AI_Hero targetPhis = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+                        //Obj_AI_Hero targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical); //Redundant atm TODO
+                        //Not finished,gotta check if R damage on target >= target.health //DONE TODO
+                        if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
+                            (targetPhis != null && targetPhis.IsValid)) {
+                            if (targetPhis.Health < player.GetSpellDamage(targetPhis, SpellSlot.R))
+                                R.Cast(targetPhis, true);
+                        }
+                    }
                     break;
             }
         }
 
         private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
-            //TODO cast Q after attack?
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
-                        castLineSkillShot(Q);
-                    if (menu.Item("useWC").GetValue<bool>())
-                        castLineSkillShot(W);
-                    if (menu.Item("useRC").GetValue<bool>())
-                    {
-                        var targetPhis = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-                        var targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-                        //Not finished,gotta check if R damage on target >= target.health
-                        if ((R.GetPrediction(targetPhis).Hitchance < HitChance.High ) && (targetPhis != null && targetPhis.IsValid))
-                        {
-                            R.Cast(targetPhis, true);
-                        }
-                    }
-                       
+                        castLineSkillShot(Q); //TODO DZ191 only cast q after attack let on update handle the w and r.
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     break;
@@ -91,10 +91,10 @@ namespace Assemblies {
             //TODO draw pls DZ191
         }
 
-        private bool AOEUltimate() {
+        private void AOEUltimate() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-            return target != null && target.Distance(player) >= 450 &&
-                   R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
+            if (target != null && target.Distance(player) >= 450)
+                R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
             // TODO set a value for 450 min range or >= maxRange..
         }
     }

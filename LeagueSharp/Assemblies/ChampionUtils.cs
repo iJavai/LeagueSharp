@@ -123,7 +123,7 @@ namespace Assemblies {
         /// <param name="spell"></param>
         /// <param name="damageType"></param>
         /// <returns> target </returns>
-        public Obj_AI_Hero castLineSkillShot(Spell spell,
+        protected Obj_AI_Hero castLineSkillShot(Spell spell,
             SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical) {
             if (!spell.IsReady())
                 return null;

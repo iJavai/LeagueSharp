@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DE07EFEB-29C2-4A5A-BB33-44DAD9411FA8}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -12,53 +12,56 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PreBuildEvent />
+    <PostBuildEvent />
+    <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BuffManagerLib">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\BuffManagerLib.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\BuffManagerLib.dll</HintPath>
     </Reference>
     <Reference Include="clipper_library">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\clipper_library.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="Igniter">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\Igniter.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\Igniter.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\SharpDX.Toolkit.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\SharpDX.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit.Graphics">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\SharpDX.Toolkit.Graphics.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\SharpDX.Toolkit.Graphics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,7 +72,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Triton">
-      <HintPath>..\..\..\..\LeagueSharp Loader\System\Triton.dll</HintPath>
+      <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\Triton.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
