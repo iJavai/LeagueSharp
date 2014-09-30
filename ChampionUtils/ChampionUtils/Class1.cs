@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
-namespace Assemblies {
-    internal class ChampionUtils {
+namespace ChampionUtils {
+    internal class LeagueUtils {
+        private int lastPingTime;
+        private Vector2 pingLocation;
 
         /// <summary>
         ///     Uses a given spell at a teleporting location to immobilize the enemy
@@ -28,26 +29,28 @@ namespace Assemblies {
         }
 
         /// <summary>
-        ///     Gets the nearest enemy from your position
+        ///     sends a local ping packet to the client
         /// </summary>
-        /// <param name="unit"></param>
-        /// <returns>the nearest enemy ^.^</returns>
-        public static Obj_AI_Hero getNearestEnemy(Obj_AI_Base unit) {
-            return ObjectManager.Get<Obj_AI_Hero>()
-                .Where(x => x.IsEnemy && x.IsValid)
-                .OrderBy(x => unit.ServerPosition.Distance(x.ServerPosition))
-                .FirstOrDefault();
+        /// <param name="position"> the position to send the ping. </param>
+        public void sendPingPacket(Vector2 position) {
+            if (Environment.TickCount - lastPingTime < 30*1000)
+                return;
+            lastPingTime = Environment.TickCount;
+            pingLocation = position;
+            sendSimplePing();
+            Utility.DelayAction.Add(150, sendSimplePing);
+            Utility.DelayAction.Add(300, sendSimplePing);
+            Utility.DelayAction.Add(400, sendSimplePing);
+            Utility.DelayAction.Add(800, sendSimplePing);
         }
 
         /// <summary>
-        ///     Sends a simple ping to a given position.
+        ///     Sends the actual ping.
         /// </summary>
-        /// <param name="pos">the position to send the ping. </param>
-        public static void sendSimplePing(Vector3 pos) {
-            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos.X, pos.Y, 0, 0, Packet.PingType.NormalSound))
-                .Process();
+        private void sendSimplePing() {
+            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pingLocation.X, pingLocation.Y, 0, 0,
+                Packet.PingType.FallbackSound)).Process();
         }
-
 
         /// <summary>
         ///     gets the percentage value of either health or mana.
@@ -85,31 +88,6 @@ namespace Assemblies {
                             Vector3.Distance(ObjectManager.Player.Position, ally.Position) < range &&
                             ((ally.Health/ally.MaxHealth)*100) < percentage);
         }
-
-        /// <summary>
-        ///     Checks if a unit is under an enemy turret then returns a bool value.
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <returns>true / false</returns>
-        public static bool IsUnderEnemyTurret(Obj_AI_Base unit) {
-            IEnumerable<Obj_AI_Turret> turrets;
-            if (unit.IsEnemy) {
-                turrets = ObjectManager.Get<Obj_AI_Turret>()
-                    .Where(
-                        x =>
-                            x.IsAlly && x.IsValid && !x.IsDead &&
-                            unit.ServerPosition.Distance(x.ServerPosition) < x.AttackRange);
-            }
-            else {
-                turrets = ObjectManager.Get<Obj_AI_Turret>()
-                    .Where(
-                        x =>
-                            x.IsEnemy && x.IsValid && !x.IsDead &&
-                            unit.ServerPosition.Distance(x.ServerPosition) < x.AttackRange);
-            }
-            return (turrets.Any());
-        }
-
 
         /// <summary>
         ///     sends a movement packet to a given position

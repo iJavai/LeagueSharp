@@ -1,4 +1,5 @@
-﻿using LeagueSharp;
+﻿using System.Linq;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Assemblies {
@@ -26,6 +27,5 @@ namespace Assemblies {
             menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
             menu.AddToMainMenu();
         }
-
     }
 }

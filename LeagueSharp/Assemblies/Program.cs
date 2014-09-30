@@ -15,6 +15,7 @@ namespace Assemblies {
             try {
                 ObjectHandle handle = Activator.CreateInstance(null,
                     "Assemblies." + ObjectManager.Player.ChampionName);
+
                 champion = (Champion) handle.Unwrap();
             }
             catch {
