@@ -7,7 +7,6 @@ using SharpDX;
 
 namespace Assemblies {
     internal class ChampionUtils {
-
         /// <summary>
         ///     Uses a given spell at a teleporting location to immobilize the enemy
         /// </summary>
@@ -32,7 +31,7 @@ namespace Assemblies {
         /// </summary>
         /// <param name="unit"></param>
         /// <returns>the nearest enemy ^.^</returns>
-        public static Obj_AI_Hero getNearestEnemy(Obj_AI_Base unit) {
+        public Obj_AI_Hero getNearestEnemy(Obj_AI_Base unit) {
             return ObjectManager.Get<Obj_AI_Hero>()
                 .Where(x => x.IsEnemy && x.IsValid)
                 .OrderBy(x => unit.ServerPosition.Distance(x.ServerPosition))
@@ -43,7 +42,7 @@ namespace Assemblies {
         ///     Sends a simple ping to a given position.
         /// </summary>
         /// <param name="pos">the position to send the ping. </param>
-        public static void sendSimplePing(Vector3 pos) {
+        public void sendSimplePing(Vector3 pos) {
             Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos.X, pos.Y, 0, 0, Packet.PingType.NormalSound))
                 .Process();
         }
@@ -91,7 +90,7 @@ namespace Assemblies {
         /// </summary>
         /// <param name="unit"></param>
         /// <returns>true / false</returns>
-        public static bool IsUnderEnemyTurret(Obj_AI_Base unit) {
+        public bool IsUnderEnemyTurret(Obj_AI_Base unit) {
             IEnumerable<Obj_AI_Turret> turrets;
             if (unit.IsEnemy) {
                 turrets = ObjectManager.Get<Obj_AI_Turret>()
