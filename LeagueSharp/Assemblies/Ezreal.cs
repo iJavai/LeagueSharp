@@ -5,6 +5,7 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal class Ezreal : Champion {
         public Ezreal() {
+            if (player.ChampionName != "Ezreal") { return; }
             loadMenu();
             loadSpells();
 
@@ -49,7 +50,7 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            if (player.IsDead || player.ChampionName != "Ezreal") return;
+            if (player.IsDead ) return;
 
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -67,6 +68,21 @@ namespace Assemblies {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
                         castLineSkillShot(Q);
+                    if (menu.Item("useWC").GetValue<bool>())
+                        castLineSkillShot(W);
+                    if (menu.Item("useRC").GetValue<bool>())
+                    {
+                        var targetPhis = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+                        var targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
+                        //Not finished,gotta check if R damage on target >= target.health
+                        if ((R.GetPrediction(targetPhis).Hitchance < HitChance.High ) && (targetPhis != null && targetPhis.IsValid))
+                        {
+                            R.Cast(targetPhis, true);
+                        }
+                    }
+                       
+                    break;
+                case Orbwalking.OrbwalkingMode.Mixed:
                     break;
             }
         }
