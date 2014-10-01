@@ -47,7 +47,7 @@ namespace Assemblies {
             W.SetSkillshot(0.25f, 80f, 2000f, false, SkillshotType.SkillshotLine);
 
             //DONT do e, its too situational.
-
+            
             R = new Spell(SpellSlot.R, 3000);
             R.SetSkillshot(1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
         }
@@ -71,6 +71,10 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("useRAOE", "Use R on >= enemies").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("rAmount", "Use R if enemeies > amount").SetValue(new Slider(3, 1, 5)));
+            menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
+            menu.SubMenu("misc")
+                .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
+
         }
 
         private void onUpdate(EventArgs args) {
@@ -88,12 +92,23 @@ namespace Assemblies {
                         Obj_AI_Hero targetPhis = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
                         //Obj_AI_Hero targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical); //Redundant atm TODO
                         //Not finished,gotta check if R damage on target >= target.health //DONE TODO
-                        if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
-                            (targetPhis != null && targetPhis.IsValidTarget(2000))) {
-                            if (targetPhis.Health < player.GetSpellDamage(targetPhis, SpellSlot.R))
-                                R.Cast(targetPhis, true);
-                        }
+                        // Done the Not Execute in certain range
+                            if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
+                                (targetPhis != null && targetPhis.IsValidTarget(2000))) {
+                                if (targetPhis.Health < player.GetSpellDamage(targetPhis, SpellSlot.R))
+                                    if (menu.Item("useNE").GetValue<bool>())
+                                    {
+                                        if(player.Distance(targetPhis)>=menu.Item("NERange").GetValue<Slider>().Value)
+                                            R.Cast(targetPhis, true);
+                                    }
+                                    else
+                                    {
+                                        R.Cast(targetPhis, true);
+                                    }
+                            }
+                        
                     }
+                    
                     break;
             }
         }
@@ -102,17 +117,29 @@ namespace Assemblies {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
-                        castLineSkillShot(Q); //TODO DZ191 only cast q after attack let on update handle the w and r.
+                        castLineSkillShot(Q); //TODO DZ191 only cast q after attack let on update handle the w and r. DZ191: Ok
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     break;
             }
         }
-
+       
         private void onDraw(EventArgs args) {
-            //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D:
+            //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE
+            if(menu.Item("DrawQ").GetValue<bool>())
+            {
+                Drawing.DrawCircle(player.Position,Q.Range,System.Drawing.Color.Purple);
+            }
+            if (menu.Item("DrawW").GetValue<bool>())
+            {
+                Drawing.DrawCircle(player.Position, W.Range, System.Drawing.Color.Purple);
+            }
+            if (menu.Item("DrawR").GetValue<bool>())
+            {
+                Drawing.DrawCircle(player.Position, R.Range, System.Drawing.Color.Purple);
+            }
         }
-
+        
         private void AOEUltimate() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
             if (target != null && target.Distance(player) >= 450)
