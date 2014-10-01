@@ -54,22 +54,25 @@ namespace Assemblies {
         }
 
         private void loadMenu() {
-            menu.AddSubMenu(new Menu("Combo", "combo"));
+            menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R to execute").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("usePackets", "Use Packet Casting").SetValue(true));
 
-            menu.AddSubMenu(new Menu("Harass", "harass"));
+            menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
 
-            menu.AddSubMenu(new Menu("Drawing", "drawing"));
+            menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
+            menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
+
+            menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawW", "Draw W").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawR", "Draw R").SetValue(false));
 
-            menu.AddSubMenu(new Menu("Misc", "misc"));
+            menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("useRAOE", "Use R on >= enemies").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("rAmount", "Use R if enemeies > amount").SetValue(new Slider(3, 1, 5)));
@@ -81,12 +84,17 @@ namespace Assemblies {
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
 
+            if (menu.Item("useQK").GetValue<bool>()) {
+                if (Q.IsKillable(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical)))
+                    castQ();
+            }
+
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useWC").GetValue<bool>())
                         castW();
                     if (menu.Item("useRAOE").GetValue<bool>() &&
-                        Utility.CountEnemysInRange(600) >= menu.Item("rAmount").GetValue<Slider>().Value) {
+                        Utility.CountEnemysInRange(600, player) >= menu.Item("rAmount").GetValue<Slider>().Value) {
                         AOEUltimate();
                     }
                     if (menu.Item("useRC").GetValue<bool>()) {
@@ -139,14 +147,16 @@ namespace Assemblies {
             }
         }
 
-        private void AOEUltimate() { // needs testing - iJava
+        private void AOEUltimate() {
+            // needs testing - iJava
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
             if (target != null && target.Distance(player) >= 600)
                 R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
             // TODO set a value for 450 min range or >= maxRange..
         }
 
-        private void castQ() { // needs testing - iJava
+        private void castQ() {
+            // needs testing - iJava
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!Q.IsReady() || qTarget == null) return;
 
@@ -156,7 +166,8 @@ namespace Assemblies {
             }
         }
 
-        private void castW() { // needs testing - iJava
+        private void castW() {
+            // needs testing - iJava
             Obj_AI_Hero wTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!W.IsReady() || wTarget == null) return;
 
