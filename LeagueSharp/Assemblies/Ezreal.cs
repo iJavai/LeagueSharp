@@ -49,6 +49,8 @@ namespace Assemblies {
         }
 
         private void loadMenu() {
+            //TODO either do items in here or do it in champion class for future scripts maybe something like an inbuilt activator
+            //TODO also autoQ while laneclearing has been requested with option for on  / off also check ultimate apparently its leave players on low hp... idek why i did an R.isKillable check.. :/
             menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));

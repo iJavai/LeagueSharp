@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Assemblies {
@@ -18,7 +17,8 @@ namespace Assemblies {
         }
 
         private void addBasicMenu() {
-            menu = new Menu("Assemblies", "Assemblies - " + ObjectManager.Player.ChampionName, true);
+            menu = new Menu("Assemblies - " + player.ChampionName, "Assemblies - " + ObjectManager.Player.ChampionName,
+                true);
             var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
             SimpleTs.AddToMenu(targetSelectorMenu);
             menu.AddSubMenu(targetSelectorMenu);
