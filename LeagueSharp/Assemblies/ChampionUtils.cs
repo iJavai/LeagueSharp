@@ -118,45 +118,6 @@ namespace Assemblies {
         }
 
         /// <summary>
-        ///     Casts a basic line skillshot towards target if hitchance is high
-        /// </summary>
-        /// <param name="spell"></param>
-        /// <param name="damageType"></param>
-        /// <returns> target </returns>
-        protected Obj_AI_Hero castLineSkillShot(Spell spell,
-            SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical) {
-            if (!spell.IsReady())
-                return null;
-            Obj_AI_Hero target = SimpleTs.GetTarget(spell.Range, damageType);
-            if (target == null)
-                return null;
-            if (!target.IsValidTarget(spell.Range) || spell.GetPrediction(target).Hitchance < HitChance.High)
-                return null;
-            spell.Cast(target, true);
-            return target;
-        }
-
-        /// <summary>
-        ///     Casts a basic circle skillshot towards target if hitchance is high
-        /// </summary>
-        /// <param name="spell"></param>
-        /// <param name="damageType"></param>
-        /// <param name="extrarange"></param>
-        /// <returns></returns>
-        public Obj_AI_Base castCircleSkillShot(Spell spell,
-            SimpleTs.DamageType damageType = SimpleTs.DamageType.Physical, float extrarange = 0) {
-            if (!spell.IsReady())
-                return null;
-            Obj_AI_Hero target = SimpleTs.GetTarget(spell.Range + extrarange, damageType);
-            if (target == null)
-                return null;
-            if (target.IsValidTarget(spell.Range + extrarange) &&
-                spell.GetPrediction(target).Hitchance >= HitChance.High)
-                spell.Cast(target, true);
-            return target;
-        }
-
-        /// <summary>
         ///     Gets the reverse position of you and your enemy.
         /// </summary>
         /// <param name="myPos"></param>

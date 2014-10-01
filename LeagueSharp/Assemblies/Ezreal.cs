@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -47,7 +48,7 @@ namespace Assemblies {
             W.SetSkillshot(0.25f, 80f, 2000f, false, SkillshotType.SkillshotLine);
 
             //DONT do e, its too situational.
-            
+
             R = new Spell(SpellSlot.R, 3000);
             R.SetSkillshot(1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
         }
@@ -57,6 +58,7 @@ namespace Assemblies {
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R to execute").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("usePackets", "Use Packet Casting").SetValue(true));
 
             menu.AddSubMenu(new Menu("Harass", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -74,7 +76,6 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
-
         }
 
         private void onUpdate(EventArgs args) {
@@ -83,9 +84,9 @@ namespace Assemblies {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useWC").GetValue<bool>())
-                        castLineSkillShot(W, SimpleTs.DamageType.Magical);
+                        castW();
                     if (menu.Item("useRAOE").GetValue<bool>() &&
-                        Utility.CountEnemysInRange(450) >= menu.Item("rAmount").GetValue<Slider>().Value) {
+                        Utility.CountEnemysInRange(600) >= menu.Item("rAmount").GetValue<Slider>().Value) {
                         AOEUltimate();
                     }
                     if (menu.Item("useRC").GetValue<bool>()) {
@@ -93,22 +94,19 @@ namespace Assemblies {
                         //Obj_AI_Hero targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical); //Redundant atm TODO
                         //Not finished,gotta check if R damage on target >= target.health //DONE TODO
                         // Done the Not Execute in certain range
-                            if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
-                                (targetPhis != null && targetPhis.IsValidTarget(2000))) {
-                                if (targetPhis.Health < player.GetSpellDamage(targetPhis, SpellSlot.R))
-                                    if (menu.Item("useNE").GetValue<bool>())
-                                    {
-                                        if(player.Distance(targetPhis)>=menu.Item("NERange").GetValue<Slider>().Value)
-                                            R.Cast(targetPhis, true);
-                                    }
-                                    else
-                                    {
+                        if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
+                            (targetPhis != null && targetPhis.IsValidTarget(2000))) {
+                            if (R.IsKillable(targetPhis)) // Thats extremly handy
+                                if (menu.Item("useNE").GetValue<bool>()) {
+                                    if (player.Distance(targetPhis) >= menu.Item("NERange").GetValue<Slider>().Value)
                                         R.Cast(targetPhis, true);
-                                    }
-                            }
-                        
+                                }
+                                else {
+                                    R.Cast(targetPhis, true);
+                                }
+                        }
                     }
-                    
+
                     break;
             }
         }
@@ -117,34 +115,55 @@ namespace Assemblies {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
-                        castLineSkillShot(Q); //TODO DZ191 only cast q after attack let on update handle the w and r. DZ191: Ok
+                        castQ();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     break;
             }
         }
-       
+
+        private bool getPackets() {
+            return menu.Item("usePackets").GetValue<bool>();
+        }
+
         private void onDraw(EventArgs args) {
-            //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE
-            if(menu.Item("DrawQ").GetValue<bool>())
-            {
-                Drawing.DrawCircle(player.Position,Q.Range,System.Drawing.Color.Purple);
+            //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE // fixed  iJava
+            if (menu.Item("drawQ").GetValue<bool>()) {
+                Drawing.DrawCircle(player.Position, Q.Range, Color.Purple);
             }
-            if (menu.Item("DrawW").GetValue<bool>())
-            {
-                Drawing.DrawCircle(player.Position, W.Range, System.Drawing.Color.Purple);
+            if (menu.Item("drawW").GetValue<bool>()) {
+                Drawing.DrawCircle(player.Position, W.Range, Color.Purple);
             }
-            if (menu.Item("DrawR").GetValue<bool>())
-            {
-                Drawing.DrawCircle(player.Position, R.Range, System.Drawing.Color.Purple);
+            if (menu.Item("drawR").GetValue<bool>()) {
+                Drawing.DrawCircle(player.Position, R.Range, Color.Purple);
             }
         }
-        
-        private void AOEUltimate() {
+
+        private void AOEUltimate() { // needs testing - iJava
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-            if (target != null && target.Distance(player) >= 450)
+            if (target != null && target.Distance(player) >= 600)
                 R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
             // TODO set a value for 450 min range or >= maxRange..
+        }
+
+        private void castQ() { // needs testing - iJava
+            Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+            if (!Q.IsReady() || qTarget == null) return;
+
+            if (qTarget.IsValidTarget(Q.Range) || Q.GetPrediction(qTarget).Hitchance >= HitChance.High) {
+                // TODO choose hitchance with slider more user customizability.
+                Q.Cast(qTarget, getPackets());
+            }
+        }
+
+        private void castW() { // needs testing - iJava
+            Obj_AI_Hero wTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+            if (!W.IsReady() || wTarget == null) return;
+
+            if (wTarget.IsValidTarget(W.Range) || W.GetPrediction(wTarget).Hitchance >= HitChance.High) {
+                // TODO choose hitchance with slider more user customizability.
+                W.Cast(wTarget, getPackets());
+            }
         }
     }
 }
