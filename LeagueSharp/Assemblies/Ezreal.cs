@@ -36,7 +36,7 @@ namespace Assemblies {
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
             Orbwalking.AfterAttack += onAfterAttack;
-            Game.PrintChat("[Assemblies] - Ezreal Loaded.");
+            Game.PrintChat("[Assemblies] - Ezreal Loaded." + "Happys a fag.");
         }
 
         private void loadSpells() {
@@ -89,7 +89,7 @@ namespace Assemblies {
                         //Obj_AI_Hero targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical); //Redundant atm TODO
                         //Not finished,gotta check if R damage on target >= target.health //DONE TODO
                         if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
-                            (targetPhis != null && targetPhis.IsValid)) {
+                            (targetPhis != null && targetPhis.IsValidTarget(2000))) {
                             if (targetPhis.Health < player.GetSpellDamage(targetPhis, SpellSlot.R))
                                 R.Cast(targetPhis, true);
                         }
@@ -110,7 +110,7 @@ namespace Assemblies {
         }
 
         private void onDraw(EventArgs args) {
-            //TODO draw pls DZ191
+            //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D:
         }
 
         private void AOEUltimate() {
