@@ -4,26 +4,21 @@ using LeagueSharp;
 using LeagueSharp.Common;
 
 /*
- * Maxric
-its pretty good, only things that might be useful are being able to have it auto q for harassing, i like that later game on other ezreals
-8:15:09 PM
-Maxric
-also it looks to me like the damage calc for his ult is off some, it has ulted and failed to kill twice now
-8:15:16 PM
-Maxric
-hit them, but they lived with about 80 hp
-8:18:24 PM
-Maxric
-oh, i dont think i hit minions but maybe i did
-8:20:41 PM
-Maxric
-yeah it actually works pretty well, not sure the first couple ults but now its fine
-8:20:59 PM
-Maxric
-only thing i can think of is like auto q and maybe w if you go the mana route or have a blue you can turn it on for
-8:28:31 PM
-Maxric
-oh ok, maybe add some logic for R not to execute if within x range?  */
+ *
+ *  ijava needs laneclear options, and harras over farm or farm over harras
+    ijava cause its harras over farm all the time  
+ * 
+ * ijava its laneclear and its autoattack harrasing all the time not last hitting when its possible to harras, i have no other scripts injected //TODO dz191 check it out man :/
+ * 
+ * 
+ * 
+ * ijava and the logic is a bit fucked should check if its possible to kill or not for example casting ultimate while leaving the hp for one more skillshot (q) not having the mana
+nedo
+ijava but skillshots are kinda not missed 
+ * 
+ * ijava in current stage marksman is a bit better, while i think marksman is not using packets 
+ * 
+ */
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -91,6 +86,8 @@ namespace Assemblies {
 
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
+                    if (menu.Item("useQC").GetValue<bool>())
+                        castQ();
                     if (menu.Item("useWC").GetValue<bool>())
                         castW();
                     if (menu.Item("useRAOE").GetValue<bool>() &&
@@ -114,20 +111,12 @@ namespace Assemblies {
                                 }
                         }
                     }
-
                     break;
             }
         }
 
         private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
-            switch (orbwalker.ActiveMode) {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    if (menu.Item("useQC").GetValue<bool>())
-                        castQ();
-                    break;
-                case Orbwalking.OrbwalkingMode.Mixed:
-                    break;
-            }
+            switch (orbwalker.ActiveMode) {}
         }
 
         private bool getPackets() {
