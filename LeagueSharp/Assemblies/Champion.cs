@@ -12,7 +12,7 @@ namespace Assemblies {
         protected Orbwalking.Orbwalker orbwalker;
 
         protected Champion() {
-            Game.PrintChat(player.ChampionName + " loaded");
+            Game.PrintChat("loading champion: " + player.ChampionName);
             addBasicMenu();
         }
 

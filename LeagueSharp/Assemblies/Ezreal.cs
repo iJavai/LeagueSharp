@@ -128,14 +128,14 @@ namespace Assemblies {
             var minionforQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
             var useQ = menu.Item("useQLC").GetValue<bool>();
             var useAutoQ = menu.Item("AutoQLC").GetValue<bool>();
-            var QPosition = Q.GetLineFarmLocation(minionforQ);
-            if(useQ && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Q.IsReady() && QPosition.MinionsHit>=1)
+            var qPosition = Q.GetLineFarmLocation(minionforQ);
+            if(useQ && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Q.IsReady() && qPosition.MinionsHit>=1)
             {
-                Q.Cast(QPosition.Position, getPackets());
+                Q.Cast(qPosition.Position, getPackets());
             }
-            if(useAutoQ && Q.IsReady() && QPosition.MinionsHit>=1)
+            if(useAutoQ && Q.IsReady() && qPosition.MinionsHit>=1)
             {
-                Q.Cast(QPosition.Position, getPackets());
+                Q.Cast(qPosition.Position, getPackets());
             }
         }
         private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
