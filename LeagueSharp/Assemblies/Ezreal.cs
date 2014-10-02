@@ -51,6 +51,10 @@ namespace Assemblies {
         private void loadMenu() {
             //TODO either do items in here or do it in champion class for future scripts maybe something like an inbuilt activator
             //TODO also autoQ while laneclearing has been requested with option for on  / off also check ultimate apparently its leave players on low hp... idek why i did an R.isKillable check.. :/
+
+            //DONE tried to change your check. Idk if it is working. Test please :P DZ191
+            //Also added Q in laneclear. Untested either.
+
             menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
@@ -60,6 +64,9 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
+            menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("AutoQLC", "Auto Q to farm").SetValue(false));
 
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
@@ -85,7 +92,7 @@ namespace Assemblies {
                 if (Q.IsKillable(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical)))
                     castQ();
             }
-
+            Farm();
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
@@ -103,7 +110,7 @@ namespace Assemblies {
                         // Done the Not Execute in certain range
                         if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
                             (targetPhis != null && targetPhis.IsValidTarget(2000))) {
-                            if (R.IsKillable(targetPhis)) // Thats extremly handy
+                            if (R.GetHealthPrediction(targetPhis)<=0) // Thats extremly handy // Tried to change the method
                                 if (menu.Item("useNE").GetValue<bool>()) {
                                     if (player.Distance(targetPhis) >= menu.Item("NERange").GetValue<Slider>().Value)
                                         R.Cast(targetPhis, true);
@@ -116,7 +123,21 @@ namespace Assemblies {
                     break;
             }
         }
-
+        private void Farm()
+        {
+            var minionforQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+            var useQ = menu.Item("useQLC").GetValue<bool>();
+            var useAutoQ = menu.Item("AutoQLC").GetValue<bool>();
+            var QPosition = Q.GetLineFarmLocation(minionforQ);
+            if(useQ && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Q.IsReady() && QPosition.MinionsHit>=1)
+            {
+                Q.Cast(QPosition.Position, getPackets());
+            }
+            if(useAutoQ && Q.IsReady() && QPosition.MinionsHit>=1)
+            {
+                Q.Cast(QPosition.Position, getPackets());
+            }
+        }
         private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
             switch (orbwalker.ActiveMode) {}
         }
@@ -151,7 +172,7 @@ namespace Assemblies {
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!Q.IsReady() || qTarget == null) return;
 
-            if (qTarget.IsValidTarget(Q.Range) || Q.GetPrediction(qTarget).Hitchance >= HitChance.High) {
+            if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead && Q.GetPrediction(qTarget).Hitchance >= HitChance.High) {
                 // TODO choose hitchance with slider more user customizability.
                 Q.Cast(qTarget, getPackets());
             }
