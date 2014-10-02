@@ -211,7 +211,8 @@ namespace Assemblies {
             if (target != null) {
                 PredictionOutput rPrediction = R.GetPrediction(target);
                 if (rPrediction.Hitchance >= getHitchance() && target.IsValidTarget(R.Range)) {
-                    if (target.Distance(player) <= menu.Item("NERange").GetValue<Slider>().Value) return;
+                    if (target.Distance(player) <= menu.Item("NERange").GetValue<Slider>().Value ||
+                        !R.IsKillable(target)) return;
                     R.Cast(target, getPackets(), true); // DONE
                 }
             }
