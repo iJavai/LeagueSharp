@@ -50,7 +50,7 @@ namespace Assemblies {
             R.SetSkillshot(1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
         }
 
-        private void loadMenu() {
+        private void loadMenu() { //[button=ls://project/xx/xx/xx/]Install xx[/button] 
             //TODO either do items in here or do it in champion class for future scripts maybe something like an inbuilt activator
             //TODO also autoQ while laneclearing has been requested with option for on  / off also check ultimate apparently its leave players on low hp... idek why i did an R.isKillable check.. :/
 
@@ -186,7 +186,7 @@ namespace Assemblies {
         private void castQ() {
             // needs testing - iJava //DONE working
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (!Q.IsReady() || qTarget == null) return;
+            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range - 10) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
                 Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
