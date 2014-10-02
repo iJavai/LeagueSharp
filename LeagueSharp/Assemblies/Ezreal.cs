@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -58,8 +59,7 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R to execute").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("usePackets", "Use Packet Casting").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useRC", "disabled atm.").SetValue(true));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -77,6 +77,7 @@ namespace Assemblies {
             menu.SubMenu("drawing").AddItem(new MenuItem("drawR", "Draw R").SetValue(false));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
+            menu.SubMenu("misc").AddItem(new MenuItem("usePackets", "Use packet Casting").SetValue(true));
             menu.SubMenu("misc").AddItem(new MenuItem("useRAOE", "Use R on >= enemies").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("rAmount", "Use R if enemeies > amount").SetValue(new Slider(3, 1, 5)));
@@ -104,40 +105,27 @@ namespace Assemblies {
                         AOEUltimate();
                     }
                     if (menu.Item("useRC").GetValue<bool>()) {
-                        Obj_AI_Hero targetPhis = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-                        //Obj_AI_Hero targetMagic = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical); //Redundant atm TODO
-                        //Not finished,gotta check if R damage on target >= target.health //DONE TODO
-                        // Done the Not Execute in certain range
-                        if ((R.GetPrediction(targetPhis).Hitchance == HitChance.High) &&
-                            (targetPhis != null && targetPhis.IsValidTarget(2000))) {
-                            if (R.GetHealthPrediction(targetPhis)<=0) // Thats extremly handy // Tried to change the method
-                                if (menu.Item("useNE").GetValue<bool>()) {
-                                    if (player.Distance(targetPhis) >= menu.Item("NERange").GetValue<Slider>().Value)
-                                        R.Cast(targetPhis, true);
-                                }
-                                else {
-                                    R.Cast(targetPhis, true);
-                                }
-                        }
+                        //TODO rework R and use a method for it like castR(target)
                     }
                     break;
             }
         }
-        private void Farm()
-        {
-            var minionforQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+
+        private void Farm() {
+            List<Obj_AI_Base> minionforQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
+                MinionTypes.All, MinionTeam.NotAlly);
             var useQ = menu.Item("useQLC").GetValue<bool>();
             var useAutoQ = menu.Item("AutoQLC").GetValue<bool>();
-            var qPosition = Q.GetLineFarmLocation(minionforQ);
-            if(useQ && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Q.IsReady() && qPosition.MinionsHit>=1)
-            {
+            MinionManager.FarmLocation qPosition = Q.GetLineFarmLocation(minionforQ);
+            if (useQ && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Q.IsReady() &&
+                qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
             }
-            if(useAutoQ && Q.IsReady() && qPosition.MinionsHit>=1)
-            {
+            if (useAutoQ && Q.IsReady() && qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
             }
         }
+
         private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
             switch (orbwalker.ActiveMode) {}
         }
@@ -172,7 +160,8 @@ namespace Assemblies {
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!Q.IsReady() || qTarget == null) return;
 
-            if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead && Q.GetPrediction(qTarget).Hitchance >= HitChance.High) {
+            if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
+                Q.GetPrediction(qTarget).Hitchance >= HitChance.High) {
                 // TODO choose hitchance with slider more user customizability.
                 Q.Cast(qTarget, getPackets());
             }
