@@ -50,7 +50,8 @@ namespace Assemblies {
             R.SetSkillshot(1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
         }
 
-        private void loadMenu() { //[button=ls://project/xx/xx/xx/]Install xx[/button] 
+        private void loadMenu() {
+            //[button=ls://project/xx/xx/xx/]Install xx[/button] 
             //TODO either do items in here or do it in champion class for future scripts maybe something like an inbuilt activator
             //TODO also autoQ while laneclearing has been requested with option for on  / off also check ultimate apparently its leave players on low hp... idek why i did an R.isKillable check.. :/
 
@@ -76,7 +77,7 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Hitchance Options", "hitchance"));
             menu.SubMenu("hitchance")
                 .AddItem(
-                    new MenuItem("hitchanceSetting", "Hitchance Setting").SetValue(
+                    new MenuItem("hitchanceSetting", "Hitchance").SetValue(
                         new StringList(new[] {"Low", "Medium", "High", "Very High"})));
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
@@ -143,17 +144,15 @@ namespace Assemblies {
         private HitChance getHitchance() {
             switch (menu.Item("hitchanceSetting").GetValue<StringList>().SelectedIndex) {
                 case 0:
-                    customHitchance = HitChance.Low;
-                    break;
+                    return HitChance.Low;
                 case 1:
-                    customHitchance = HitChance.Medium;
-                    break;
+                    return HitChance.Medium;
                 case 2:
-                    customHitchance = HitChance.High;
-                    break;
+                    return HitChance.High;
                 case 3:
-                    customHitchance = HitChance.VeryHigh;
-                    break;
+                    return HitChance.VeryHigh;
+                default:
+                    return HitChance.High;
             }
             return HitChance.High;
         }
