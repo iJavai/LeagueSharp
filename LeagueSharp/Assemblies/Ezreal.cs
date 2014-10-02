@@ -23,6 +23,8 @@ ijava but skillshots are kinda not missed
 
 namespace Assemblies {
     internal class Ezreal : Champion {
+        private HitChance customHitchance = HitChance.High;
+
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
                 return;
@@ -32,7 +34,6 @@ namespace Assemblies {
 
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
-            Orbwalking.AfterAttack += onAfterAttack;
             Game.PrintChat("[Assemblies] - Ezreal Loaded." + "Happys a fag.");
         }
 
@@ -64,12 +65,19 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
+
             menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
             menu.SubMenu("laneclear").AddItem(new MenuItem("AutoQLC", "Auto Q to farm").SetValue(false));
 
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
+
+            menu.AddSubMenu(new Menu("Hitchance Options", "hitchance"));
+            menu.SubMenu("hitchance")
+                .AddItem(
+                    new MenuItem("hitchanceSetting", "Hitchance Setting").SetValue(
+                        new StringList(new[] {"Low", "Medium", "High", "Very High"})));
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q").SetValue(false));
@@ -105,8 +113,14 @@ namespace Assemblies {
                         AOEUltimate();
                     }
                     if (menu.Item("useRC").GetValue<bool>()) {
-                        //TODO rework R and use a method for it like castR(target)
+                        castR();
                     }
+                    break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    if (menu.Item("useQH").GetValue<bool>())
+                        castQ();
+                    if (menu.Item("useWH").GetValue<bool>())
+                        castW();
                     break;
             }
         }
@@ -126,8 +140,22 @@ namespace Assemblies {
             }
         }
 
-        private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
-            switch (orbwalker.ActiveMode) {}
+        private HitChance getHitchance() {
+            switch (menu.Item("hitchanceSetting").GetValue<StringList>().SelectedIndex) {
+                case 0:
+                    customHitchance = HitChance.Low;
+                    break;
+                case 1:
+                    customHitchance = HitChance.Medium;
+                    break;
+                case 2:
+                    customHitchance = HitChance.High;
+                    break;
+                case 3:
+                    customHitchance = HitChance.VeryHigh;
+                    break;
+            }
+            return HitChance.High;
         }
 
         private bool getPackets() {
@@ -148,7 +176,7 @@ namespace Assemblies {
         }
 
         private void AOEUltimate() {
-            // needs testing - iJava
+            // needs testing - iJava // not tested.
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
             if (target != null && target.Distance(player) >= 600)
                 R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
@@ -156,25 +184,36 @@ namespace Assemblies {
         }
 
         private void castQ() {
-            // needs testing - iJava
+            // needs testing - iJava //DONE working
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!Q.IsReady() || qTarget == null) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
-                Q.GetPrediction(qTarget).Hitchance >= HitChance.High) {
+                Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
                 // TODO choose hitchance with slider more user customizability.
                 Q.Cast(qTarget, getPackets());
             }
         }
 
         private void castW() {
-            // needs testing - iJava
+            // needs testing - iJava //DONE working
             Obj_AI_Hero wTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!W.IsReady() || wTarget == null) return;
-
-            if (wTarget.IsValidTarget(W.Range) || W.GetPrediction(wTarget).Hitchance >= HitChance.High) {
+            if (wTarget.IsValidTarget(W.Range) || W.GetPrediction(wTarget).Hitchance >= getHitchance()) {
                 // TODO choose hitchance with slider more user customizability.
                 W.Cast(wTarget, getPackets());
+            }
+        }
+
+        private void castR() {
+            // not tested todo
+            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+            if (target != null) {
+                PredictionOutput rPrediction = R.GetPrediction(target);
+                if (rPrediction.Hitchance >= getHitchance() && target.IsValidTarget(R.Range)) {
+                    if (target.Distance(player) <= menu.Item("NERange").GetValue<Slider>().Value) return;
+                    R.Cast(target, getPackets(), true); // DONE
+                }
             }
         }
     }
