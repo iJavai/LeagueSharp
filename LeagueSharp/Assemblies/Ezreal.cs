@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using LeagueSharp;
-using LeagueSharp.Common;
-
-/*
+﻿/*
  *
  *  ijava needs laneclear options, and harras over farm or farm over harras
     ijava cause its harras over farm all the time  
@@ -20,6 +14,13 @@ ijava but skillshots are kinda not missed
  * ijava in current stage marksman is a bit better, while i think marksman is not using packets 
  * 
  */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using LeagueSharp;
+using LeagueSharp.Common;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -109,7 +110,8 @@ namespace Assemblies {
                         AOEUltimate();
                     }
                     if (menu.Item("useRC").GetValue<bool>()) {
-                        castR();
+                        var target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
+                        CustomRCalculation(target);
                     }
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
@@ -197,66 +199,36 @@ namespace Assemblies {
                 W.Cast(wTarget, getPackets());
             }
         }
+
         //This should take into account minion and champs on the path
         //Not sure if this is working.
-        private bool CustomRCalculation(Obj_AI_Hero target)
-        {
+        private bool CustomRCalculation(Obj_AI_Hero target) {
             //So I got this weird idea. -DZ191
-            var Distance = player.Distance(target);
-            var RVector = player.Position-target.Position;
-            List < Obj_AI_Base > minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
+            float distance = player.Distance(target);
+            //Vector3 RVector = player.Position - target.Position;
+            List<Obj_AI_Base> minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
-            int NumberOfMinion = 0;
-            int numberOfChamps = 0;
-            double coeff = 1 ;
-            foreach(Obj_AI_Base minion in minionListR)
-            {
-                //I'm sure there is a better way, but I am noob.
-
-                if(R.WillHit(minion.Position,player.Position))
-                {
-                    NumberOfMinion += 1;
-                }
-            }
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
-            {
-                if(hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero)<=R.Range)
-                {
-                    if (R.WillHit(hero.Position, player.Position))
-                    {
-                        numberOfChamps += 1;
-                    }
-                }
-            }
-            int total = numberOfChamps + NumberOfMinion;
-            if((total-1) >=7)
-            {
+            double coeff = 1;
+            int numberOfMinions = minionListR.Count(minion => R.WillHit(minion.Position, player.Position));
+            int numberOfChamps =
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Where(hero => hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero) <= R.Range)
+                    .Count(hero => R.WillHit(hero.Position, player.Position));
+            int total = numberOfChamps + numberOfMinions;
+            if ((total - 1) >= 7) {
                 coeff = 0.3;
-            }else if(total >1)
-            {
-                coeff = 1 - ((total - 1) / 10);
+            }
+            else if (total > 1) {
+                coeff = 1 - ((total - 1)/10);
             }
             //2000 being the EZ R projectile speed.
             //Factoring in The Regen. Thanks AcidRain.
-            //princer007 Is a demigod <3
-            if(R.GetDamage(target)*coeff >= (target.Health + (Distance/2000)*target.HPRegenRate))
-            {
+            //princer007 Is a demigod <3 
+            //Thanks princer007 - iJava appreciated your help :)
+            if (R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
                 return true;
             }
             return false;
-        }
-
-        private void castR() {
-            // not tested todo
-            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-            if (target != null) {
-                PredictionOutput rPrediction = R.GetPrediction(target);
-                if (rPrediction.Hitchance >= getHitchance() && target.IsValidTarget(R.Range)) {
-                    if (target.Distance(player) <= menu.Item("NERange").GetValue<Slider>().Value ||
-                        !R.IsKillable(target)) return;
-                    R.Cast(target, getPackets(), true); // DONE
-                }
-            }
         }
     }
 }
