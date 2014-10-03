@@ -242,7 +242,9 @@ namespace Assemblies {
             {
                 coeff = 1 - ((total - 1) / 10);
             }
-            if(R.GetDamage(target)*coeff >= target.Health)
+            //2000 being the EZ R projectile speed.
+            //Factoring in The Regen. Thanks AcidRain
+            if(R.GetDamage(target)*coeff >= (target.Health + (Distance/2000)*target.HPRegenRate))
             {
                 return true;
             }
