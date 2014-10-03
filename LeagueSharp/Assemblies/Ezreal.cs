@@ -231,6 +231,7 @@ namespace Assemblies {
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
             //Thanks princer007 - iJava appreciated your help :)
+            Console.WriteLine(target.ChampionName+" HP: "+target.Health+", Predicted damage: "+(player.GetSpellDamage(hero, SpellSlot.R)*coeff));
             if (player.GetSpellDamage(hero, SpellSlot.R)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
                 return true;
             }
