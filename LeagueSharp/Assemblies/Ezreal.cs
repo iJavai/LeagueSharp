@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  ijava needs laneclear options, and harras over farm or farm over harras
     ijava cause its harras over farm all the time  
@@ -21,13 +21,17 @@ using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
+        private HitChance customHitchance = HitChance.High;
+        //private Vector3 targetPont;
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
                 return;
             }
+            //targetPont = player.Position;
             loadMenu();
             loadSpells();
 
@@ -112,7 +116,7 @@ namespace Assemblies {
                         if (CustomRCalculation(target)) {
                             //TODO i think i did this right, if not then I'm a retard and feel free to test and change.
                             PredictionOutput prediction = R.GetPrediction(target, true);
-                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= HitChance.High) {
+                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= getHitchance()) {
                                 R.Cast(target, getPackets(), true);
                             }
                         }
@@ -164,14 +168,15 @@ namespace Assemblies {
         private void onDraw(EventArgs args) {
             //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE // fixed  iJava
             if (menu.Item("drawQ").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, Q.Range, Color.Purple);
+                Drawing.DrawCircle(player.Position, Q.Range, System.Drawing.Color.Purple);
             }
             if (menu.Item("drawW").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, W.Range, Color.Purple);
+                Drawing.DrawCircle(player.Position, W.Range, System.Drawing.Color.Purple);
             }
             if (menu.Item("drawR").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, R.Range, Color.Purple);
+                Drawing.DrawCircle(player.Position, R.Range, System.Drawing.Color.Purple);
             }
+            //Drawing.DrawLine(Drawing.WorldToScreen(player.Position), Drawing.WorldToScreen(targetPont), 2, System.Drawing.Color.BlueViolet);
         }
 
         private void AOEUltimate() {
@@ -185,7 +190,7 @@ namespace Assemblies {
         private void castQ() {
             // needs testing - iJava //DONE working
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (!Q.IsReady() || qTarget == null) return;
+            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range - 10) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
                 Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
@@ -213,12 +218,22 @@ namespace Assemblies {
             List<Obj_AI_Base> minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
             double coeff = 1;
-            int numberOfMinions = minionListR.Count(minion => R.WillHit(minion.Position, player.Position));
-            int numberOfChamps =
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(hero => hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero) <= R.Range)
-                    .Count(hero => R.WillHit(hero.Position, player.Position));
-            int total = numberOfChamps + numberOfMinions;
+            //Magic starts here!
+            //ushort projectileSpeed = 2000;
+            int numberOfMinions = 0;
+            int numberOfChamps = 0;
+            foreach(Obj_AI_Minion minion in minionListR)
+            {
+                Vector2 skillshotPosition = V2E(player.Position, target.Position, Vector3.Distance(player.Position, minion.Position));
+                if (skillshotPosition.Distance(minion) < R.Width) ++numberOfMinions;
+            }
+            foreach (Obj_AI_Hero minion in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                Vector2 skillshotPosition = V2E(player.Position, target.Position, Vector3.Distance(player.Position, minion.Position));
+                if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
+            }
+            //this is totally had to be reworked!
+            int total = numberOfChamps + numberOfMinions - 1;
             if ((total - 1) >= 7) {
                 coeff = 0.3;
             }
@@ -229,12 +244,17 @@ namespace Assemblies {
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
             //Thanks princer007 - iJava appreciated your help :)
-            Console.WriteLine(target.ChampionName + " HP: " + target.Health + ", Predicted damage: " +
-                              (player.GetSpellDamage(target, SpellSlot.R)*coeff));
-            if (player.GetSpellDamage(target, SpellSlot.R)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
+            //Game.PrintChat(target.ChampionName + " HP: " + target.Health + ", Predicted damage: " + (player.GetSpellDamage(target, SpellSlot.R) * coeff));
+            //Game.PrintChat("Will hit " + numberOfMinions + " minions and " + numberOfChamps + " champions");
+            if (R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
+                //targetPont = target.Position;
                 return true;
             }
             return false;
+        }
+        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
+        {
+            return (from + distance * Vector3.Normalize(direction - from)).To2D();
         }
     }
 }
