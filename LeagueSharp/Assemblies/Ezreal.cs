@@ -14,13 +14,13 @@ ijava but skillshots are kinda not missed
  * ijava in current stage marksman is a bit better, while i think marksman is not using packets 
  * 
  */
+
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
-using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -110,8 +110,14 @@ namespace Assemblies {
                         AOEUltimate();
                     }
                     if (menu.Item("useRC").GetValue<bool>()) {
-                        var target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-                        CustomRCalculation(target);
+                        Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
+                        if (CustomRCalculation(target)) {
+                            //TODO i think i did this right, if not then I'm a retard and feel free to test and change.
+                            PredictionOutput prediction = R.GetPrediction(target, true);
+                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= getHitchance()) {
+                                R.Cast(target, getPackets(), true);
+                            }
+                        }
                     }
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
