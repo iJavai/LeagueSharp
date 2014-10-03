@@ -10,6 +10,7 @@ namespace Assemblies {
         protected Spell W;
         protected Menu menu;
         protected Orbwalking.Orbwalker orbwalker;
+        public SkinManager skinManager;
 
         protected Champion() {
             Game.PrintChat("loading champion: " + player.ChampionName);
@@ -25,6 +26,9 @@ namespace Assemblies {
             Menu orbwalking = menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
             orbwalker = new Orbwalking.Orbwalker(orbwalking);
             menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
+
+            skinManager.AddToMenu(ref menu);
+
             menu.AddToMainMenu();
         }
     }

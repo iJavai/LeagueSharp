@@ -24,8 +24,6 @@ using LeagueSharp.Common;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
-        private HitChance customHitchance = HitChance.High;
-
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
                 return;
@@ -93,6 +91,8 @@ namespace Assemblies {
 
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
+
+            skinManager.Update();
 
             if (menu.Item("useQK").GetValue<bool>()) {
                 if (Q.IsKillable(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical)))
@@ -187,7 +187,7 @@ namespace Assemblies {
         private void castQ() {
             // needs testing - iJava //DONE working
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range - 10) return;
+            if (!Q.IsReady() || qTarget == null) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
                 Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
@@ -231,7 +231,8 @@ namespace Assemblies {
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
             //Thanks princer007 - iJava appreciated your help :)
-            Console.WriteLine(target.ChampionName+" HP: "+target.Health+", Predicted damage: "+(player.GetSpellDamage(target, SpellSlot.R)*coeff));
+            Console.WriteLine(target.ChampionName + " HP: " + target.Health + ", Predicted damage: " +
+                              (player.GetSpellDamage(target, SpellSlot.R)*coeff));
             if (player.GetSpellDamage(target, SpellSlot.R)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
                 return true;
             }
