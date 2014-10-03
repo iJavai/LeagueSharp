@@ -17,11 +17,10 @@ ijava but skillshots are kinda not missed
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -168,13 +167,13 @@ namespace Assemblies {
         private void onDraw(EventArgs args) {
             //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE // fixed  iJava
             if (menu.Item("drawQ").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, Q.Range, System.Drawing.Color.Purple);
+                Drawing.DrawCircle(player.Position, Q.Range, Color.Purple);
             }
             if (menu.Item("drawW").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, W.Range, System.Drawing.Color.Purple);
+                Drawing.DrawCircle(player.Position, W.Range, Color.Purple);
             }
             if (menu.Item("drawR").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, R.Range, System.Drawing.Color.Purple);
+                Drawing.DrawCircle(player.Position, R.Range, Color.Purple);
             }
             //Drawing.DrawLine(Drawing.WorldToScreen(player.Position), Drawing.WorldToScreen(targetPont), 2, System.Drawing.Color.BlueViolet);
         }
@@ -222,14 +221,18 @@ namespace Assemblies {
             //ushort projectileSpeed = 2000;
             int numberOfMinions = 0;
             int numberOfChamps = 0;
-            foreach(Obj_AI_Minion minion in minionListR)
-            {
-                Vector2 skillshotPosition = V2E(player.Position, V2E(player.Position, target.Position, Vector3.Distance(player.Position, target.Position)-R.Width+1), Vector3.Distance(player.Position, minion.Position));
+            foreach (Obj_AI_Minion minion in minionListR) {
+                Vector2 skillshotPosition = V2E(player.Position,
+                    V2E(player.Position, target.Position,
+                        Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
+                    Vector3.Distance(player.Position, minion.Position));
                 if (skillshotPosition.Distance(minion) < R.Width) ++numberOfMinions;
             }
-            foreach (Obj_AI_Hero minion in ObjectManager.Get<Obj_AI_Hero>())
-            {
-                Vector2 skillshotPosition = V2E(player.Position, V2E(player.Position, target.Position, Vector3.Distance(player.Position, target.Position)-R.Width+1), Vector3.Distance(player.Position, minion.Position));
+            foreach (Obj_AI_Hero minion in ObjectManager.Get<Obj_AI_Hero>()) {
+                Vector2 skillshotPosition = V2E(player.Position,
+                    V2E(player.Position, target.Position,
+                        Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
+                    Vector3.Distance(player.Position, minion.Position));
                 if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
             }
             //this is totally had to be reworked!
@@ -252,9 +255,9 @@ namespace Assemblies {
             }
             return false;
         }
-        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
-        {
-            return (from + distance * Vector3.Normalize(direction - from)).To2D();
+
+        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance) {
+            return (from + distance*Vector3.Normalize(direction - from)).To2D();
         }
     }
 }
