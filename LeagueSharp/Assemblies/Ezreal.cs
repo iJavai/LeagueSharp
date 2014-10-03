@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  ijava needs laneclear options, and harras over farm or farm over harras
     ijava cause its harras over farm all the time  
@@ -220,18 +220,8 @@ namespace Assemblies {
             double coeff = 1;
             //Magic starts here!
             //ushort projectileSpeed = 2000;
-            int numberOfMinions = 0;
-            int numberOfChamps = 0;
-            foreach(Obj_AI_Minion minion in minionListR)
-            {
-                Vector2 skillshotPosition = V2E(player.Position, target.Position, Vector3.Distance(player.Position, minion.Position));
-                if (skillshotPosition.Distance(minion) < R.Width) ++numberOfMinions;
-            }
-            foreach (Obj_AI_Hero minion in ObjectManager.Get<Obj_AI_Hero>())
-            {
-                Vector2 skillshotPosition = V2E(player.Position, target.Position, Vector3.Distance(player.Position, minion.Position));
-                if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
-            }
+            int numberOfMinions = (from Obj_AI_Minion minion in minionListR let skillshotPosition = V2E(player.Position, target.Position, Vector3.Distance(player.Position, minion.Position)) where skillshotPosition.Distance(minion) < R.Width select minion).Count();
+            int numberOfChamps = (from minion in ObjectManager.Get<Obj_AI_Hero>() let skillshotPosition = V2E(player.Position, target.Position, Vector3.Distance(player.Position, minion.Position)) where skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy select minion).Count();
             //this is totally had to be reworked!
             int total = numberOfChamps + numberOfMinions - 1;
             if ((total - 1) >= 7) {
