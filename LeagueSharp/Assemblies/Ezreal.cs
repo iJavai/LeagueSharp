@@ -203,7 +203,51 @@ namespace Assemblies {
                 W.Cast(wTarget, getPackets());
             }
         }
+        //This should take into account minion and champs on the path
+        //Not sure if this is working.
+        private bool CustomRCalculation(Obj_AI_Hero target)
+        {
+            //So I got this weird idea. DZ191
+            var Distance = player.Distance(target);
+            var RVector = player.Position-target.Position;
+            List < Obj_AI_Base > minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
+                MinionTypes.All, MinionTeam.NotAlly);
+            int NumberOfMinion = 0;
+            int numberOfChamps = 0;
+            double coeff;
+            foreach(Obj_AI_Base minion in minionListR)
+            {
+                //I'm sure there is a better way, but I am noob.
 
+                if(minion.Position.X == RVector.X || minion.Position.Y == RVector.Y || minion.Position.Z == RVector.Z)
+                {
+                    NumberOfMinion += 1;
+                }
+            }
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if(hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero)<=R.Range)
+                {
+                    if (hero.Position.X == RVector.X || hero.Position.Y == RVector.Y || hero.Position.Z == RVector.Z)
+                    {
+                        numberOfChamps += 1;
+                    }
+                }
+            }
+            int total = numberOfChamps + NumberOfMinion;
+            if((total-1) >=7)
+            {
+                coeff = 0.3;
+            }else
+            {
+                coeff = 1 - ((total - 1) / 10);
+            }
+            if(R.GetDamage(target)*coeff >= target.Health)
+            {
+                return true;
+            }
+            return false;
+        }
         private void castR() {
             // not tested todo
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
