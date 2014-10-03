@@ -214,7 +214,7 @@ namespace Assemblies {
                 MinionTypes.All, MinionTeam.NotAlly);
             int NumberOfMinion = 0;
             int numberOfChamps = 0;
-            double coeff;
+            double coeff = 1 ;
             foreach(Obj_AI_Base minion in minionListR)
             {
                 //I'm sure there is a better way, but I am noob.
@@ -238,7 +238,7 @@ namespace Assemblies {
             if((total-1) >=7)
             {
                 coeff = 0.3;
-            }else
+            }else if(total >1)
             {
                 coeff = 1 - ((total - 1) / 10);
             }
