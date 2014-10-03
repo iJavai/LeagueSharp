@@ -93,6 +93,8 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
+
+            Game.PrintChat("Ezreal by iJava & DZ191 Loaded. Special thanks to princer007");
         }
 
         private void onUpdate(EventArgs args) {
@@ -219,7 +221,7 @@ namespace Assemblies {
             {
                 //I'm sure there is a better way, but I am noob.
 
-                if(minion.Position.X == RVector.X || minion.Position.Y == RVector.Y)
+                if(R.WillHit(minion.Position,player.Position))
                 {
                     NumberOfMinion += 1;
                 }
@@ -228,7 +230,7 @@ namespace Assemblies {
             {
                 if(hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero)<=R.Range)
                 {
-                    if (hero.Position.X == RVector.X || hero.Position.Y == RVector.Y )
+                    if (R.WillHit(hero.Position, player.Position))
                     {
                         numberOfChamps += 1;
                     }
@@ -244,12 +246,14 @@ namespace Assemblies {
             }
             //2000 being the EZ R projectile speed.
             //Factoring in The Regen. Thanks AcidRain.
+            //princer007 Is a demigod <3
             if(R.GetDamage(target)*coeff >= (target.Health + (Distance/2000)*target.HPRegenRate))
             {
                 return true;
             }
             return false;
         }
+
         private void castR() {
             // not tested todo
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
