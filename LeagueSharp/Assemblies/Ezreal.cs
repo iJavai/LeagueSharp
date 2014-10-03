@@ -224,12 +224,12 @@ namespace Assemblies {
             int numberOfChamps = 0;
             foreach(Obj_AI_Minion minion in minionListR)
             {
-                Vector2 skillshotPosition = V2E(player.Position, V2E(player.Position, target.Position, R.Width-1), Vector3.Distance(player.Position, minion.Position));
+                Vector2 skillshotPosition = V2E(player.Position, V2E(player.Position, target.Position, Vector3.Distance(player.Position, target.Position)-R.Width+1), Vector3.Distance(player.Position, minion.Position));
                 if (skillshotPosition.Distance(minion) < R.Width) ++numberOfMinions;
             }
             foreach (Obj_AI_Hero minion in ObjectManager.Get<Obj_AI_Hero>())
             {
-                Vector2 skillshotPosition = V2E(player.Position, V2E(player.Position, target.Position, R.Width-1), Vector3.Distance(player.Position, minion.Position));
+                Vector2 skillshotPosition = V2E(player.Position, V2E(player.Position, target.Position, Vector3.Distance(player.Position, target.Position)-R.Width+1), Vector3.Distance(player.Position, minion.Position));
                 if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
             }
             //this is totally had to be reworked!
