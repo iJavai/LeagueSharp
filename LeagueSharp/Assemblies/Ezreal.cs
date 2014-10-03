@@ -114,7 +114,7 @@ namespace Assemblies {
                         if (CustomRCalculation(target)) {
                             //TODO i think i did this right, if not then I'm a retard and feel free to test and change.
                             PredictionOutput prediction = R.GetPrediction(target, true);
-                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= getHitchance()) {
+                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= Hitchance.High) {
                                 R.Cast(target, getPackets(), true);
                             }
                         }
@@ -231,7 +231,7 @@ namespace Assemblies {
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
             //Thanks princer007 - iJava appreciated your help :)
-            if (R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
+            if (R.GetSpellDamage(hero, SpellSlot.R)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
                 return true;
             }
             return false;
