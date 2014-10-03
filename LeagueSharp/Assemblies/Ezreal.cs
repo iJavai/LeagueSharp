@@ -207,7 +207,7 @@ namespace Assemblies {
         //Not sure if this is working.
         private bool CustomRCalculation(Obj_AI_Hero target)
         {
-            //So I got this weird idea. DZ191
+            //So I got this weird idea. -DZ191
             var Distance = player.Distance(target);
             var RVector = player.Position-target.Position;
             List < Obj_AI_Base > minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
@@ -219,7 +219,7 @@ namespace Assemblies {
             {
                 //I'm sure there is a better way, but I am noob.
 
-                if(minion.Position.X == RVector.X || minion.Position.Y == RVector.Y || minion.Position.Z == RVector.Z)
+                if(minion.Position.X == RVector.X || minion.Position.Y == RVector.Y)
                 {
                     NumberOfMinion += 1;
                 }
@@ -228,7 +228,7 @@ namespace Assemblies {
             {
                 if(hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero)<=R.Range)
                 {
-                    if (hero.Position.X == RVector.X || hero.Position.Y == RVector.Y || hero.Position.Z == RVector.Z)
+                    if (hero.Position.X == RVector.X || hero.Position.Y == RVector.Y )
                     {
                         numberOfChamps += 1;
                     }
@@ -243,7 +243,7 @@ namespace Assemblies {
                 coeff = 1 - ((total - 1) / 10);
             }
             //2000 being the EZ R projectile speed.
-            //Factoring in The Regen. Thanks AcidRain
+            //Factoring in The Regen. Thanks AcidRain.
             if(R.GetDamage(target)*coeff >= (target.Health + (Distance/2000)*target.HPRegenRate))
             {
                 return true;
