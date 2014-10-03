@@ -231,7 +231,7 @@ namespace Assemblies {
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
             //Thanks princer007 - iJava appreciated your help :)
-            if (R.GetSpellDamage(hero, SpellSlot.R)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
+            if (player.GetSpellDamage(hero, SpellSlot.R)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
                 return true;
             }
             return false;
