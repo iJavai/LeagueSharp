@@ -92,8 +92,6 @@ namespace Assemblies {
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
 
-            skinManager.Update();
-
             if (menu.Item("useQK").GetValue<bool>()) {
                 if (Q.IsKillable(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical)))
                     castQ();
