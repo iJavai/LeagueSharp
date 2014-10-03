@@ -86,6 +86,8 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
+
+            Game.PrintChat("Ezreal by iJava & DZ191 Loaded. Special thanks to princer007");
         }
 
         private void onUpdate(EventArgs args) {
@@ -194,6 +196,54 @@ namespace Assemblies {
                 // TODO choose hitchance with slider more user customizability.
                 W.Cast(wTarget, getPackets());
             }
+        }
+        //This should take into account minion and champs on the path
+        //Not sure if this is working.
+        private bool CustomRCalculation(Obj_AI_Hero target)
+        {
+            //So I got this weird idea. -DZ191
+            var Distance = player.Distance(target);
+            var RVector = player.Position-target.Position;
+            List < Obj_AI_Base > minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
+                MinionTypes.All, MinionTeam.NotAlly);
+            int NumberOfMinion = 0;
+            int numberOfChamps = 0;
+            double coeff = 1 ;
+            foreach(Obj_AI_Base minion in minionListR)
+            {
+                //I'm sure there is a better way, but I am noob.
+
+                if(R.WillHit(minion.Position,player.Position))
+                {
+                    NumberOfMinion += 1;
+                }
+            }
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if(hero.IsEnemy && hero.IsValid && !hero.IsDead && player.Distance(hero)<=R.Range)
+                {
+                    if (R.WillHit(hero.Position, player.Position))
+                    {
+                        numberOfChamps += 1;
+                    }
+                }
+            }
+            int total = numberOfChamps + NumberOfMinion;
+            if((total-1) >=7)
+            {
+                coeff = 0.3;
+            }else if(total >1)
+            {
+                coeff = 1 - ((total - 1) / 10);
+            }
+            //2000 being the EZ R projectile speed.
+            //Factoring in The Regen. Thanks AcidRain.
+            //princer007 Is a demigod <3
+            if(R.GetDamage(target)*coeff >= (target.Health + (Distance/2000)*target.HPRegenRate))
+            {
+                return true;
+            }
+            return false;
         }
 
         private void castR() {
