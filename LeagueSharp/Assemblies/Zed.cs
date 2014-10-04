@@ -106,6 +106,7 @@ namespace Assemblies
         private void onProcessSpell(GameObject sender, EventArgs args)
         {
             var theSpell = (Obj_SpellMissile)sender;
+ 
             if(sender.IsMe && theSpell.SData.Name == "ZedUltMissile")
             {
                 RShadow = new ZedShadow { shadowPosition = player.ServerPosition, WR = "R", gameTick = Game.Time,sender = sender};
