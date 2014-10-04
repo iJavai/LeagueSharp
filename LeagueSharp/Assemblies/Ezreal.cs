@@ -17,6 +17,7 @@ ijava but skillshots are kinda not missed
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -82,14 +83,14 @@ namespace Assemblies {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("usePackets", "Use packet Casting").SetValue(true));
-            menu.SubMenu("misc").AddItem(new MenuItem("useRAOE", "Use R on >= enemies").SetValue(false));
-            menu.SubMenu("misc")
-                .AddItem(new MenuItem("rAmount", "Use R if enemeies > amount").SetValue(new Slider(3, 1, 5)));
+            //menu.SubMenu("misc").AddItem(new MenuItem("useRAOE", "Use R on >= enemies").SetValue(false));
+            //menu.SubMenu("misc")
+            //   .AddItem(new MenuItem("rAmount", "Use R if enemeies > amount").SetValue(new Slider(3, 1, 5)));
             menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
 
-            Game.PrintChat("Ezreal by iJava & DZ191 Loaded. Special thanks to princer007");
+            Game.PrintChat("Ezreal by iJava, Princer007 and DZ191 Loaded.");
         }
 
         private void onUpdate(EventArgs args) {
@@ -106,16 +107,16 @@ namespace Assemblies {
                         castQ();
                     if (menu.Item("useWC").GetValue<bool>())
                         castW();
-                    if (menu.Item("useRAOE").GetValue<bool>() &&
-                        Utility.CountEnemysInRange(600, player) >= menu.Item("rAmount").GetValue<Slider>().Value) {
-                        AOEUltimate();
-                    }
+                    //if (menu.Item("useRAOE").GetValue<bool>() &&
+                    //   Utility.CountEnemysInRange(600, player) >= menu.Item("rAmount").GetValue<Slider>().Value) {
+                    //  AOEUltimate(); //TODO recode AOE ult no worky atm
+                    //}
                     if (menu.Item("useRC").GetValue<bool>()) {
                         Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-                        if (CustomRCalculation(target)) {
-                            //TODO i think i did this right, if not then I'm a retard and feel free to test and change.
+                        if (getUnitsInPath(target)) {
+                            //TODO needs testing moit.
                             PredictionOutput prediction = R.GetPrediction(target, true);
-                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= getHitchance()) {
+                            if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= HitChance.High) {
                                 R.Cast(target, getPackets(), true);
                             }
                         }
@@ -210,7 +211,7 @@ namespace Assemblies {
 
         //This should take into account minion and champs on the path
         //Not sure if this is working.
-        private bool CustomRCalculation(Obj_AI_Hero target) {
+        private bool getUnitsInPath(Obj_AI_Hero target) {
             //So I got this weird idea. -DZ191
             float distance = player.Distance(target);
             //Vector3 RVector = player.Position - target.Position;
@@ -219,9 +220,27 @@ namespace Assemblies {
             double coeff = 1;
             //Magic starts here!
             //ushort projectileSpeed = 2000;
-            int numberOfMinions = 0;
-            int numberOfChamps = 0;
-            foreach (Obj_AI_Minion minion in minionListR) {
+
+            int numberOfMinions = (from Obj_AI_Minion minion in minionListR
+                let skillshotPosition =
+                    V2E(player.Position,
+                        V2E(player.Position, target.Position,
+                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
+                        Vector3.Distance(player.Position, minion.Position))
+                where skillshotPosition.Distance(minion) < R.Width
+                select minion).Count();
+            int numberOfChamps = (from minion in ObjectManager.Get<Obj_AI_Hero>()
+                let skillshotPosition =
+                    V2E(player.Position,
+                        V2E(player.Position, target.Position,
+                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
+                        Vector3.Distance(player.Position, minion.Position))
+                where skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy
+                select minion).Count();
+
+            //TODO converted to linq expression, DW PRINCER your code is below this comment, so just make changes to that when you need :3
+
+            /*foreach (Obj_AI_Minion minion in minionListR) {
                 Vector2 skillshotPosition = V2E(player.Position,
                     V2E(player.Position, target.Position,
                         Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
@@ -234,7 +253,7 @@ namespace Assemblies {
                         Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
                     Vector3.Distance(player.Position, minion.Position));
                 if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
-            }
+            }*/
             //this is totally had to be reworked!
             int total = numberOfChamps + numberOfMinions - 1;
             if ((total - 1) >= 7) {
