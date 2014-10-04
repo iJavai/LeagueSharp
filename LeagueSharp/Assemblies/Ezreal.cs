@@ -220,7 +220,7 @@ namespace Assemblies {
             double coeff = 1;
             //Magic starts here!
             //ushort projectileSpeed = 2000;
-
+            //Princer the god. <3 -DZ191
             int numberOfMinions = (from Obj_AI_Minion minion in minionListR
                 let skillshotPosition =
                     V2E(player.Position,
@@ -255,13 +255,11 @@ namespace Assemblies {
                 if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
             }*/
             //this is totally had to be reworked!
+            //I know it fucking sucks :3 -DZ191
             int total = numberOfChamps + numberOfMinions - 1;
-            if ((total - 1) >= 7) {
-                coeff = 0.3;
-            }
-            else if (total > 1) {
-                coeff = 1 - ((total - 1)/10);
-            }
+            if (total == -1) { return false; }
+            coeff = ((total >= 7)) ? 0.3 : (total==0)?1.0:(1 - ((total) / 10));
+            
             //2000 being the EZ R projectile speed.
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
