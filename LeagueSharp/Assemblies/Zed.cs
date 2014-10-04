@@ -92,12 +92,17 @@ namespace Assemblies
         {
             var theObject = sender;
             //Untested. No clue if this works. :3 -Dz191
-            if(theObject.IsValid && theObject.NetworkId == WShadow.sender.NetworkId)
+            /*
+             * I mean,it should
+             * But there it this weird thing with Azir where he can push Zed shadows with his ult
+             * so this might need to be perfected. Maybe using NetworkdId ? 
+           */
+            if (theObject.IsValid && theObject.Position.Distance(WShadow.shadowPosition) < 50)
             {
                 WShadow = null;
                 WOut = false;
             }
-            if (theObject.IsValid && theObject.NetworkId == RShadow.sender.NetworkId)
+            if (theObject.IsValid && theObject.Position.Distance(RShadow.shadowPosition)<50)
             {
                 RShadow = null;
                 ROut = false;
