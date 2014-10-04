@@ -10,7 +10,7 @@ namespace Assemblies {
         protected Spell W;
         protected Menu menu;
         protected Orbwalking.Orbwalker orbwalker;
-        public SkinManager skinManager;
+        //public SkinManager skinManager;
 
         protected Champion() {
             Game.PrintChat("loading champion: " + player.ChampionName);
