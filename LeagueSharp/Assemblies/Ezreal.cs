@@ -257,9 +257,9 @@ namespace Assemblies {
             //this is totally had to be reworked!
             //I know it fucking sucks :3 -DZ191
             int total = numberOfChamps + numberOfMinions - 1;
-            if (total == -1) { return false; }
-            coeff = ((total >= 7)) ? 0.3 : (total==0)?1.0:(1 - ((total) / 10));
-            
+            if (total == -1) return false;
+            coeff = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));
+
             //2000 being the EZ R projectile speed.
             //Factoring in The Regen. Thanks AcidRain.
             //princer007 Is a demigod <3 
