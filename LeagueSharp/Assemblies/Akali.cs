@@ -60,29 +60,29 @@ namespace Assemblies {
             throw new NotImplementedException();
         }
         
-        private void CastR(Obj_AI_Base target) {
-            throw new NotImplementedException();
+        private void CastR() {
+            Obj_AI_Minion target = new Obj_AI_Minion();
+            foreach(Obj_AI_Minion minion in MinionManager.GetMinions(wPos, 800, MinionTypes.All, MinionTeam.NotAlly)
+            {
+                if(Player.Distance(minion) < Player.Distance(target)) target = minion;
+            }
+            if(R.IsReady() && R.InRange(target)) R.Cast(target, true);
         }
         
         private void Escape() {
             Vector3 cursorPos = Game.CursorPos;
             Vector3 pos = V2E(player.Position, cursorPos, R.Range);
-            if (IsPassWall(player.Position, cursorPos))
+            Vector3 pass = V3E(player.Position, cursorPos, 100);
+            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pass.X, pass.Y)).Send();
+            if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D())){
+                if (!W.IsReady()) W.Cast(pos);
+                CastR();
+            }
+            else
             {
-                Vector3 pass = V3E(player.Position, cursorPos, 100);
-                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pass.X, pass.Y)).Send();
-                if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D())){
-                    if (!W.IsReady()) W.Cast(pos);
-                    Obj_AI_Minion target = new Obj_AI_Minion();
-                    foreach(Obj_AI_Minion minion in MinionManager.GetMinions(wPos, 800, MinionTypes.All, MinionTeam.NotAlly)
-                    {
-                        if(Player.Distance(minion) < Player.Distance(target)) target = minion;
-                    }
-                    if(R.IsReady() && R.InRange(target)) R.Cast(target, true);
-                }
+                CastR();
             }
         }
-        
         
         private static bool IsPassWall(Vector3 start, Vector3 end)
         {
