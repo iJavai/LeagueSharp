@@ -98,7 +98,13 @@ namespace Assemblies {
             return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2" ||
                    player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
         }
-
+        private int GetCountNearPos(Vector3 pos,float range)
+        {
+            int count = 0;
+            foreach(Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos)<=range))
+                count++;
+            return count;
+        }
         private void onDeleteObject(GameObject sender, EventArgs args) {
             GameObject theObject = sender;
             
