@@ -77,7 +77,7 @@ namespace Assemblies {
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(heroes => heroes.IsEnemy)
                     .FirstOrDefault(heroes => heroes.HasBuff("zedulttargetmark", true));
-                // <-- is that the actual buff name or nah?
+                // <-- is that the actual buff name or nah? It is
         }
         private bool isTargetKilled()
         {
@@ -92,7 +92,7 @@ namespace Assemblies {
         }
 
         /**
-         * This would work? 
+         * This would work? Ye,maybe
          */
         private bool canBackToShadow() {
             return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2" ||
