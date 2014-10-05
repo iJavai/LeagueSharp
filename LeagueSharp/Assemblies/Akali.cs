@@ -20,7 +20,7 @@ namespace Assemblies {
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
 
-            Game.PrintChat("[Assemblies] - Akali Loaded." + "swag.");
+            Game.PrintChat("[Assemblies] - Akali Loaded.");
         }
 
 
