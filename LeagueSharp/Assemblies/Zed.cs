@@ -17,7 +17,8 @@ namespace Assemblies {
         private ZedShadow WShadow;
         private HitChance customHitchance = HitChance.High;
         private List<ZedShadow> shadowList;
-
+        private enum RWEnum{R, W};
+        private bool isChampKill; //but what if champ is not kill Kappa
         public Zed() {
             if (player.ChampionName != "Zed") {
                 return;
@@ -78,7 +79,10 @@ namespace Assemblies {
                     .FirstOrDefault(heroes => heroes.HasBuff("zedulttargetmark", true));
                 // <-- is that the actual buff name or nah?
         }
-
+        private bool isTargetKilled()
+        {
+            return isChampKill;
+        }
         private bool canGoBackW() {
             return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2";
         }
@@ -97,20 +101,17 @@ namespace Assemblies {
 
         private void onDeleteObject(GameObject sender, EventArgs args) {
             GameObject theObject = sender;
-            //Untested. No clue if this works. :3 -Dz191
-            /*
-             * I mean,it should
-             * But there it this weird thing with Azir where he can push Zed shadows with his ult
-             * so this might need to be perfected. Maybe using NetworkdId ? 
-           */
-            if (theObject.IsValid && theObject.Position.Distance(WShadow.shadowPosition) < 50) {
+            
+            if (theObject.IsValid && theObject == WShadow.shadowObj) {
                 WShadow = null;
                 WOut = false;
             }
-            if (theObject.IsValid && theObject.Position.Distance(RShadow.shadowPosition) < 50) {
+            if (theObject.IsValid && theObject == RShadow.shadowObj) {
                 RShadow = null;
                 ROut = false;
             }
+            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy"))
+                isChampKill = false;
         }
 
         private void onProcessSpell(GameObject sender, EventArgs args) {
@@ -119,28 +120,49 @@ namespace Assemblies {
             if (sender.IsMe && theSpell.SData.Name == "ZedUltMissile") {
                 RShadow = new ZedShadow {
                     shadowPosition = player.ServerPosition,
-                    WR = "R",
-                    gameTick = Game.Time,
-                    sender = sender
+                    WR = RWEnum.R,
+                    gameTick = Environment.TickCount,
+                    sender = sender,
+                    shadowObj = CheckForClones(RWEnum.R)
                 };
                 ROut = true;
             }
             if (sender.IsMe && theSpell.SData.Name == "ZedShadowDashMissile") {
                 WShadow = new ZedShadow {
-                    shadowPosition = theSpell.EndPosition,
-                    WR = "W",
-                    gameTick = Game.Time,
-                    sender = sender
+                    shadowPosition = CheckForClones(RWEnum.W).ServerPosition,
+                    WR = RWEnum.W,
+                    gameTick = Environment.TickCount,
+                    sender = sender,
+                    shadowObj = CheckForClones(RWEnum.W)
                 };
                 WOut = true;
             }
+            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy"))
+                isChampKill = true;
         }
-
+        private Obj_AI_Minion CheckForClones(RWEnum RorW)
+        {
+            switch(RorW){
+                case RWEnum.W:
+                    var obj1 = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly && obj != RShadow.shadowObj);
+                    if (obj1 != null)
+                        return obj1;
+                    return null;
+                case RWEnum.R:
+                    var obj2 = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && player.Distance(obj)<50 && obj.IsAlly && obj != WShadow.shadowObj);
+                    if (obj2 != null)
+                        return obj2;
+                    return null;
+                default:
+                    return null;
+            }
+        }
         private class ZedShadow {
             public Vector3 shadowPosition { get; set; }
-            public String WR { get; set; }
+            public RWEnum WR { get; set; }
             public float gameTick { get; set; }
             public GameObject sender { get; set; }
+            public Obj_AI_Minion shadowObj { get; set; }
         }
     }
 }
