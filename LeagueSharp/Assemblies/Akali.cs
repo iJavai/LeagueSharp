@@ -63,5 +63,24 @@ namespace Assemblies {
         private void CastR(Obj_AI_Base target, bool escape) {
             throw new NotImplementedException();
         }
+        
+        
+        
+        private static bool IsPassWall(Vector3 start, Vector3 end)
+        {
+            double count = Vector3.Distance(start, end);
+            for (uint i = 0; i <= count; i += 10)
+            {
+                Vector2 pos = V2E(start, end, i);
+                if (IsWall(pos)) return true;
+            }
+            return false;
+        }
+        
+        private static bool IsWall(Vector2 pos)
+        {
+            return (NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Wall || NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Building);
+        }
+        
     }
 }
