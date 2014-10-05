@@ -71,8 +71,8 @@ namespace Assemblies {
         
         private void Escape() {
             Vector3 cursorPos = Game.CursorPos;
-            Vector3 pos = V2E(player.Position, cursorPos, R.Range);
-            Vector3 pass = V3E(player.Position, cursorPos, 100);
+            Vector2 pos = V2E(player.Position, cursorPos, R.Range);
+            Vector2 pass = V2E(player.Position, cursorPos, 100);
             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pass.X, pass.Y)).Send();
             if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D())){
                 if (!W.IsReady()) W.Cast(pos);
