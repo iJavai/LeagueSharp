@@ -7,6 +7,7 @@ using SharpDX;
 
 //TODO idea, use EvadeSpellDatabase or .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
 //TODO - reply here.
+//TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated..
 
 namespace Assemblies {
     //Kappa
@@ -16,9 +17,10 @@ namespace Assemblies {
         private bool WOut;
         private ZedShadow WShadow;
         private HitChance customHitchance = HitChance.High;
-        private List<ZedShadow> shadowList;
-        private enum RWEnum{R, W};
+
         private bool isChampKill; //but what if champ is not kill Kappa
+        private List<ZedShadow> shadowList;
+
         public Zed() {
             if (player.ChampionName != "Zed") {
                 return;
@@ -63,7 +65,7 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            throw new NotImplementedException();
+            //TODO combo.
         }
 
         private void onDraw(EventArgs args) {
@@ -77,12 +79,13 @@ namespace Assemblies {
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(heroes => heroes.IsEnemy)
                     .FirstOrDefault(heroes => heroes.HasBuff("zedulttargetmark", true));
-                // <-- is that the actual buff name or nah? It is
+            // <-- is that the actual buff name or nah? It is
         }
-        private bool isTargetKilled()
-        {
+
+        private bool isTargetKilled() {
             return isChampKill;
         }
+
         private bool canGoBackW() {
             return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2";
         }
@@ -94,20 +97,25 @@ namespace Assemblies {
         /**
          * This would work? Ye,maybe
          */
+
         private bool canBackToShadow() {
             return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2" ||
                    player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
         }
-        private int GetCountNearPos(Vector3 pos,float range)
-        {
+
+        private int GetCountNearPos(Vector3 pos, float range) {
             int count = 0;
-            foreach(Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos)<=range))
+            foreach (
+                Obj_AI_Hero hero in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range))
                 count++;
             return count;
         }
+
         private void onDeleteObject(GameObject sender, EventArgs args) {
             GameObject theObject = sender;
-            
+
             if (theObject.IsValid && theObject == WShadow.shadowObj) {
                 WShadow = null;
                 WOut = false;
@@ -146,16 +154,23 @@ namespace Assemblies {
             if (sender.Name.Contains("Zed_Base_R_buf_tell.troy"))
                 isChampKill = true;
         }
-        private Obj_AI_Minion CheckForClones(RWEnum RorW)
-        {
-            switch(RorW){
+
+        private Obj_AI_Minion CheckForClones(RWEnum RorW) {
+            switch (RorW) {
                 case RWEnum.W:
-                    var obj1 = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly && obj != RShadow.shadowObj);
+                    Obj_AI_Minion obj1 =
+                        ObjectManager.Get<Obj_AI_Minion>()
+                            .FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly && obj != RShadow.shadowObj);
                     if (obj1 != null)
                         return obj1;
                     return null;
                 case RWEnum.R:
-                    var obj2 = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && player.Distance(obj)<50 && obj.IsAlly && obj != WShadow.shadowObj);
+                    Obj_AI_Minion obj2 =
+                        ObjectManager.Get<Obj_AI_Minion>()
+                            .FirstOrDefault(
+                                obj =>
+                                    obj.Name == "Shadow" && player.Distance(obj) < 50 && obj.IsAlly &&
+                                    obj != WShadow.shadowObj);
                     if (obj2 != null)
                         return obj2;
                     return null;
@@ -163,6 +178,12 @@ namespace Assemblies {
                     return null;
             }
         }
+
+        private enum RWEnum {
+            R,
+            W
+        };
+
         private class ZedShadow {
             public Vector3 shadowPosition { get; set; }
             public RWEnum WR { get; set; }

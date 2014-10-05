@@ -42,6 +42,9 @@
     <Reference Include="clipper_library">
       <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\clipper_library.dll</HintPath>
     </Reference>
+    <Reference Include="Evade">
+      <HintPath>..\..\..\..\LeagueSharp Loader\System\Evade.dll</HintPath>
+    </Reference>
     <Reference Include="Igniter">
       <HintPath>C:\Users\Corey\Desktop\LeagueSharp Loader\System\Igniter.dll</HintPath>
     </Reference>

@@ -25,7 +25,7 @@ using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
-        private HitChance customHitchance = HitChance.High;
+        //private HitChance customHitchance = HitChance.High;
         //private Vector3 targetPont;
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
@@ -225,7 +225,7 @@ namespace Assemblies {
                 let skillshotPosition =
                     V2E(player.Position,
                         V2E(player.Position, target.Position,
-                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
+                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D() ,
                         Vector3.Distance(player.Position, minion.Position))
                 where skillshotPosition.Distance(minion) < R.Width
                 select minion).Count();
