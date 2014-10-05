@@ -11,7 +11,7 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal class Akali : Champion {
         public Akali() {
-            if (player.ChampionName != "Zed") {
+            if (player.ChampionName != "Akali") {
                 return;
             }
             loadMenu();
