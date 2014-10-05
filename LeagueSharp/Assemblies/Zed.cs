@@ -5,6 +5,9 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
+//TODO idea, use EvadeSpellDatabase and .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
+//TODO - reply here.
+
 namespace Assemblies {
     //Kappa
     internal class Zed : Champion {
@@ -28,7 +31,7 @@ namespace Assemblies {
             GameObject.OnCreate += onProcessSpell;
             GameObject.OnDelete += onDeleteObject;
 
-            Game.PrintChat("[Assemblies] - Zed Loaded." + "Huehuehue.");
+            Game.PrintChat("[Assemblies] - Zed Loaded." + "swag.");
         }
 
 
