@@ -82,5 +82,9 @@ namespace Assemblies {
             return (NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Wall || NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Building);
         }
         
+        private static Vector2 V3E(Vector3 from, Vector3 direction, float distance)
+        {
+            return from.To2D() + distance * Vector3.Normalize(direction - from).To2D();
+        }
     }
 }
