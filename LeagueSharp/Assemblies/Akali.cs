@@ -78,10 +78,6 @@ namespace Assemblies {
                 if (!W.IsReady()) W.Cast(pos);
                 CastR();
             }
-            else
-            {
-                CastR();
-            }
         }
         
         private static bool IsPassWall(Vector3 start, Vector3 end)
