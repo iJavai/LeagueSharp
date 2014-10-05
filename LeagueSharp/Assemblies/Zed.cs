@@ -57,6 +57,8 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(false));
+
+            Game.PrintChat("Zed by iJava, Princer007 and DZ191 Loaded.");
         }
 
         private void onUpdate(EventArgs args) {
@@ -67,10 +69,14 @@ namespace Assemblies {
             throw new NotImplementedException();
         }
 
-        private void fillShadowList() {}
+        private void fillShadowList() {} // todo wat? :S
 
         private Obj_AI_Hero getDeathmarkedTarget() {
-            return ObjectManager.Get<Obj_AI_Hero>().Where(heroes => heroes.IsEnemy).FirstOrDefault(heroes => heroes.HasBuff("zedulttargetmark", true));
+            return
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Where(heroes => heroes.IsEnemy)
+                    .FirstOrDefault(heroes => heroes.HasBuff("zedulttargetmark", true));
+                // <-- is that the actual buff name or nah?
         }
 
         private bool canGoBackW() {
@@ -79,6 +85,14 @@ namespace Assemblies {
 
         private bool canGoBackR() {
             return player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
+        }
+
+        /**
+         * This would work? 
+         */
+        private bool canBackToShadow() {
+            return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2" ||
+                   player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
         }
 
         private void onDeleteObject(GameObject sender, EventArgs args) {
