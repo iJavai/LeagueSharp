@@ -20,7 +20,7 @@ namespace Assemblies {
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
 
-            Game.PrintChat("[Assemblies] - Akali Loaded.");
+            Game.PrintChat("[Assemblies] - Akali Loaded. Swag.");
         }
 
 
@@ -53,6 +53,14 @@ namespace Assemblies {
         }
 
         private void onDraw(EventArgs args) {
+            throw new NotImplementedException();
+        }
+        
+        private void Combo(EventArgs args) {
+            throw new NotImplementedException();
+        }
+        
+        private void CastR(Obj_AI_Base target, bool escape) {
             throw new NotImplementedException();
         }
     }
