@@ -2,6 +2,12 @@
 using LeagueSharp;
 using LeagueSharp.Common;
 
+//TODO auto R KS for stacks reset maybe
+//AUtoShroud erm, fake recall in top lane? :3
+//Flee mode using jungle camps or miniions
+//Maybe different combo modes switchable using StringList ofc
+
+
 namespace Assemblies {
     internal class Akali : Champion {
         public Akali() {
@@ -19,14 +25,10 @@ namespace Assemblies {
 
 
         private void loadSpells() {
-            Q = new Spell(SpellSlot.Q, 900);
-            Q.SetSkillshot(0.235f, 50f, 1700, false, SkillshotType.SkillshotLine);
-
-            W = new Spell(SpellSlot.W, 550);
-
-            E = new Spell(SpellSlot.E, 290);
-
-            R = new Spell(SpellSlot.R, 600);
+            Q = new Spell(SpellSlot.Q, 600);
+            W = new Spell(SpellSlot.W, 700);
+            E = new Spell(SpellSlot.E, 325);
+            R = new Spell(SpellSlot.R, 800);
         }
 
         private void loadMenu() {
@@ -40,6 +42,8 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(false));
+
+            //TODO items
 
             Game.PrintChat("Akali by iJava, Princer007 and DZ191 Loaded.");
         }
