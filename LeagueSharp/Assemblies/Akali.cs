@@ -76,8 +76,8 @@ namespace Assemblies {
             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pass.X, pass.Y)).Send();
             if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D())){
                 if (!W.IsReady()) W.Cast(pos);
-                CastR();
             }
+            CastR();
         }
         
         private static bool IsPassWall(Vector3 start, Vector3 end)
