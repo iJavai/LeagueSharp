@@ -47,7 +47,16 @@ namespace Assemblies {
         }
 
         private void loadMenu() {
-            throw new NotImplementedException();
+            menu.AddSubMenu(new Menu("Combo Options", "combo"));
+            menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use W in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
+
+            menu.AddSubMenu(new Menu("Harass Options", "harass"));
+            menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
+            menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
+            menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(false));
         }
 
         private void onUpdate(EventArgs args) {
