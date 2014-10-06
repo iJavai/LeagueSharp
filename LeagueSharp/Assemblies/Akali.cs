@@ -8,7 +8,9 @@ Use Q -> R -> E -> AA -> W, not AA when in shroud but if killable
 If not in Q range
 Use R -> Q -> E -> AA -> W, not AA when in shroud but if killable
 
+ * This code need refactoring ASAP!
 */
+
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -59,7 +61,7 @@ namespace Assemblies
 
             menu.AddSubMenu(new Menu("Lane Clear", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQL", "Use Q in laneclear").SetValue(true));
-            menu.SubMenu("laneclear").AddItem(new MenuItem("useEL", "Use E in laneclear").SetValue(false));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("useEL", "Use E in laneclear").SetValue(true));
             menu.SubMenu("laneclear").AddItem(new MenuItem("hitCounter", "Use E if will hit min").SetValue(new Slider(3, 1, 6)));
 
             menu.AddSubMenu(new Menu("Miscellaneous", "misc"));
@@ -73,6 +75,7 @@ namespace Assemblies
 
         private void onUpdate(EventArgs args)
         {
+            Combo();
             if (menu.SubMenu("misc").Item("escape").GetValue<KeyBind>().Active) Escape();
         }
 
@@ -82,7 +85,7 @@ namespace Assemblies
                 Utility.DrawCircle(Game.CursorPos, 150, W.IsReady() ? Color.Blue : Color.Red, 3);
         }
 
-        private void Combo(EventArgs args)
+        private void Combo()
         {
             switch (orbwalker.ActiveMode)
             {
@@ -90,9 +93,9 @@ namespace Assemblies
                     //TODO princers combo when i get homerino
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    if (menu.Item("useQL").GetValue<bool>())
+                    if (menu.SubMenu("laneclear").Item("useQL").GetValue<bool>())
                         castQ(false);
-                    if (menu.Item("useEL").GetValue<bool>())
+                    if (menu.SubMenu("laneclear").Item("useEL").GetValue<bool>())
                         castE(false);
                     break;
 
@@ -104,37 +107,36 @@ namespace Assemblies
             if (!Q.IsReady()) return;
             if (mode)
             {
-            Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
-            if (target == null || !target.IsValidTarget(Q.Range)) return;
+                Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
+                if (target == null || !target.IsValidTarget(Q.Range)) return;
                 Q.Cast(target, true);
-        }
+            }
             else
             {
-                foreach(Obj_AI_Base minion in MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health))
-                    if(minion.Health < player.GetSpellDamage(minion, SpellSlot.Q)) Q.Cast(minion);
+                foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health))
+                    if (HealthPrediction.GetHealthPrediction(minion, (int)(E.Delay + (minion.Distance(player) / E.Speed))*1000) < player.GetSpellDamage(minion, SpellSlot.Q) &&
+                        HealthPrediction.GetHealthPrediction(minion, (int)(E.Delay + (minion.Distance(player) / E.Speed))*1000) > 0)
+                        Q.Cast(minion);
             }
         }
 
         private void castE(bool mode)
         {
             if (!E.IsReady()) return;
-            if(mode)
+            if (mode)
             {
-            Obj_AI_Hero target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
-            if (target == null || !target.IsValidTarget(E.Range)) return;
-                if (E.IsReady())
-                {
+                Obj_AI_Hero target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
+                if (target == null || !target.IsValidTarget(E.Range)) return;
                     //TODO E if target has Q Buff for more dmg
                     //TODO AA this moofuka if E is on CD (c) Princer007
-                    if (hasBuff(target, "qBuffName?!?!?!?!?") && !E.IsReady())
+                if (hasBuff(target, "AkaliMota") && !E.IsReady() && player.AttackRange >= player.Distance(target))
                         orbwalker.ForceTarget(target);
                     else
-                E.Cast(target, true);
+                        E.Cast(target, true);
                 }
                 else
-                {       //Minions in E range                                                                        >= Value in menu
-                    if (MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy).Count >= menu.SubMenu("laneclear").Item("RCounter").GetValue<Slider>().Value) E.Cast();
-                }
+            {   //Minions in E range                                                                            >= Value in menu
+                if (MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy).Count >= menu.SubMenu("laneclear").Item("hitCounter").GetValue<Slider>().Value) E.Cast();
             }
         }
 
@@ -143,18 +145,7 @@ namespace Assemblies
             if (!R.IsReady()) return;
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             if (target == null || !target.IsValidTarget(R.Range)) return;
-                R.Cast(target, true);
-            }
-
-        private void castREscape()
-        {
-            Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
-            foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
-                if (player.Distance(target) < player.Distance(minion))
-                    target = minion;
-
-            if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
-                R.Cast(target, true);
+            R.Cast(target, true);
         }
 
         private void Escape()
@@ -167,6 +158,17 @@ namespace Assemblies
             if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D()))
                 if (W.IsReady()) W.Cast(V2E(player.Position, cursorPos, W.Range));
             castREscape();
+        }
+
+        private void castREscape()
+        {
+            Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
+            foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
+                if (player.Distance(target) < player.Distance(minion) && minion.Distance(Game.CursorPos) < 150)
+                    target = minion;
+
+            if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
+                R.Cast(target, true);
         }
 
         private static bool IsPassWall(Vector3 start, Vector3 end)
