@@ -8,6 +8,7 @@ Use Q -> R -> E -> AA -> W, not AA when in shroud but if killable
 If not in Q range
 Use R -> Q -> E -> AA -> W, not AA when in shroud but if killable
 
+ * This code need refactoring ASAP!
 */
 
 using System;
@@ -117,8 +118,8 @@ namespace Assemblies
             else
             {
                 foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health))
-                    if (HealthPrediction.GetHealthPrediction(minion, (int)(E.Delay+(minion.Distance(player)/E.Speed))) < player.GetSpellDamage(minion, SpellSlot.Q) &&
-                        HealthPrediction.GetHealthPrediction(minion, (int)(E.Delay + (minion.Distance(player) / E.Speed))) > 0)
+                    if (HealthPrediction.GetHealthPrediction(minion, (int)(E.Delay + (minion.Distance(player) / E.Speed))*1000) < player.GetSpellDamage(minion, SpellSlot.Q) &&
+                        HealthPrediction.GetHealthPrediction(minion, (int)(E.Delay + (minion.Distance(player) / E.Speed))*1000) > 0)
                         Q.Cast(minion);
             }
         }
