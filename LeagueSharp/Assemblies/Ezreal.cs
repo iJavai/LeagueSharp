@@ -169,7 +169,6 @@ namespace Assemblies {
             float distance = player.Distance(target);
             List<Obj_AI_Base> minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
-            double coeff = 1;
             int numberOfMinions = (from Obj_AI_Minion minion in minionListR
                 let skillshotPosition =
                     V2E(player.Position,
@@ -188,15 +187,8 @@ namespace Assemblies {
                 select minion).Count();
             int total = numberOfChamps + numberOfMinions - 1;
             if (total == -1) return false;
-            coeff = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));
-            if (R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
-                return true;
-            }
-            return false;
-        }
-
-        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance) {
-            return (from + distance*Vector3.Normalize(direction - from)).To2D();
+            double coeff = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));
+            return R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate);
         }
     }
 }
