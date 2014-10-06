@@ -4,9 +4,11 @@
 //Maybe different combo modes switchable using StringList ofc
 
 using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Akali : Champion {
@@ -44,8 +46,9 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(false));
 
             menu.AddSubMenu(new Menu("Miscellaneous", "misc"));
-            menu.SubMenu("misc").AddItem(new MenuItem("escape", "Escape key").SetValue<KeyBind>(new KeyBind('G', KeyBindType.Press)));
-            menu.SubMenu("misc").AddItem(new MenuItem("RCounter", "Do not escape if R<").SetValue<Slider>(new Slider(1, 1, 3)));
+            menu.SubMenu("misc")
+                .AddItem(new MenuItem("escape", "Escape key").SetValue(new KeyBind('G', KeyBindType.Press)));
+            menu.SubMenu("misc").AddItem(new MenuItem("RCounter", "Do not escape if R<").SetValue(new Slider(1, 1, 3)));
             //TODO items
 
             Game.PrintChat("Akali by iJava, Princer007 and DZ191 Loaded.");
@@ -56,19 +59,49 @@ namespace Assemblies {
         }
 
         private void onDraw(EventArgs args) {
-            if (menu.SubMenu("misc").Item("escape").GetValue<KeyBind>().Active) Utility.DrawCircle(Game.CursorPos, 150, W.IsReady() ? System.Drawing.Color.Blue : System.Drawing.Color.Red, 2); ;
+            if (menu.SubMenu("misc").Item("escape").GetValue<KeyBind>().Active)
+                Utility.DrawCircle(Game.CursorPos, 150, W.IsReady() ? Color.Blue : Color.Red, 2);
         }
 
         private void Combo(EventArgs args) {
-            throw new NotImplementedException();
+            switch (orbwalker.ActiveMode) {
+                case Orbwalking.OrbwalkingMode.Combo:
+                    if (menu.Item("useQC").GetValue<bool>()) {}
+                    castQ();
+                    break;
+            }
         }
 
-        private void CastR() {
+        private void castQ() {
+            Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
+            if (target == null || !target.IsValidTarget(Q.Range)) return;
+            if (Q.IsReady())
+                Q.Cast(target, true);
+        }
+
+        private void castE() {
+            Obj_AI_Hero target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
+            if (target == null || !target.IsValidTarget(E.Range)) return;
+            if (E.IsReady()) {
+                //TODO E if target has Q Buff for more dmg
+                if (hasBuff(target, "qBuffName?!?!?!?!?")) {
+                    E.Cast(target, true);
+                }
+                else {
+                    E.Cast(target, true);
+                }
+            }
+        }
+
+        private void castREscape() {
             Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
-            foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
+            foreach (
+                Obj_AI_Base minion in
+                    MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
                 if (player.Distance(target) < player.Distance(minion))
                     target = minion;
-            if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150) R.Cast(target, true);
+            if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
+                R.Cast(target, true);
         }
 
         private void Escape() {
@@ -79,7 +112,7 @@ namespace Assemblies {
             if (menu.SubMenu("misc").Item("RCounter").GetValue<Slider>().Value > ultiCount()) return;
             if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D()))
                 if (W.IsReady()) W.Cast(V2E(player.Position, cursorPos, W.Range));
-            CastR();
+            castREscape();
         }
 
         private static bool IsPassWall(Vector3 start, Vector3 end) {
@@ -91,11 +124,8 @@ namespace Assemblies {
             return false;
         }
 
-        private int ultiCount()
-        {
-            foreach (BuffInstance buff in player.Buffs)
-                if (buff.Name == "AkaliShadowDance") return buff.Count;
-            return 0;
+        private int ultiCount() {
+            return (from buff in player.Buffs where buff.Name == "AkaliShadowDance" select buff.Count).FirstOrDefault();
         }
 
         private static bool IsWall(Vector2 pos) {
