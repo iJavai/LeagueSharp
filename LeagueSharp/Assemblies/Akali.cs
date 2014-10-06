@@ -16,6 +16,7 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using Igniter;
 using Color = System.Drawing.Color;
 
 namespace Assemblies
@@ -196,6 +197,7 @@ namespace Assemblies
             if (E.IsReady() && E.InRange(victim.Position)) E.Cast();
             if (W.IsReady() && W.InRange(victim.Position)) W.Cast(V2E(player.Position, victim.Position, player.Distance(victim)+W.Width-20));
             if (R.IsReady() && R.InRange(victim.Position)) R.Cast(victim);
+            new Igniter.Ignite().Cast(victim);
         }
 
         private bool IsRapeble(Obj_AI_Hero victim)
