@@ -8,6 +8,7 @@ using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
+
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
                 return;
@@ -60,9 +61,6 @@ namespace Assemblies {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("usePackets", "Use packet Casting").SetValue(true));
-            //menu.SubMenu("misc").AddItem(new MenuItem("useRAOE", "Use R on >= enemies").SetValue(false));
-            //menu.SubMenu("misc")
-            //   .AddItem(new MenuItem("rAmount", "Use R if enemeies > amount").SetValue(new Slider(3, 1, 5)));
             menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
@@ -84,10 +82,6 @@ namespace Assemblies {
                         castQ();
                     if (menu.Item("useWC").GetValue<bool>())
                         castW();
-                    //if (menu.Item("useRAOE").GetValue<bool>() &&
-                    //   Utility.CountEnemysInRange(600, player) >= menu.Item("rAmount").GetValue<Slider>().Value) {
-                    //  AOEUltimate(); //TODO recode AOE ult no worky atm
-                    //}
                     if (menu.Item("useRC").GetValue<bool>()) {
                         Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
                         if (getUnitsInPath(target)) {
@@ -153,12 +147,6 @@ namespace Assemblies {
             }
         }
 
-        private void AOEUltimate() {
-            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-            if (target != null && target.Distance(player) >= 600)
-                R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
-        }
-
         private void castQ() {
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range - 10) return;
@@ -186,7 +174,7 @@ namespace Assemblies {
                 let skillshotPosition =
                     V2E(player.Position,
                         V2E(player.Position, target.Position,
-                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D() ,
+                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
                         Vector3.Distance(player.Position, minion.Position))
                 where skillshotPosition.Distance(minion) < R.Width
                 select minion).Count();
@@ -198,20 +186,6 @@ namespace Assemblies {
                         Vector3.Distance(player.Position, minion.Position))
                 where skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy
                 select minion).Count();
-            /*foreach (Obj_AI_Minion minion in minionListR) {
-                Vector2 skillshotPosition = V2E(player.Position,
-                    V2E(player.Position, target.Position,
-                        Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
-                    Vector3.Distance(player.Position, minion.Position));
-                if (skillshotPosition.Distance(minion) < R.Width) ++numberOfMinions;
-            }
-            foreach (Obj_AI_Hero minion in ObjectManager.Get<Obj_AI_Hero>()) {
-                Vector2 skillshotPosition = V2E(player.Position,
-                    V2E(player.Position, target.Position,
-                        Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
-                    Vector3.Distance(player.Position, minion.Position));
-                if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
-            }*/
             int total = numberOfChamps + numberOfMinions - 1;
             if (total == -1) return false;
             coeff = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));

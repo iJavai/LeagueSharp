@@ -79,7 +79,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Akali.cs" />
     <Compile Include="Champion.cs" />
     <Compile Include="ChampionUtils.cs" />
     <Compile Include="Ezreal.cs" />

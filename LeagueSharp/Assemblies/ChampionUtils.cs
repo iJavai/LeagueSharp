@@ -128,5 +128,16 @@ namespace Assemblies {
             float y = myPos.Y - enemyPos.Y;
             return new Vector3(myPos.X + x, myPos.Y + y, myPos.Z);
         }
+
+        /// <summary>
+        ///     Extends a vector using the params from, direction, distance
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="direction"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        private static Vector2 extendedVector2(Vector3 from, Vector3 direction, float distance) {
+            return from.To2D() + distance*Vector3.Normalize(direction - from).To2D();
+        }
     }
 }
