@@ -2,7 +2,13 @@
 //AUtoShroud erm, fake recall in top lane? :3
 //Flee mode using jungle camps or miniions
 //Maybe different combo modes switchable using StringList ofc
+/* 
+Combo:
+Use Q -> R -> E -> AA -> W, not AA when in shroud but if killable
+If not in Q range
+Use R -> Q -> E -> AA -> W, not AA when in shroud but if killable
 
+*/
 using System;
 using System.Linq;
 using LeagueSharp;
