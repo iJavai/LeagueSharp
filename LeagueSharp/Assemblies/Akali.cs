@@ -107,9 +107,7 @@ namespace Assemblies {
 
         private void castREscape() {
             Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
-            foreach (
-                Obj_AI_Base minion in
-                    MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
+            foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
                 if (player.Distance(target) < player.Distance(minion))
                     target = minion;
             if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
