@@ -168,13 +168,13 @@ namespace Assemblies {
         private void onDraw(EventArgs args) {
             //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE // fixed  iJava
             if (menu.Item("drawQ").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, Q.Range, Color.Purple);
+                Utility.DrawCircle(player.Position, Q.Range, Color.Purple);
             }
             if (menu.Item("drawW").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, W.Range, Color.Purple);
+                Utility.DrawCircle(player.Position, W.Range, Color.Purple);
             }
             if (menu.Item("drawR").GetValue<bool>()) {
-                Drawing.DrawCircle(player.Position, R.Range, Color.Purple);
+                Utility.DrawCircle(player.Position, R.Range, Color.Purple);
             }
             //Drawing.DrawLine(Drawing.WorldToScreen(player.Position), Drawing.WorldToScreen(targetPont), 2, System.Drawing.Color.BlueViolet);
         }
