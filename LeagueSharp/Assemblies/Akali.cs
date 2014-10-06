@@ -213,7 +213,7 @@ namespace Assemblies
                         if (player.Spellbook.CanUseSpell((SpellSlot)item.Slot) == SpellState.Ready)
                             comboDamage *= 1.15;
             if (R.IsReady() && ultiCount() > 2) comboDamage += player.GetSpellDamage(victim, SpellSlot.R);
-            //MAAAAAAAAAAAAAD. I'm fucked up. Gotta get cup of hot tea :3
+            //MAAAAAAAAAAAAAD. I'm fucked up. Gotta get cup of hot tea :3 GOOD JOB
             return victim.Health < comboDamage;
         }
 
