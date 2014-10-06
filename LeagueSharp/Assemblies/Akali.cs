@@ -112,10 +112,11 @@ namespace Assemblies {
         }
 
         private void castREscape() {
-            Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
-            foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
-                if (player.Distance(target) < player.Distance(minion))
-                    target = minion;
+            //Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
+            //foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
+              //  if (player.Distance(target) < player.Distance(minion))
+                //    target = minion;
+            Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly).OrderBy(min => player.Distance(min)).FirstOrDefault();
             if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
                 R.Cast(target, true);
         }
