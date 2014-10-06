@@ -1,21 +1,4 @@
-﻿/*
- *
- *  ijava needs laneclear options, and harras over farm or farm over harras
-    ijava cause its harras over farm all the time  
- * 
- * ijava its laneclear and its autoattack harrasing all the time not last hitting when its possible to harras, i have no other scripts injected //TODO dz191 check it out man :/
- * 
- * 
- * 
- * ijava and the logic is a bit fucked should check if its possible to kill or not for example casting ultimate while leaving the hp for one more skillshot (q) not having the mana
-nedo
-ijava but skillshots are kinda not missed 
- * 
- * ijava in current stage marksman is a bit better, while i think marksman is not using packets 
- * 
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
@@ -25,16 +8,12 @@ using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
-        //private HitChance customHitchance = HitChance.High;
-        //private Vector3 targetPont;
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
                 return;
             }
-            //targetPont = player.Position;
             loadMenu();
             loadSpells();
-
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
             Game.PrintChat("[Assemblies] - Ezreal Loaded." + "Happys a fag.");
@@ -46,8 +25,6 @@ namespace Assemblies {
 
             W = new Spell(SpellSlot.W, 1050);
             W.SetSkillshot(0.25f, 80f, 2000f, false, SkillshotType.SkillshotLine);
-
-            //DONT do e, its too situational.
 
             R = new Spell(SpellSlot.R, 3000);
             R.SetSkillshot(1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
@@ -114,7 +91,6 @@ namespace Assemblies {
                     if (menu.Item("useRC").GetValue<bool>()) {
                         Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
                         if (getUnitsInPath(target)) {
-                            //TODO needs testing moit.
                             PredictionOutput prediction = R.GetPrediction(target, true);
                             if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= HitChance.High) {
                                 R.Cast(target, getPackets(), true);
@@ -166,7 +142,6 @@ namespace Assemblies {
         }
 
         private void onDraw(EventArgs args) {
-            //TODO draw pls DZ191 HURRY UP DZ191 I DOONT LIKE DOING THE BORING PARTS D: //DONE // fixed  iJava
             if (menu.Item("drawQ").GetValue<bool>()) {
                 Utility.DrawCircle(player.Position, Q.Range, Color.Purple);
             }
@@ -176,51 +151,37 @@ namespace Assemblies {
             if (menu.Item("drawR").GetValue<bool>()) {
                 Utility.DrawCircle(player.Position, R.Range, Color.Purple);
             }
-            //Drawing.DrawLine(Drawing.WorldToScreen(player.Position), Drawing.WorldToScreen(targetPont), 2, System.Drawing.Color.BlueViolet);
         }
 
         private void AOEUltimate() {
-            // needs testing - iJava // not tested.
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
             if (target != null && target.Distance(player) >= 600)
                 R.CastIfWillHit(target, menu.Item("rAmount").GetValue<Slider>().Value, true);
-            // TODO set a value for 450 min range or >= maxRange..
         }
 
         private void castQ() {
-            // needs testing - iJava //DONE working
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range - 10) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
                 Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
-                // TODO choose hitchance with slider more user customizability.
                 Q.Cast(qTarget, getPackets());
             }
         }
 
         private void castW() {
-            // needs testing - iJava //DONE working
             Obj_AI_Hero wTarget = SimpleTs.GetTarget(W.Range, SimpleTs.DamageType.Physical);
             if (!W.IsReady() || wTarget == null) return;
             if (wTarget.IsValidTarget(W.Range) || W.GetPrediction(wTarget).Hitchance >= getHitchance()) {
-                // TODO choose hitchance with slider more user customizability.
                 W.Cast(wTarget, getPackets());
             }
         }
 
-        //This should take into account minion and champs on the path
-        //Not sure if this is working.
         private bool getUnitsInPath(Obj_AI_Hero target) {
-            //So I got this weird idea. -DZ191
             float distance = player.Distance(target);
-            //Vector3 RVector = player.Position - target.Position;
             List<Obj_AI_Base> minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
             double coeff = 1;
-            //Magic starts here!
-            //ushort projectileSpeed = 2000;
-            //Princer the god. <3 -DZ191
             int numberOfMinions = (from Obj_AI_Minion minion in minionListR
                 let skillshotPosition =
                     V2E(player.Position,
@@ -237,9 +198,6 @@ namespace Assemblies {
                         Vector3.Distance(player.Position, minion.Position))
                 where skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy
                 select minion).Count();
-
-            //TODO converted to linq expression, DW PRINCER your code is below this comment, so just make changes to that when you need :3
-
             /*foreach (Obj_AI_Minion minion in minionListR) {
                 Vector2 skillshotPosition = V2E(player.Position,
                     V2E(player.Position, target.Position,
@@ -254,20 +212,10 @@ namespace Assemblies {
                     Vector3.Distance(player.Position, minion.Position));
                 if (skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy) ++numberOfChamps;
             }*/
-            //this is totally had to be reworked!
-            //I know it fucking sucks :3 -DZ191
             int total = numberOfChamps + numberOfMinions - 1;
             if (total == -1) return false;
             coeff = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));
-
-            //2000 being the EZ R projectile speed.
-            //Factoring in The Regen. Thanks AcidRain.
-            //princer007 Is a demigod <3 
-            //Thanks princer007 - iJava appreciated your help :)
-            //Game.PrintChat(target.ChampionName + " HP: " + target.Health + ", Predicted damage: " + (player.GetSpellDamage(target, SpellSlot.R) * coeff));
-            //Game.PrintChat("Will hit " + numberOfMinions + " minions and " + numberOfChamps + " champions");
             if (R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate)) {
-                //targetPont = target.Position;
                 return true;
             }
             return false;
