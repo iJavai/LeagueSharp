@@ -20,7 +20,6 @@ using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Akali : Champion {
-
         public Akali() {
             if (player.ChampionName != "Akali") {
                 return;
@@ -118,7 +117,15 @@ namespace Assemblies {
                 Q.Cast(target, true);
             }
             else {
-                foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, Q.Range).Where(minion => HealthPrediction.GetHealthPrediction(minion, (int) (E.Delay + (minion.Distance(player)/E.Speed))*1000) < player.GetSpellDamage(minion, SpellSlot.Q) && HealthPrediction.GetHealthPrediction(minion, (int) (E.Delay + (minion.Distance(player)/E.Speed))*1000) > 0))
+                foreach (
+                    Obj_AI_Base minion in
+                        MinionManager.GetMinions(player.Position, Q.Range).Where(
+                            minion =>
+                                HealthPrediction.GetHealthPrediction(minion,
+                                    (int) (E.Delay + (minion.Distance(player)/E.Speed))*1000) <
+                                player.GetSpellDamage(minion, SpellSlot.Q) &&
+                                HealthPrediction.GetHealthPrediction(minion,
+                                    (int) (E.Delay + (minion.Distance(player)/E.Speed))*1000) > 0))
                     Q.Cast(minion);
             }
         }
@@ -137,7 +144,8 @@ namespace Assemblies {
             }
             else {
                 //Minions in E range                                the extra args was redundant.                                            >= Value in menu
-                if (MinionManager.GetMinions(player.Position, E.Range).Count >= menu.SubMenu("laneclear").Item("hitCounter").GetValue<Slider>().Value) E.Cast();
+                if (MinionManager.GetMinions(player.Position, E.Range).Count >=
+                    menu.SubMenu("laneclear").Item("hitCounter").GetValue<Slider>().Value) E.Cast();
             }
         }
 
@@ -156,14 +164,15 @@ namespace Assemblies {
             if (menu.SubMenu("misc").Item("RCounter").GetValue<Slider>().Value > ultiCount()) return;
             Obj_AI_Base target = getMinion();
             if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D()))
-                if (!target.IsVisible)
-                {
-                    if (W.IsReady()) W.Cast(V2E(player.Position, cursorPos, W.Range)); //TODO check if the miniion / jungle creep is already visible so it doesn't waste W - Should be done -DZ191
+                if (!target.IsVisible) {
+                    if (W.IsReady())
+                        W.Cast(V2E(player.Position, cursorPos, W.Range));
+                            //TODO check if the miniion / jungle creep is already visible so it doesn't waste W - Should be done -DZ191
                 }
             castREscape(target);
         }
-        private Obj_AI_Base getMinion()
-        {
+
+        private Obj_AI_Base getMinion() {
             Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
             foreach (
                 Obj_AI_Base minion in
@@ -172,6 +181,7 @@ namespace Assemblies {
                     target = minion;
             return target;
         }
+
         private void castREscape(Obj_AI_Base target) {
             if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
                 R.Cast(target, true);
