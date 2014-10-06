@@ -66,8 +66,12 @@ namespace Assemblies {
         private void Combo(EventArgs args) {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    if (menu.Item("useQC").GetValue<bool>()) {}
-                    castQ();
+                    if (menu.Item("useQC").GetValue<bool>())
+                        castQ();
+                    if (menu.Item("useEC").GetValue<bool>())
+                        castE();
+                    if (menu.Item("useRC").GetValue<bool>())
+                        castR();
                     break;
             }
         }
@@ -90,6 +94,14 @@ namespace Assemblies {
                 else {
                     E.Cast(target, true);
                 }
+            }
+        }
+
+        private void castR() {
+            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
+            if (target == null || !target.IsValidTarget(R.Range)) return;
+            if (R.IsReady()) {
+                R.Cast(target, true);
             }
         }
 
