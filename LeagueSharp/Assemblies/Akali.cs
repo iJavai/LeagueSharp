@@ -137,8 +137,7 @@ namespace Assemblies {
             }
             else {
                 //Minions in E range                                the extra args was redundant.                                            >= Value in menu
-                if (MinionManager.GetMinions(player.Position, E.Range).Count >=
-                    menu.SubMenu("laneclear").Item("hitCounter").GetValue<Slider>().Value) E.Cast();
+                if (MinionManager.GetMinions(player.Position, E.Range).Count >= menu.SubMenu("laneclear").Item("hitCounter").GetValue<Slider>().Value) E.Cast();
             }
         }
 
