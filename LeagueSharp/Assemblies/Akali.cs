@@ -9,6 +9,7 @@ If not in Q range
 Use R -> Q -> E -> AA -> W, not AA when in shroud but if killable
 
 */
+
 using System;
 using System.Linq;
 using LeagueSharp;
@@ -72,12 +73,7 @@ namespace Assemblies {
         private void Combo(EventArgs args) {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    if (menu.Item("useQC").GetValue<bool>())
-                        castQ();
-                    if (menu.Item("useEC").GetValue<bool>())
-                        castE();
-                    if (menu.Item("useRC").GetValue<bool>())
-                        castR();
+                    //TODO princers combo when i get homerino
                     break;
             }
         }
@@ -93,14 +89,8 @@ namespace Assemblies {
             Obj_AI_Hero target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null || !target.IsValidTarget(E.Range)) return;
             if (E.IsReady()) {
-                //TODO E if target has Q Buff for more dmg
-                if (hasBuff(target, "qBuffName?!?!?!?!?")) {
-                    E.Cast(target, true);
-                }
-                else {
-                    E.Cast(target, true);
-                }
-            }
+                E.Cast(target, true);
+            } // TODO: AutoAttack this cunt
         }
 
         private void castR() {
@@ -113,7 +103,9 @@ namespace Assemblies {
 
         private void castREscape() {
             Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
-            foreach (Obj_AI_Base minion in MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
+            foreach (
+                Obj_AI_Base minion in
+                    MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
                 if (player.Distance(target) < player.Distance(minion))
                     target = minion;
             if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
