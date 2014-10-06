@@ -155,18 +155,25 @@ namespace Assemblies {
             Vector2 pass = V2E(player.Position, cursorPos, 120);
             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pass.X, pass.Y)).Send();
             if (menu.SubMenu("misc").Item("RCounter").GetValue<Slider>().Value > ultiCount()) return;
+            Obj_AI_Base target = getMinion();
             if (!IsWall(pos) && IsPassWall(player.Position, pos.To3D()))
-                if (W.IsReady()) W.Cast(V2E(player.Position, cursorPos, W.Range)); //TODO check if the miniion / jungle creep is already visible so it doesn't waste W
-            castREscape();
+                if (!target.IsVisible)
+                {
+                    if (W.IsReady()) W.Cast(V2E(player.Position, cursorPos, W.Range)); //TODO check if the miniion / jungle creep is already visible so it doesn't waste W - Should be done -DZ191
+                }
+            castREscape(target);
         }
-
-        private void castREscape() {
+        private Obj_AI_Base getMinion()
+        {
             Obj_AI_Base target = MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly)[0];
             foreach (
                 Obj_AI_Base minion in
                     MinionManager.GetMinions(player.Position, 800, MinionTypes.All, MinionTeam.NotAlly))
                 if (player.Distance(target) < player.Distance(minion) && minion.Distance(Game.CursorPos) < 150)
                     target = minion;
+            return target;
+        }
+        private void castREscape(Obj_AI_Base target) {
             if (R.IsReady() && R.InRange(target.Position) && target.Distance(Game.CursorPos) < 150)
                 R.Cast(target, true);
         }
