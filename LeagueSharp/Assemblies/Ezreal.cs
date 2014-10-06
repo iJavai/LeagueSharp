@@ -201,7 +201,7 @@ namespace Assemblies {
 
         private void castW() {
             // needs testing - iJava //DONE working
-            Obj_AI_Hero wTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+            Obj_AI_Hero wTarget = SimpleTs.GetTarget(W.Range, SimpleTs.DamageType.Physical);
             if (!W.IsReady() || wTarget == null) return;
             if (wTarget.IsValidTarget(W.Range) || W.GetPrediction(wTarget).Hitchance >= getHitchance()) {
                 // TODO choose hitchance with slider more user customizability.
