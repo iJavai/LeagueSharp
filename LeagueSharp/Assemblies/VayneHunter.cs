@@ -191,10 +191,10 @@ namespace Assemblies {
             }
         }
 
-        public void CastQ(Obj_AI_Hero targ) {
+        private void CastQ(Obj_AI_Hero targ) {
             if (Q.IsReady()) {
                 if (isEn("SmartQ") && player.Distance(targ) >= Orbwalking.GetRealAutoAttackRange(null)) {
-                    if (isMode("Combo") && getManaPer() >= menu.Item("QManaC").GetValue<Slider>().Value) {
+                    if (isMode("Combo") && getPercentValue(player, true) >= menu.Item("QManaC").GetValue<Slider>().Value) {
                         const float tumbleRange = 300f;
                         bool canGapclose = player.Distance(targ) <=
                                            Orbwalking.GetRealAutoAttackRange(null) + tumbleRange;
@@ -205,8 +205,9 @@ namespace Assemblies {
                             }
                         }
                     }
-                    else if (isMode("Mixed") && getManaPer() >= menu.Item("QManaM").GetValue<Slider>().Value) {
-                        float tumbleRange = 300f;
+                    else if (isMode("Mixed") &&
+                             getPercentValue(player, true) >= menu.Item("QManaM").GetValue<Slider>().Value) {
+                        const float tumbleRange = 300f;
                         bool canGapclose = player.Distance(targ) <=
                                            Orbwalking.GetRealAutoAttackRange(null) + tumbleRange;
                         if ((player.Distance(targ) >= Orbwalking.GetRealAutoAttackRange(null))) {
@@ -218,10 +219,11 @@ namespace Assemblies {
                     }
                 }
                 else {
-                    if (isMode("Combo") && getManaPer() >= menu.Item("QManaC").GetValue<Slider>().Value) {
+                    if (isMode("Combo") && getPercentValue(player, true) >= menu.Item("QManaC").GetValue<Slider>().Value) {
                         Q.Cast(Game.CursorPos, isEn("UsePK"));
                     }
-                    else if (isMode("Mixed") && getManaPer() >= menu.Item("QManaM").GetValue<Slider>().Value) {
+                    else if (isMode("Mixed") &&
+                             getPercentValue(player, true) >= menu.Item("QManaM").GetValue<Slider>().Value) {
                         Q.Cast(Game.CursorPos, isEn("UsePK"));
                     }
                 }
@@ -231,10 +233,11 @@ namespace Assemblies {
         private void CastE(Obj_AI_Hero Target, bool forGp = false) {
             if (E.IsReady() && player.Distance(Target) < 550f) {
                 if (!forGp) {
-                    if (isMode("Combo") && getManaPer() >= menu.Item("EManaC").GetValue<Slider>().Value) {
+                    if (isMode("Combo") && getPercentValue(player, true) >= menu.Item("EManaC").GetValue<Slider>().Value) {
                         E.Cast(Target, isEn("UsePK"));
                     }
-                    else if (isMode("Mixed") && getManaPer() >= menu.Item("EManaM").GetValue<Slider>().Value) {
+                    else if (isMode("Mixed") &&
+                             getPercentValue(player, true) >= menu.Item("EManaM").GetValue<Slider>().Value) {
                         E.Cast(Target, isEn("UsePK"));
                     }
                 }
@@ -244,7 +247,7 @@ namespace Assemblies {
             }
         }
 
-        public bool IsWall(Vector3 position) {
+        private bool IsWall(Vector3 position) {
             CollisionFlags cFlags = NavMesh.GetCollisionFlags(position);
             return (cFlags == CollisionFlags.Wall || cFlags == CollisionFlags.Building || cFlags == CollisionFlags.Prop);
         }
@@ -269,7 +272,7 @@ namespace Assemblies {
             if (!(dir == new Vector3(0, 0, 0))) {
                 Vector3 windup = target.Position + dir*(target.MoveSpeed*250/1000);
                 var time = (float) GetCollisionTime(windup, dir, target.MoveSpeed, player.Position, 1600f);
-                if (time == 0) {
+                if (Math.Abs(time) < 1) {
                     return new Vector3(0, 0, 0);
                 }
                 Vector3 returner = target.Position + dir*(target.MoveSpeed*(time + 0.25f))/2;
@@ -344,8 +347,9 @@ namespace Assemblies {
         }
 
         private void useItems(Obj_AI_Hero target) {
-            float OwnH = getPlHPer();
-            if (menu.Item("Botrk").GetValue<bool>() && (menu.Item("OwnHPercBotrk").GetValue<Slider>().Value <= OwnH) &&
+            float currentHealth = getPercentValue(player, false);
+            if (menu.Item("Botrk").GetValue<bool>() &&
+                (menu.Item("OwnHPercBotrk").GetValue<Slider>().Value <= currentHealth) &&
                 ((menu.Item("EnHPercBotrk").GetValue<Slider>().Value <= getEnH(target)))) {
                 useItem(3153, target);
             }
@@ -356,11 +360,6 @@ namespace Assemblies {
 
         private bool isEn(String opt) {
             return menu.Item(opt).GetValue<bool>();
-        }
-
-        public float getManaPer() {
-            float mana = (player.Mana/player.MaxMana)*100;
-            return mana;
         }
 
         private bool isEnK(String opt) {
@@ -379,11 +378,6 @@ namespace Assemblies {
 
         private float getEnH(Obj_AI_Hero target) {
             float h = (target.Health/target.MaxHealth)*100;
-            return h;
-        }
-
-        private float getPlHPer() {
-            float h = (player.Health/player.MaxHealth)*100;
             return h;
         }
     }
