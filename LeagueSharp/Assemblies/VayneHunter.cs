@@ -329,14 +329,14 @@ namespace Assemblies {
                 "AlZaharNetherGrasp", "FallenOne", "Pantheon_GrandSkyfall_Jump", "VarusQ", "CaitlynAceintheHole",
                 "MissFortuneBulletTime", "InfiniteDuress", "LucianR"
             };
-            foreach (string t in gapcloser) {
-                menu.SubMenu("gap").AddItem(new MenuItem(t, t)).SetValue(true);
+            foreach (string gapclosers in gapcloser) {
+                menu.SubMenu("gap").AddItem(new MenuItem(gapclosers, gapclosers)).SetValue(true);
             }
-            foreach (string t in notarget) {
-                menu.SubMenu("gap2").AddItem(new MenuItem(t, t)).SetValue(true);
+            foreach (string gapcloser2 in notarget) {
+                menu.SubMenu("gap2").AddItem(new MenuItem(gapcloser2, gapcloser2)).SetValue(true);
             }
-            foreach (string t in interrupt) {
-                menu.SubMenu("int").AddItem(new MenuItem(t, t)).SetValue(true);
+            foreach (string interrupts in interrupt) {
+                menu.SubMenu("int").AddItem(new MenuItem(interrupts, interrupts)).SetValue(true);
             }
         }
 
