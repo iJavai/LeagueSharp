@@ -8,7 +8,6 @@ using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
-
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {
                 return;
