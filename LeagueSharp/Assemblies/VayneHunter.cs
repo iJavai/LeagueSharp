@@ -24,6 +24,7 @@ namespace Assemblies {
             Game.OnGameUpdate += OnTick;
             Orbwalking.AfterAttack += OW_AfterAttack;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
+            Game.PrintChat("[Assemblies] - Vayne Hunter Loaded by DZ191");
         }
 
         private void loadMenu() {
@@ -51,19 +52,19 @@ namespace Assemblies {
             menu.SubMenu("Items").AddItem(new MenuItem("Botrk", "Use BOTRK").SetValue(true));
             menu.SubMenu("Items").AddItem(new MenuItem("Youmuu", "Use Youmuu").SetValue(true));
             menu.SubMenu("Items").AddItem(
-                new MenuItem("OwnHPercBotrk", "Min Own H % Botrk").SetValue(new Slider(50, 1, 100)));
+                new MenuItem("OwnHPercBotrk", "Min Own H % Botrk").SetValue(new Slider(50, 1)));
             menu.SubMenu("Items").AddItem(
-                new MenuItem("EnHPercBotrk", "Min Enemy H % Botrk").SetValue(new Slider(20, 1, 100)));
+                new MenuItem("EnHPercBotrk", "Min Enemy H % Botrk").SetValue(new Slider(20, 1)));
             menu.SubMenu("Items").AddItem(new MenuItem("ItInMix", "Use Items In Mixed Mode").SetValue(false));
             menu.AddSubMenu(new Menu("[Hunter] - Mana Mng", "ManaMan"));
             menu.SubMenu("ManaMan").AddItem(
-                new MenuItem("QManaC", "Min Q Mana in Combo").SetValue(new Slider(30, 1, 100)));
+                new MenuItem("QManaC", "Min Q Mana in Combo").SetValue(new Slider(30, 1)));
             menu.SubMenu("ManaMan").AddItem(
-                new MenuItem("QManaM", "Min Q Mana in Mixed").SetValue(new Slider(30, 1, 100)));
+                new MenuItem("QManaM", "Min Q Mana in Mixed").SetValue(new Slider(30, 1)));
             menu.SubMenu("ManaMan").AddItem(
-                new MenuItem("EManaC", "Min E Mana in Combo").SetValue(new Slider(20, 1, 100)));
+                new MenuItem("EManaC", "Min E Mana in Combo").SetValue(new Slider(20, 1)));
             menu.SubMenu("ManaMan").AddItem(
-                new MenuItem("EManaM", "Min E Mana in Mixed").SetValue(new Slider(20, 1, 100)));
+                new MenuItem("EManaM", "Min E Mana in Mixed").SetValue(new Slider(20, 1)));
             //menu.AddSubMenu(new Menu("[Hunter]WIP", "ezCondemn"));
             // menu.SubMenu("ezCondemn").AddItem(new MenuItem("CheckDistance", "Condemn check Distance").SetValue(new Slider(25, 1, 200)));
             //menu.SubMenu("ezCondemn").AddItem(new MenuItem("Checks", "Num of Checks").SetValue(new Slider(3, 0, 5)));
