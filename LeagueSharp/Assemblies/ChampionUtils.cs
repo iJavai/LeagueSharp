@@ -180,7 +180,11 @@ namespace Assemblies {
             return from.To2D() + distance*Vector3.Normalize(direction - from).To2D();
         }
 
-        protected int getEnemiesInRange(Vector3 pos, float range) {
+        protected List<Obj_AI_Hero> getEnemiesInRange(Vector3 pos, float range) {
+            return ObjectManager.Get<Obj_AI_Hero>().Where(player => player.IsValid && player.IsEnemy).ToList();
+        }
+
+        protected int countEnemiesNearPosition(Vector3 pos, float range) {
             return
                 ObjectManager.Get<Obj_AI_Hero>().Count(
                     hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range);
