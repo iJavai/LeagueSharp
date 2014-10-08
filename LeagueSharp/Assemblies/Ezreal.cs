@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
-using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -14,9 +12,10 @@ namespace Assemblies {
             }
             loadMenu();
             loadSpells();
+
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
-            Game.PrintChat("[Assemblies] - Ezreal Loaded." + "Happys a fag.");
+            Game.PrintChat("[Assemblies] - Ezreal Loaded.");
         }
 
         private void loadSpells() {
@@ -44,6 +43,10 @@ namespace Assemblies {
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
             menu.SubMenu("laneclear").AddItem(new MenuItem("AutoQLC", "Auto Q to farm").SetValue(false));
 
+            menu.AddSubMenu(new Menu("Lasthit Options", "lastHit"));
+            menu.SubMenu("lastHit").AddItem(new MenuItem("lastHitq", "Use Q Last Hit").SetValue(false));
+            menu.SubMenu("lastHit").AddItem(new MenuItem("autoLastHit", "Auto Last Hit Q").SetValue(false));
+
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
 
@@ -63,8 +66,6 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("useNE", "No R if Closer than range").SetValue(false));
             menu.SubMenu("misc")
                 .AddItem(new MenuItem("NERange", "No R Range").SetValue(new Slider(450, 450, 1400)));
-
-            Game.PrintChat("Ezreal by iJava, Princer007 and DZ191 Loaded.");
         }
 
         private void onUpdate(EventArgs args) {
@@ -74,7 +75,8 @@ namespace Assemblies {
                 if (Q.IsKillable(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical)))
                     castQ();
             }
-            Farm();
+            laneClear();
+            lastHit();
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
@@ -83,9 +85,10 @@ namespace Assemblies {
                         castW();
                     if (menu.Item("useRC").GetValue<bool>()) {
                         Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-                        if (getUnitsInPath(target)) {
+                        if (getUnitsInPath(player, target, R)) {
                             PredictionOutput prediction = R.GetPrediction(target, true);
                             if (target.IsValidTarget(R.Range) && R.IsReady() && prediction.Hitchance >= HitChance.High) {
+                                sendSimplePing(target.Position);
                                 R.Cast(target, getPackets(), true);
                             }
                         }
@@ -100,7 +103,24 @@ namespace Assemblies {
             }
         }
 
-        private void Farm() {
+        private void lastHit() {
+            //TODO - get minions around you
+            //Check if minion is killable with Q && isInRange
+            //Also check if orbwalking mode == lasthit
+            var autoQ = menu.Item("autoLastHit").GetValue<bool>();
+            var lastHitNormal = menu.Item("lastHitq").GetValue<bool>();
+            foreach (
+                Obj_AI_Base minion in
+                    MinionManager.GetMinions(player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly)) {
+                if (autoQ && Q.IsReady() && Q.IsKillable(minion))
+                    Q.Cast(minion.Position, getPackets());
+                if (lastHitNormal && Q.IsReady() && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit &&
+                    Q.IsKillable(minion))
+                    Q.Cast(minion.Position, getPackets());
+            }
+        }
+
+        private void laneClear() {
             List<Obj_AI_Base> minionforQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
             var useQ = menu.Item("useQLC").GetValue<bool>();
@@ -148,7 +168,7 @@ namespace Assemblies {
 
         private void castQ() {
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range - 10) return;
+            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
                 Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
@@ -162,32 +182,6 @@ namespace Assemblies {
             if (wTarget.IsValidTarget(W.Range) || W.GetPrediction(wTarget).Hitchance >= getHitchance()) {
                 W.Cast(wTarget, getPackets());
             }
-        }
-
-        private bool getUnitsInPath(Obj_AI_Hero target) {
-            float distance = player.Distance(target);
-            List<Obj_AI_Base> minionListR = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, R.Range,
-                MinionTypes.All, MinionTeam.NotAlly);
-            int numberOfMinions = (from Obj_AI_Minion minion in minionListR
-                let skillshotPosition =
-                    V2E(player.Position,
-                        V2E(player.Position, target.Position,
-                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
-                        Vector3.Distance(player.Position, minion.Position))
-                where skillshotPosition.Distance(minion) < R.Width
-                select minion).Count();
-            int numberOfChamps = (from minion in ObjectManager.Get<Obj_AI_Hero>()
-                let skillshotPosition =
-                    V2E(player.Position,
-                        V2E(player.Position, target.Position,
-                            Vector3.Distance(player.Position, target.Position) - R.Width + 1).To3D(),
-                        Vector3.Distance(player.Position, minion.Position))
-                where skillshotPosition.Distance(minion) < R.Width && minion.IsEnemy
-                select minion).Count();
-            int total = numberOfChamps + numberOfMinions - 1;
-            if (total == -1) return false;
-            double coeff = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));
-            return R.GetDamage(target)*coeff >= (target.Health + (distance/2000)*target.HPRegenRate);
         }
     }
 }

@@ -7,7 +7,7 @@ using SharpDX;
 
 //TODO idea, use EvadeSpellDatabase or .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
 //TODO - reply here.
-//TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated..
+//TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated.
 
 namespace Assemblies {
     //Kappa
@@ -16,16 +16,14 @@ namespace Assemblies {
         private ZedShadow RShadow;
         private bool WOut;
         private ZedShadow WShadow;
-        private HitChance customHitchance = HitChance.High;
 
-        private bool isChampKill; //but what if champ is not kill Kappa
+        private bool isChampKill; //but what if champ is not kill Kappa :^)
         private List<ZedShadow> shadowList;
 
         public Zed() {
             if (player.ChampionName != "Zed") {
                 return;
             }
-            //targetPont = player.Position;
             loadMenu();
             loadSpells();
 
@@ -34,7 +32,7 @@ namespace Assemblies {
             GameObject.OnCreate += onProcessSpell;
             GameObject.OnDelete += onDeleteObject;
 
-            Game.PrintChat("[Assemblies] - Zed Loaded." + "swag.");
+            Game.PrintChat("[Assemblies] - Zed Loaded.");
         }
 
 
@@ -53,7 +51,7 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use W in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
@@ -61,15 +59,28 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(false));
 
-            Game.PrintChat("Zed by iJava, Princer007 and DZ191 Loaded.");
+            //TODO - laneclear - hitchance - misc
         }
 
-        private void onUpdate(EventArgs args) {
-            //TODO combo.
-        }
+        private void onUpdate(EventArgs args) {}
 
         private void onDraw(EventArgs args) {
             throw new NotImplementedException();
+        }
+
+        private HitChance getHitchance() {
+            switch (menu.Item("hitchanceSetting").GetValue<StringList>().SelectedIndex) {
+                case 0:
+                    return HitChance.Low;
+                case 1:
+                    return HitChance.Medium;
+                case 2:
+                    return HitChance.High;
+                case 3:
+                    return HitChance.VeryHigh;
+                default:
+                    return HitChance.High;
+            }
         }
 
         private void fillShadowList() {} // todo wat? :S
@@ -101,16 +112,6 @@ namespace Assemblies {
         private bool canBackToShadow() {
             return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2" ||
                    player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
-        }
-
-        private int GetCountNearPos(Vector3 pos, float range) {
-            int count = 0;
-            foreach (
-                Obj_AI_Hero hero in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range))
-                count++;
-            return count;
         }
 
         private void onDeleteObject(GameObject sender, EventArgs args) {

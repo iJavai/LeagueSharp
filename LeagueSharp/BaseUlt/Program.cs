@@ -78,10 +78,10 @@ namespace BaseUlt {
             _menu.AddItem(new MenuItem("extraDelay", "Extra Delay").SetValue(new Slider(0, -2000, 2000)));
             _menu.AddItem(
                 new MenuItem("panicKey", "Panic key (hold for disable)").SetValue(new KeyBind(32, KeyBindType.Press)));
-                //32 == space
+            //32 == space
             _menu.AddItem(
                 new MenuItem("regardlessKey", "No timelimit (hold)").SetValue(new KeyBind(17, KeyBindType.Press)));
-                //17 == ctrl
+            //17 == ctrl
             _menu.AddItem(new MenuItem("debugMode", "Debug (developer only)").SetValue(false).DontSave());
 
             Menu teamUlt = _menu.AddSubMenu(new Menu("Team Baseult Friends", "TeamUlt"));
@@ -226,6 +226,9 @@ namespace BaseUlt {
                 Game.PrintChat("SHOOT {0} (Health: {1} TOTAL-UltDamage: {2})", playerInfo.Champ.ChampionName,
                     targetHealth, totalUltDamage);
 
+            Game.PrintChat("Should shoot {0}: Target Health: {1} UltDamage: {2}", playerInfo.Champ.ChampionName,
+                targetHealth, totalUltDamage);
+
             _ult.Cast(_enemySpawnPos, true);
             _ultCasted = time;
         }
@@ -245,7 +248,7 @@ namespace BaseUlt {
                 index++;
 
                 //draw progress bar
-                //show circle on minimap on recall
+                //Draw circle on minimap.
 
                 Drawing.DrawText(Drawing.Width*0.73f, Drawing.Height*0.88f + (index*15f), Color.Red,
                     playerInfo.ToString());

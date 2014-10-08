@@ -2,7 +2,7 @@
 using LeagueSharp.Common;
 
 namespace Assemblies {
-    internal abstract class Champion : ChampionUtils {
+    internal class Champion : ChampionUtils {
         protected readonly Obj_AI_Hero player = ObjectManager.Player;
         protected Spell E;
         protected Spell Q;
@@ -10,10 +10,8 @@ namespace Assemblies {
         protected Spell W;
         protected Menu menu;
         protected Orbwalking.Orbwalker orbwalker;
-        //public SkinManager skinManager;
 
-        protected Champion() {
-            Game.PrintChat("loading champion: " + player.ChampionName);
+        public Champion() {
             addBasicMenu();
         }
 
@@ -25,9 +23,7 @@ namespace Assemblies {
             menu.AddSubMenu(targetSelectorMenu);
             Menu orbwalking = menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
             orbwalker = new Orbwalking.Orbwalker(orbwalking);
-            menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
-
-            //skinManager.AddToMenu(ref menu);
+            //menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
 
             menu.AddToMainMenu();
         }

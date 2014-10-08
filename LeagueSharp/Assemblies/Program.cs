@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Remoting;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -13,10 +12,24 @@ namespace Assemblies {
 
         private static void Game_OnGameLoad(EventArgs args) {
             try {
-                ObjectHandle handle = Activator.CreateInstance(null,
+                /*ObjectHandle handle = Activator.CreateInstance(null,
                     "Assemblies." + ObjectManager.Player.ChampionName);
 
-                champion = (Champion) handle.Unwrap();
+                champion = (Champion) handle.Unwrap();*/
+                switch (ObjectManager.Player.ChampionName) {
+                    case "Ezreal":
+                        champion = new Ezreal();
+                        break;
+                    case "Vayne":
+                        champion = new VayneHunter();
+                        break;
+                    case "champion":
+                        //TODO - new Champion?
+                        break;
+                    default:
+                        champion = new Champion();
+                        break;
+                }
             }
             catch {
                 Console.WriteLine("Fail.");
