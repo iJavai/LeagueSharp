@@ -33,7 +33,16 @@ namespace Assemblies {
                 .OrderBy(x => unit.ServerPosition.Distance(x.ServerPosition))
                 .FirstOrDefault();
         }
-
+        /// <summary>
+        /// Returns if the Menu item is enabled. For convenience.
+        /// </summary>
+        /// <param name="menu">The menu object</param>
+        /// <param name="item">Item's name</param>
+        /// <returns>The value</returns>
+        public bool isEn(Menu menu,String item)
+        {
+            return menu.Item(item).GetValue<bool>();
+        }
         /// <summary>
         ///     Sends a simple ping to a given position.
         /// </summary>
