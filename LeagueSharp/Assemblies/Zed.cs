@@ -12,16 +12,16 @@ using SharpDX;
 namespace Assemblies {
     //Kappa
     internal class Zed : Champion {
+        private static Vector3 PositionBeforeR = Vector3.Zero;
         private bool ROut;
         private ZedShadow RShadow;
         private bool WOut;
         private ZedShadow WShadow;
         private HitChance customHitchance = HitChance.High;
+        private Obj_AI_Hero deathMarkTarget;
 
         private bool isChampKill; //but what if champ is not kill Kappa
         private List<ZedShadow> shadowList;
-        private Obj_AI_Hero deathMarkTarget;
-        private static Vector3 PositionBeforeR = Vector3.Zero;
 
         public Zed() {
             if (player.ChampionName != "Zed") {
@@ -36,7 +36,7 @@ namespace Assemblies {
             GameObject.OnCreate += onProcessSpell;
             GameObject.OnDelete += onDeleteObject;
 
-            Game.PrintChat("[Assemblies] - Zed Loaded." + "swag.");
+            Game.PrintChat("[Assemblies] - Zed Loaded.");
         }
 
 
@@ -65,14 +65,14 @@ namespace Assemblies {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("SwapHPToggle", "Swap R at % HP").SetValue(true));
-            menu.SubMenu("misc").AddItem(new MenuItem("SwapHP", "%HP").SetValue(new Slider(5,1,100)));
+            menu.SubMenu("misc").AddItem(new MenuItem("SwapHP", "%HP").SetValue(new Slider(5, 1)));
             menu.SubMenu("misc").AddItem(new MenuItem("SwapRKill", "Swap R when target dead").SetValue(true));
             menu.SubMenu("misc").AddItem(new MenuItem("SafeRBack", "Safe swap calculation").SetValue(true));
             Game.PrintChat("Zed by iJava and DZ191 Loaded.");
         }
 
         private void onUpdate(EventArgs args) {
-            //TODO combo.
+            //DoTheRDance();
         }
 
         private void onDraw(EventArgs args) {
@@ -104,8 +104,7 @@ namespace Assemblies {
         private void DoTheRDance() {
             //Added a very basic line combo.
             Obj_AI_Hero ComboTarget;
-            if(getDeathmarkedTarget() == null)
-            {
+            if (getDeathmarkedTarget() == null) {
                 PositionBeforeR = Vector3.Zero;
                 var ts = new TargetSelector(R.Range, TargetSelector.TargetingMode.LessCast);
                 ComboTarget = ts.Target;
@@ -113,9 +112,8 @@ namespace Assemblies {
                 PositionBeforeR = player.ServerPosition;
                 R.Cast(ComboTarget);
             }
-            else
-            {
-               ComboTarget = getDeathmarkedTarget();
+            else {
+                getDeathmarkedTarget();
             }
             safetySwap();
             ComboTarget = getDeathmarkedTarget();
@@ -158,21 +156,21 @@ namespace Assemblies {
                 Q.Cast(ComboTarget);
             if (isPlayerERangeR || isPlayerERangeW)
                 E.Cast();
-            if (isChampKill && canBackToShadow() && isEn(menu,"SwapRKill")) {
-                if (isEn(menu, "SafeRBack") && safeBack(RSh)) R.Cast(); else R.Cast();
+            if (isChampKill && canBackToShadow() && isEn(menu, "SwapRKill")) {
+                if (isEn(menu, "SafeRBack") && safeBack(RSh)) R.Cast();
+                else R.Cast();
             }
         }
-        private void safetySwap()
-        {
-            var Hpperc = getPercentValue(player, false);
-            if(Hpperc <= menu.Item("SwapHP").GetValue<Slider>().Value)
-            {
-                if(safeBack(RShadow) && canBackToShadow())
-                {
+
+        private void safetySwap() {
+            float Hpperc = getPercentValue(player, false);
+            if (Hpperc <= menu.Item("SwapHP").GetValue<Slider>().Value) {
+                if (safeBack(RShadow) && canBackToShadow()) {
                     R.Cast();
                 }
             }
         }
+
         private Vector2 getBestShadowPos(Vector3 from, Vector3 targetPos) {
             Vector2 predictPos = V2E(from, targetPos - from, W.Range);
             if (IsWall(predictPos) || IsPassWall(targetPos, predictPos.To3D())) {
@@ -180,15 +178,17 @@ namespace Assemblies {
             }
             return predictPos;
         }
-        private bool safeBack(ZedShadow shadow)
-        {
+
+        private bool safeBack(ZedShadow shadow) {
             Vector3 shadowPos = shadow.shadowPosition;
             Vector3 playerPos = player.ServerPosition;
-            var nearShadowPos = getEnemiesInRange(shadowPos,500f).Count;
-            var nearPlayerPos = getEnemiesInRange(playerPos,500f).Count;
-            if (nearPlayerPos > nearShadowPos) return true;
+            int nearShadowPos = getEnemiesInRange(shadowPos, 500f).Count;
+            int nearPlayerPos = getEnemiesInRange(playerPos, 500f).Count;
+            if (nearPlayerPos > nearShadowPos) 
+                return true;
             return false;
         }
+
         //Credits to princer007
         private static bool IsPassWall(Vector3 start, Vector3 end) {
             double count = Vector3.Distance(start, end);
@@ -225,11 +225,10 @@ namespace Assemblies {
                 RShadow = null;
                 ROut = false;
             }
-            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy"))
-            {
+            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy")) {
                 isChampKill = false;
                 deathMarkTarget = null;
-            } 
+            }
         }
 
         private void onProcessSpell(GameObject sender, EventArgs args) {
@@ -255,12 +254,10 @@ namespace Assemblies {
                 };
                 WOut = true;
             }
-            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy"))
-            {
+            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy")) {
                 isChampKill = true;
                 deathMarkTarget = null;
             }
-                
         }
 
         private Obj_AI_Minion CheckForClones(RWEnum RorW) {

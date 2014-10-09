@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -109,6 +110,7 @@ namespace Assemblies {
             //Also check if orbwalking mode == lasthit
             var autoQ = menu.Item("autoLastHit").GetValue<bool>();
             var lastHitNormal = menu.Item("lastHitq").GetValue<bool>();
+      
             foreach (
                 Obj_AI_Base minion in
                     MinionManager.GetMinions(player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly)) {
