@@ -72,11 +72,20 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            //DoTheRDance();
+            if (R.IsReady()) {
+                DoTheRDance();
+            } // this should work right TODO DZ191? 
+            else {
+                doNormalCombo();
+            }
         }
 
         private void onDraw(EventArgs args) {
             throw new NotImplementedException();
+        }
+
+        private void doNormalCombo() {
+            //TODO Q,W,E combo including shadows
         }
 
         private void fillShadowList() {} // todo wat? :S
@@ -128,7 +137,7 @@ namespace Assemblies {
                 Game.PrintChat("Something went wrong");
                 return;
             }
-            PredictionOutput CustomQPredictionW = Prediction.GetPrediction(new PredictionInput {
+            PredictionOutput customQPredictionW = Prediction.GetPrediction(new PredictionInput {
                 Unit = ComboTarget,
                 Delay = Q.Delay,
                 Radius = Q.Width,
@@ -139,7 +148,7 @@ namespace Assemblies {
                 RangeCheckFrom = player.ServerPosition,
                 Aoe = false
             });
-            PredictionOutput CustomQPredictionR = Prediction.GetPrediction(new PredictionInput {
+            PredictionOutput customQPredictionR = Prediction.GetPrediction(new PredictionInput {
                 Unit = ComboTarget,
                 Delay = Q.Delay,
                 Radius = Q.Width,
@@ -152,13 +161,15 @@ namespace Assemblies {
             });
             bool isPlayerERangeW = getEnemiesInRange(WSh.shadowPosition, E.Range).Contains(ComboTarget);
             bool isPlayerERangeR = getEnemiesInRange(RSh.shadowPosition, E.Range).Contains(ComboTarget);
-            if (CustomQPredictionW.Hitchance >= customHitchance || CustomQPredictionR.Hitchance >= customHitchance)
+            if (customQPredictionW.Hitchance >= customHitchance || customQPredictionR.Hitchance >= customHitchance)
                 Q.Cast(ComboTarget);
             if (isPlayerERangeR || isPlayerERangeW)
                 E.Cast();
             if (isChampKill && canBackToShadow() && isEn(menu, "SwapRKill")) {
-                if (isEn(menu, "SafeRBack") && safeBack(RSh)) R.Cast();
-                else R.Cast();
+                if (isEn(menu, "SafeRBack") && safeBack(RSh))
+                    R.Cast();
+                else
+                    R.Cast();
             }
         }
 
@@ -184,7 +195,7 @@ namespace Assemblies {
             Vector3 playerPos = player.ServerPosition;
             int nearShadowPos = getEnemiesInRange(shadowPos, 500f).Count;
             int nearPlayerPos = getEnemiesInRange(playerPos, 500f).Count;
-            if (nearPlayerPos > nearShadowPos) 
+            if (nearPlayerPos > nearShadowPos)
                 return true;
             return false;
         }
