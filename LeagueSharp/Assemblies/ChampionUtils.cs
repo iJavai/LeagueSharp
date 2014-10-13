@@ -39,7 +39,7 @@ namespace Assemblies {
         /// <param name="menu">The menu object</param>
         /// <param name="item">Item's name</param>
         /// <returns>The value</returns>
-        public bool isEn(Menu menu,String item)
+        protected bool isMenuEnabled(Menu menu,String item)
         {
             return menu.Item(item).GetValue<bool>();
         }
@@ -72,6 +72,7 @@ namespace Assemblies {
         ///     if a target is killable with given spell, taking into account damage reduction from minions and champs it
         ///     passes through also takes into account health regeneration rate, returns true / false.
         /// </returns>
+        /// Credits Princer007
         protected bool getUnitsInPath(Obj_AI_Hero player, Obj_AI_Hero target, Spell spell) {
             float distance = player.Distance(target);
             List<Obj_AI_Base> minionList = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spell.Range,
@@ -139,7 +140,7 @@ namespace Assemblies {
         /// </summary>
         /// <param name="unit"></param>
         /// <returns>true / false</returns>
-        public bool IsUnderEnemyTurret(Obj_AI_Base unit) {
+        public bool isUnderEnemyTurret(Obj_AI_Base unit) {
             IEnumerable<Obj_AI_Turret> turrets;
             if (unit.IsEnemy) {
                 turrets = ObjectManager.Get<Obj_AI_Turret>()

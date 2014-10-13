@@ -165,8 +165,8 @@ namespace Assemblies {
                 Q.Cast(ComboTarget);
             if (isPlayerERangeR || isPlayerERangeW)
                 E.Cast();
-            if (isChampKill && canBackToShadow() && isEn(menu, "SwapRKill")) {
-                if (isEn(menu, "SafeRBack") && safeBack(RSh))
+            if (isChampKill && canBackToShadow() && isMenuEnabled(menu, "SwapRKill")) {
+                if (isMenuEnabled(menu, "SafeRBack") && safeBack(RSh))
                     R.Cast();
                 else
                     R.Cast();
@@ -174,8 +174,8 @@ namespace Assemblies {
         }
 
         private void safetySwap() {
-            float Hpperc = getPercentValue(player, false);
-            if (Hpperc <= menu.Item("SwapHP").GetValue<Slider>().Value) {
+            float currentHealthPercent = getPercentValue(player, false);
+            if (currentHealthPercent <= menu.Item("SwapHP").GetValue<Slider>().Value) {
                 if (safeBack(RShadow) && canBackToShadow()) {
                     R.Cast();
                 }
