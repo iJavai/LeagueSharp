@@ -187,7 +187,7 @@ namespace Assemblies {
         /// <param name="direction"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance) {
+        private Vector2 V2E(Vector3 from, Vector3 direction, float distance) {
             return from.To2D() + distance*Vector3.Normalize(direction - from).To2D();
         }
 
