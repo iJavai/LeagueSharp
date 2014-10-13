@@ -55,7 +55,7 @@ namespace Assemblies {
             PredictionOutput prediction = R.GetPrediction(target, true);
 
             if (player.GetComboDamage(target, new[] {SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.R}) >
-                player.Health) {
+                target.Health) {
                 //IsKillable with combo apparently
                 //if legit do combo :P
                 //else FIRE FISHY STICKS TO CUNTFACE
