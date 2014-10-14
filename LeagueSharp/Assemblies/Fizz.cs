@@ -48,6 +48,10 @@ namespace Assemblies {
                     goFishyGo();
                     break;
             }
+            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+            foreach (BuffInstance buff in target.Buffs) {
+                Game.PrintChat("Buff: " + buff.Name + " - DisplayName: " + buff.DisplayName);
+            }
         }
 
         private void goFishyGo() {
