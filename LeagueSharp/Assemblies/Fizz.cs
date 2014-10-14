@@ -8,12 +8,14 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal class Fizz : Champion {
         private Spell E2;
+        private JumpStage jumpStage;
 
         public Fizz() {
             loadMenu();
             loadSpells();
 
             Game.OnGameUpdate += onUpdate;
+            Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
         }
 
@@ -48,8 +50,8 @@ namespace Assemblies {
         private void onUpdate(EventArgs args) {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    goFishyGo();
-                    //TODO basic combo... :3
+                    if (menu.Item("initR").GetValue<bool>() && menu.Item("useRC").GetValue<bool>())
+                        goFishyGo();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     //TODO harass
@@ -61,13 +63,24 @@ namespace Assemblies {
             }
         }
 
+        private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+            //TODO check jump states and set
+            if (sender.IsMe)
+                if (args.SData.Name == "FizzJump") {
+                    jumpStage = JumpStage.PLAYFUL;
+                    ;
+                }
+        }
+
         private void goFishyGo() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             PredictionOutput prediction = R.GetPrediction(target, true);
 
-            if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                if (prediction.Hitchance >= HitChance.High && target.IsVisible && !target.IsDead) {
-                    R.Cast(target, true);
+            if (target != null && target.IsValidTarget(R.Range)) {
+                if (R.IsReady() && !isUnderEnemyTurret(target)) {
+                    if (prediction.Hitchance >= HitChance.High && target.IsVisible && !target.IsDead) {
+                        R.Cast(target, true);
+                    }
                 }
             }
         }
@@ -75,6 +88,16 @@ namespace Assemblies {
         private float getDamage(Obj_AI_Hero target) {
             var damages = new[] {SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.R};
             return (float) player.GetComboDamage(target, damages);
+        }
+
+        private class FizzJump {
+            public float jumpTime { get; set; }
+            public bool called { get; set; }
+        }
+
+        private enum JumpStage {
+            PLAYFUL,
+            TRICKSTER
         }
     }
 }
