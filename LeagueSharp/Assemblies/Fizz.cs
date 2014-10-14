@@ -58,17 +58,16 @@ namespace Assemblies {
         private void goFishyGo() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             PredictionOutput prediction = R.GetPrediction(target, true);
-
-            if (player.GetComboDamage(target, new[] {SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.R}) >
-                target.Health) {
-                //IsKillable with combo apparently
-                //if legit do combo :P
-                //else FIRE FISHY STICKS TO CUNTFACE
-            }
-            else {
+            if (target.IsValidTarget(R.Range)) {
                 if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                    if (prediction.Hitchance >= HitChance.High && target.IsVisible && !target.IsDead) {
+                    if (Q.IsReady())
+                        Q.Cast(target, true);
+                    if (W.IsReady())
+                        W.Cast(player, true);
+                    if (prediction.Hitchance >= HitChance.High) {
                         R.Cast(target, true);
+                        if (E.IsReady())
+                            E.Cast(target, true);
                     }
                 }
             }
