@@ -3,6 +3,8 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
+// fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
+
 namespace Assemblies {
     internal class Fizz : Champion {
         private Spell E2;
@@ -47,8 +49,12 @@ namespace Assemblies {
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     goFishyGo();
+                    //TODO basic combo... :3
                     break;
-            } // fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    //TODO harass
+                    break;
+            }
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
                 Game.PrintChat("Rek that kid: " + target.ChampionName);
@@ -58,24 +64,17 @@ namespace Assemblies {
         private void goFishyGo() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             PredictionOutput prediction = R.GetPrediction(target, true);
-            if (target.IsValidTarget(R.Range)) {
-                if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                    if (Q.IsReady())
-                        Q.Cast(target, true);
-                    if (W.IsReady())
-                        W.Cast(player, true);
-                    if (prediction.Hitchance >= HitChance.High) {
-                        R.Cast(target, true);
-                        if (E.IsReady())
-                            E.Cast(target, true);
-                    }
+
+            if (R.IsReady() && !isUnderEnemyTurret(target)) {
+                if (prediction.Hitchance >= HitChance.High && target.IsVisible && !target.IsDead) {
+                    R.Cast(target, true);
                 }
             }
         }
 
-        private float getDamage() {
-            const double damage = 0;
-            return (float) damage;
+        private float getDamage(Obj_AI_Hero target) {
+            var damages = new[] {SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.R};
+            return (float) player.GetComboDamage(target, damages);
         }
     }
 }

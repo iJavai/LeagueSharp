@@ -27,7 +27,7 @@ namespace Assemblies {
         /// </summary>
         /// <param name="unit"></param>
         /// <returns>the nearest enemy ^.^</returns>
-        public Obj_AI_Hero getNearestEnemy(Obj_AI_Base unit) {
+        protected Obj_AI_Hero getNearestEnemy(Obj_AI_Hero unit) {
             return ObjectManager.Get<Obj_AI_Hero>()
                 .Where(x => x.IsEnemy && x.IsValid)
                 .OrderBy(x => unit.ServerPosition.Distance(x.ServerPosition))
@@ -115,7 +115,7 @@ namespace Assemblies {
         /// <param name="target"></param>
         /// <param name="buffName"></param>
         /// <returns>true if buff is on player / mainTarget</returns>
-        public bool hasBuff(Obj_AI_Hero target, string buffName) {
+        protected bool hasBuff(Obj_AI_Hero target, string buffName) {
             return
                 target.Buffs.Any(buff => String.Equals(buff.Name, buffName, StringComparison.CurrentCultureIgnoreCase));
         }
@@ -141,7 +141,7 @@ namespace Assemblies {
         /// </summary>
         /// <param name="unit"></param>
         /// <returns>true / false</returns>
-        public bool isUnderEnemyTurret(Obj_AI_Base unit) {
+        protected bool isUnderEnemyTurret(Obj_AI_Base unit) {
             IEnumerable<Obj_AI_Turret> turrets;
             if (unit.IsEnemy) {
                 turrets = ObjectManager.Get<Obj_AI_Turret>()
