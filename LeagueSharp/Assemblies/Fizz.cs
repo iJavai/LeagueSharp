@@ -4,6 +4,7 @@ using LeagueSharp.Common;
 
 namespace Assemblies {
     internal class Fizz : Champion {
+
         private Spell E2;
 
         public Fizz() {
