@@ -23,7 +23,7 @@ namespace Assemblies {
             menu.AddSubMenu(targetSelectorMenu);
             Menu orbwalking = menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
             orbwalker = new Orbwalking.Orbwalker(orbwalking);
-            //menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
+            menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
 
             menu.AddToMainMenu();
         }

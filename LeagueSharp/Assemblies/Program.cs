@@ -23,8 +23,8 @@ namespace Assemblies {
                     case "Vayne":
                         champion = new VayneHunter();
                         break;
-                    case "champion":
-                        //TODO - new Champion?
+                    case "Fizz":
+                        champion = new Fizz();
                         break;
                     default:
                         champion = new Champion();
