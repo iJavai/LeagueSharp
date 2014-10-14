@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Assemblies {
     internal class Fizz : Champion {
-
         private Spell E2;
 
         public Fizz() {
@@ -48,10 +48,10 @@ namespace Assemblies {
                 case Orbwalking.OrbwalkingMode.Combo:
                     goFishyGo();
                     break;
-            }
+            } // fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-            foreach (BuffInstance buff in target.Buffs) {
-                Game.PrintChat("Buff: " + buff.Name + " - DisplayName: " + buff.DisplayName);
+            foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
+                Game.PrintChat("Rek that kid: " + target.ChampionName);
             }
         }
 
