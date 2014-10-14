@@ -8,7 +8,7 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal class Fizz : Champion {
         private Spell E2;
-        private JumpStage jumpStage;
+        private FizzJump fizzJump;
 
         public Fizz() {
             loadMenu();
@@ -67,8 +67,7 @@ namespace Assemblies {
             //TODO check jump states and set
             if (sender.IsMe)
                 if (args.SData.Name == "FizzJump") {
-                    jumpStage = JumpStage.PLAYFUL;
-                    ;
+                    fizzJump.jumpStage = JumpStage.PLAYFUL; // idek this is pissing me off and half asleep
                 }
         }
 
@@ -93,6 +92,7 @@ namespace Assemblies {
         private class FizzJump {
             public float jumpTime { get; set; }
             public bool called { get; set; }
+            public JumpStage jumpStage { get; set; }
         }
 
         private enum JumpStage {
