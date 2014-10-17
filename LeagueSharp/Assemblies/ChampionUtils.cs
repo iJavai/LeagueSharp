@@ -195,6 +195,10 @@ namespace Assemblies {
             return ObjectManager.Get<Obj_AI_Hero>().Where(player => player.IsValid && player.IsEnemy).ToList();
         }
 
+        protected float getDistanceSqr(Obj_AI_Hero source, Obj_AI_Hero target) {
+            return Vector2.DistanceSquared(source.ServerPosition.To2D(), target.ServerPosition.To2D());
+        }
+
         protected int countEnemiesNearPosition(Vector3 pos, float range) {
             return
                 ObjectManager.Get<Obj_AI_Hero>().Count(

@@ -292,7 +292,7 @@ namespace Assemblies {
                     return null;
                 default:
                     return null;
-            }
+            }  
         }
 
         private enum RWEnum {

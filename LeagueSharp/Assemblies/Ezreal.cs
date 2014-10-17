@@ -170,7 +170,7 @@ namespace Assemblies {
 
         private void castQ() {
             Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > Q.Range) return;
+            if (!Q.IsReady() || qTarget == null || player.Distance(qTarget) > 1150) return;
 
             if (qTarget.IsValidTarget(Q.Range) && qTarget.IsVisible && !qTarget.IsDead &&
                 Q.GetPrediction(qTarget).Hitchance >= getHitchance()) {
