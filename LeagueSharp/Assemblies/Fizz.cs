@@ -4,6 +4,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 
 // fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
+using SharpDX;
 
 namespace Assemblies {
     internal class Fizz : Champion {
@@ -57,9 +58,10 @@ namespace Assemblies {
                     //TODO harass
                     break;
             }
-            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
-                Game.PrintChat("Rek that kid: " + target.ChampionName);
+                //Game.PrintChat("Rek that kid: " + target.ChampionName);
+                Utility.DrawCircle(target.Position,130,System.Drawing.Color.Coral,5,30,false);
             }
         }
 
@@ -77,11 +79,17 @@ namespace Assemblies {
 
             if (target != null && target.IsValidTarget(R.Range)) {
                 if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                    if (prediction.Hitchance >= HitChance.High && target.IsVisible && !target.IsDead) {
+                    if (prediction.Hitchance >= HitChance.High && target.IsValidTarget()) {
                         R.Cast(target, true);
                     }
                 }
             }
+            if (player.Distance(target) > Q.Range)
+            {
+                //TODO E cast
+            }
+            W.Cast();
+            Q.Cast(target,true);
         }
 
         private float getDamage(Obj_AI_Hero target) {
