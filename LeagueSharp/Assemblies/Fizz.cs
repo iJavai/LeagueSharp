@@ -1,10 +1,10 @@
-﻿using System;
+﻿// fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
+
+using System;
+using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-
-// fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
-using SharpDX;
 
 namespace Assemblies {
     internal class Fizz : Champion {
@@ -61,7 +61,7 @@ namespace Assemblies {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
                 //Game.PrintChat("Rek that kid: " + target.ChampionName);
-                Utility.DrawCircle(target.Position,130,System.Drawing.Color.Coral,5,30,false);
+                Utility.DrawCircle(target.Position, 130, Color.Coral, 5, 30, false);
             }
         }
 
@@ -84,12 +84,19 @@ namespace Assemblies {
                     }
                 }
             }
-            if (player.Distance(target) > Q.Range)
-            {
-                //TODO E cast
+            if (player.Distance(target) > Q.Range && target != null) {
+                //TODO get second e?
+                switch (fizzJump.jumpStage) {
+                    case JumpStage.PLAYFUL:
+                        E.Cast(target.ServerPosition, true);
+                        break;
+                    case JumpStage.TRICKSTER: // todo i guess more checks if needed to use e2 or not, idek if this will work l0l pls fix DZ191 bae
+                        E2.Cast(target.ServerPosition);
+                        break;
+                }
             }
             W.Cast();
-            Q.Cast(target,true);
+            Q.Cast(target, true);
         }
 
         private float getDamage(Obj_AI_Hero target) {
