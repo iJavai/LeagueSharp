@@ -6,10 +6,17 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
+/**
+ * IDEA - Flee mode over walls should be easy - ish, Cast E on first vector point then cast E2 on second vector point on the other side of the wall? :3
+ *
+ */
+
 namespace Assemblies {
     internal class Fizz : Champion {
         private Spell E2;
-        private FizzJump fizzJump;
+        private bool isCalled;
+        private FizzJump jumpStage; // 0 = playful, 1 = trickster :3
+        private float time;
 
         public Fizz() {
             loadMenu();
@@ -49,11 +56,13 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            //wardJumper.processJump();
+            if (time + 1f < Game.Time && !isCalled) {
+                isCalled = true;
+                jumpStage = FizzJump.PLAYFUL;
+            }
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    if (menu.Item("initR").GetValue<bool>() && menu.Item("useRC").GetValue<bool>())
-                        goFishyGo();
+                    goFishyGo();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     //TODO harass
@@ -61,60 +70,55 @@ namespace Assemblies {
             }
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
-                //Game.PrintChat("Rek that kid: " + target.ChampionName);
                 Utility.DrawCircle(target.Position, 130, Color.Coral);
             }
-            foreach (BuffInstance buff in target.Buffs) {
-                Game.PrintChat("Name: " + buff.Name + " - Display Name: " + buff.DisplayName);
+            //Game.PrintChat(jumpStage == FizzJump.PLAYFUL ? "playful" : "trickster");
+        }
+
+        private void castEGapclose(Obj_AI_Hero target) {
+            // 100% working add checks and shit ofc
+            //Obj_AI_Hero target = SimpleTs.GetTarget(800, SimpleTs.DamageType.Magical); 
+            if (target.IsValidTarget(800)) {
+                if (E.IsReady() && player.Distance(target) > Q.Range) {
+                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump")
+                        E.Cast(target.ServerPosition, true);
+                    //Gapclosing witrh e hopefully
+                }
+                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo")
+                    E2.Cast(target.ServerPosition, true);
             }
         }
 
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
-            //TODO check jump states and set
-            if (sender.IsMe)
+            if (sender.IsMe) {
                 if (args.SData.Name == "FizzJump") {
-                    fizzJump.jumpStage = JumpStage.PLAYFUL; // idek this is pissing me off and half asleep
+                    jumpStage = FizzJump.TRICKSTER;
+                    time = Game.Time;
+                    isCalled = false;
                 }
+            }
         }
 
         private void goFishyGo() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             PredictionOutput prediction = R.GetPrediction(target, true);
 
-            if (target != null && target.IsValidTarget(R.Range)) {
+            if (target.IsValidTarget(R.Range)) {
                 if (R.IsReady() && !isUnderEnemyTurret(target)) {
                     if (prediction.Hitchance >= HitChance.High && target.IsValidTarget()) {
                         R.Cast(target, true);
                     }
                 }
+                if (E.IsReady())
+                    castEGapclose(target);
+                if (W.IsReady())
+                    W.Cast();
+                if (Q.IsReady())
+                    Q.CastOnUnit(target);
             }
-            if (player.Distance(target) > Q.Range && target != null) {
-                //TODO get second e?
-                switch (fizzJump.jumpStage) {
-                    case JumpStage.PLAYFUL:
-                        E.Cast(target.ServerPosition, true);
-                        break;
-                    case JumpStage.TRICKSTER: //TODO i guess more checks if needed to use e2 or not, idek if this will work l0l pls fix DZ191 bae
-                        E2.Cast(target.ServerPosition);
-                        break;
-                }
-            }
-            W.Cast();
-            //Q.Cast(target, true);
         }
 
-        private float getDamage(Obj_AI_Hero target) {
-            var damages = new[] {SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.R};
-            return (float) player.GetComboDamage(target, damages);
-        }
-
-        private class FizzJump {
-            public float jumpTime { get; set; }
-            public bool called { get; set; }
-            public JumpStage jumpStage { get; set; }
-        }
-
-        private enum JumpStage {
+        private enum FizzJump {
             PLAYFUL,
             TRICKSTER
         }

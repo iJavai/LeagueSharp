@@ -16,7 +16,6 @@ namespace Assemblies {
             jumpSpell = getJumpSpell();
             GameObject.OnCreate += GameObject_OnCreate;
             //Game.OnGameUpdate += processJump;
-            Game.PrintChat("Vis's WardJumper loaded.");
         }
 
         private void GameObject_OnCreate(GameObject sender, EventArgs args) {
@@ -62,6 +61,7 @@ namespace Assemblies {
             menu.SubMenu("wardJummper").AddItem(
                 new MenuItem("Wardjump", "Wardjump").SetValue(new KeyBind(71, KeyBindType.Press)));
             menu.AddToMainMenu();
+            Game.PrintChat("Vis's WardJumper loaded.");
         }
 
         private InventorySlot getWardSlot() {
