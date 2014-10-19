@@ -73,7 +73,6 @@ namespace Assemblies {
         ///     if a target is killable with given spell, taking into account damage reduction from minions and champs it
         ///     passes through also takes into account health regeneration rate, returns true / false.
         /// </returns>
-        /// Credits Princer007
         protected bool getUnitsInPath(Obj_AI_Hero player, Obj_AI_Hero target, Spell spell) {
             float distance = player.Distance(target);
             List<Obj_AI_Base> minionList = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spell.Range,
