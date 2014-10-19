@@ -94,14 +94,17 @@ namespace Assemblies {
                         Vector3.Distance(player.Position, minion.Position))
                 where skillshotPosition.Distance(minion) < spell.Width && minion.IsEnemy
                 select minion).Count();
-            int total = numberOfChamps + numberOfMinions - 1;
+            int totalUnits = numberOfChamps + numberOfMinions - 1;
             // total number of champions and minions the projectile will pass through.
-            if (total == -1) return false;
+            if (totalUnits == -1) return false;
             //if total higher or equal to 7 then damage reduction = 0.3 else if total == 0 then damage reduction = 1.0 else damage reduction = 1 - total / 10 // TODO make this useable for similar champs.
             double damageReduction = 0;
             switch (ObjectManager.Player.ChampionName) {
                 case "Ezreal":
-                    damageReduction = ((total >= 7)) ? 0.3 : (total == 0) ? 1.0 : (1 - ((total)/10));
+                    damageReduction = ((totalUnits >= 7)) ? 0.3 : (totalUnits == 0) ? 1.0 : (1 - ((totalUnits)/10));
+                    break;
+                case "Lux":
+                    damageReduction = 0;
                     break;
             }
             // the damage reduction calculations minus percentage for each unit it passes through!

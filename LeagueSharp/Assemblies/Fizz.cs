@@ -49,6 +49,7 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
+            //wardJumper.processJump();
             switch (orbwalker.ActiveMode) {
                 case Orbwalking.OrbwalkingMode.Combo:
                     if (menu.Item("initR").GetValue<bool>() && menu.Item("useRC").GetValue<bool>())
@@ -61,7 +62,10 @@ namespace Assemblies {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
                 //Game.PrintChat("Rek that kid: " + target.ChampionName);
-                Utility.DrawCircle(target.Position, 130, Color.Coral, 5, 30, false);
+                Utility.DrawCircle(target.Position, 130, Color.Coral);
+            }
+            foreach (BuffInstance buff in target.Buffs) {
+                Game.PrintChat("Name: " + buff.Name + " - Display Name: " + buff.DisplayName);
             }
         }
 
@@ -90,13 +94,13 @@ namespace Assemblies {
                     case JumpStage.PLAYFUL:
                         E.Cast(target.ServerPosition, true);
                         break;
-                    case JumpStage.TRICKSTER: // todo i guess more checks if needed to use e2 or not, idek if this will work l0l pls fix DZ191 bae
+                    case JumpStage.TRICKSTER: //TODO i guess more checks if needed to use e2 or not, idek if this will work l0l pls fix DZ191 bae
                         E2.Cast(target.ServerPosition);
                         break;
                 }
             }
             W.Cast();
-            Q.Cast(target, true);
+            //Q.Cast(target, true);
         }
 
         private float getDamage(Obj_AI_Hero target) {
