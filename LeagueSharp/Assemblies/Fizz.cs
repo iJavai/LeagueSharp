@@ -1,15 +1,15 @@
 ﻿// fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
 
-using System;
-using System.Drawing;
-using System.Linq;
-using LeagueSharp;
-using LeagueSharp.Common;
-
 /**
  * IDEA - Flee mode over walls should be easy - ish, Cast E on first vector point then cast E2 on second vector point on the other side of the wall? :3
  *
  */
+using System;
+using System.Linq;
+using LeagueSharp;
+using LeagueSharp.Common;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Fizz : Champion {
@@ -70,7 +70,7 @@ namespace Assemblies {
             }
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
-                Utility.DrawCircle(target.Position, 130, Color.Coral);
+                Utility.DrawCircle(target.Position, R.Range, Color.Coral);
             }
             //Game.PrintChat(jumpStage == FizzJump.PLAYFUL ? "playful" : "trickster");
         }
@@ -99,6 +99,11 @@ namespace Assemblies {
             }
         }
 
+        private void fleeMode() {
+            Vector3 position1 = player.Position;
+            Vector3 position2 = default(Vector3); // just a  shit start, basically a reminder to do flee mode.
+        }
+
         private void goFishyGo() {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             PredictionOutput prediction = R.GetPrediction(target, true);
@@ -109,7 +114,7 @@ namespace Assemblies {
                         R.Cast(target, true);
                     }
                 }
-                if (E.IsReady())
+                if (E.IsReady()) // TODO this combo is a pile of shit atm, just basic as fk
                     castEGapclose(target);
                 if (W.IsReady())
                     W.Cast();
