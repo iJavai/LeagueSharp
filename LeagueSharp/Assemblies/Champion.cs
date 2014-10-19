@@ -10,7 +10,7 @@ namespace Assemblies {
         protected Spell W;
         protected Menu menu;
         protected Orbwalking.Orbwalker orbwalker;
-        protected WardJumper wardJumper;
+        private WardJumper wardJumper;
 
         public Champion() {
             addBasicMenu();
