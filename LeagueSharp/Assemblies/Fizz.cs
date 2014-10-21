@@ -139,12 +139,14 @@ namespace Assemblies {
         }
 
         private void onBeforeAttack(Obj_AI_Base unit, Obj_AI_Base target) {
-            switch (LXOrbwalker.CurrentMode) {
-                case LXOrbwalker.Mode.Combo:
-                    if (W.IsReady() && target.Distance(unit) < W.Range && !target.IsMinion &&
-                        target.IsValidTarget(W.Range))
-                        W.Cast(unit, true);
-                    break;
+            if (unit.IsMe) {
+                switch (LXOrbwalker.CurrentMode) {
+                    case LXOrbwalker.Mode.Combo:
+                        if (W.IsReady() && target.Distance(unit) < W.Range && !target.IsMinion &&
+                            target.IsValidTarget(W.Range))
+                            W.Cast(unit, true);
+                        break;
+                }
             }
         }
 
@@ -397,8 +399,6 @@ namespace Assemblies {
                         R.Cast(target, true);
                     }
                 }
-                if (W.IsReady())
-                    W.Cast(); // Casts W for proc
                 if (Q.IsReady())
                     Q.CastOnUnit(target); // then Q's
             }
