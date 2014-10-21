@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LX_Orbwalker;
 using SharpDX;
 
 //TODO idea, use EvadeSpellDatabase or .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
@@ -126,7 +127,8 @@ namespace Assemblies {
             }
             safetySwap();
             ComboTarget = getDeathmarkedTarget();
-            orbwalker.ForceTarget(ComboTarget);
+            //LXOrbwalker.(ComboTarget); setForcedTarget with lxorbwalker
+            LXOrbwalker.ForcedTarget = ComboTarget; // could work idk
             Vector3 tgPos = ComboTarget.ServerPosition;
             Vector2 bestShadowPos = getBestShadowPos(PositionBeforeR, tgPos);
             if (bestShadowPos == Vector2.Zero) return;

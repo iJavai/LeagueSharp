@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LX_Orbwalker;
 using SharpDX;
 
 namespace Assemblies {
@@ -22,7 +23,7 @@ namespace Assemblies {
             loadSpells();
 
             Game.OnGameUpdate += OnTick;
-            Orbwalking.AfterAttack += OW_AfterAttack;
+            LXOrbwalker.AfterAttack += OW_AfterAttack;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
             Game.PrintChat("[Assemblies] - Vayne Hunter Loaded.");
         }
@@ -368,7 +369,7 @@ namespace Assemblies {
         }
 
         private bool isMode(String mode) {
-            return (orbwalker.ActiveMode.ToString() == mode);
+            return (LXOrbwalker.CurrentMode.ToString() == mode);
         }
 
         private void useItem(int id, Obj_AI_Hero target = null) {

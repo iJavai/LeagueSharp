@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LX_Orbwalker;
 
 namespace Assemblies {
     internal class Ezreal : Champion {
@@ -77,8 +78,8 @@ namespace Assemblies {
             }
             laneClear();
             lastHit();
-            switch (orbwalker.ActiveMode) {
-                case Orbwalking.OrbwalkingMode.Combo:
+            switch (LXOrbwalker.CurrentMode) {
+                case LXOrbwalker.Mode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
                         castQ();
                     if (menu.Item("useWC").GetValue<bool>())
@@ -94,7 +95,7 @@ namespace Assemblies {
                         }
                     }
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass:
                     if (menu.Item("useQH").GetValue<bool>())
                         castQ();
                     if (menu.Item("useWH").GetValue<bool>())
@@ -115,7 +116,7 @@ namespace Assemblies {
                     MinionManager.GetMinions(player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly)) {
                 if (autoQ && Q.IsReady() && Q.IsKillable(minion))
                     Q.Cast(minion.Position, getPackets());
-                if (lastHitNormal && Q.IsReady() && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit &&
+                if (lastHitNormal && Q.IsReady() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Lasthit &&
                     Q.IsKillable(minion))
                     Q.Cast(minion.Position, getPackets());
             }
@@ -127,7 +128,7 @@ namespace Assemblies {
             var useQ = menu.Item("useQLC").GetValue<bool>();
             var useAutoQ = menu.Item("AutoQLC").GetValue<bool>();
             MinionManager.FarmLocation qPosition = Q.GetLineFarmLocation(minionforQ);
-            if (useQ && orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Q.IsReady() &&
+            if (useQ && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.LaneClear && Q.IsReady() &&
                 qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
             }

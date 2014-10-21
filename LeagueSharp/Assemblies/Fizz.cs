@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using LX_Orbwalker;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -44,9 +45,9 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
 
-            menu.AddSubMenu(new Menu("Pouncer Flee", "FleeMode"));
-            menu.SubMenu("FleeMode").AddItem(
-                new MenuItem("FleeKey", "Flee").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
+            menu.AddSubMenu(new Menu("Flee Options", "FleeMode"));
+            //menu.SubMenu("FleeMode").AddItem(
+            //  new MenuItem("FleeKey", "Flee").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eDodge", "Use E to dodge spells").SetValue(false));
@@ -71,18 +72,19 @@ namespace Assemblies {
                 isCalled = true;
                 jumpStage = FizzJump.PLAYFUL;
             }
-            switch (orbwalker.ActiveMode) {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    //goFishyGo();
-                    castEGapclose(SimpleTs.GetTarget(800, SimpleTs.DamageType.Magical));
+            switch (LXOrbwalker.CurrentMode) {
+                case LXOrbwalker.Mode.Combo:
+                    goFishyGo();
+                    //castEGapclose(SimpleTs.GetTarget(800, SimpleTs.DamageType.Magical));
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass:
                     //TODO harass
                     break;
+                case LXOrbwalker.Mode.Flee:
+                    //if (menu.Item("FleeKey").GetValue<KeyBind>().Active)
+                    fleeMode();
+                    break;
             }
-
-            if (menu.Item("FleeKey").GetValue<KeyBind>().Active)
-                fleeMode();
 
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
@@ -92,9 +94,7 @@ namespace Assemblies {
         }
 
         private void dragonStealerino() {
-            foreach (KeyValuePair<Vector3, Vector3> entry in positions) {
-                
-            }
+            foreach (var entry in positions) {}
         }
 
         private void castEGapclose(Obj_AI_Hero target) {
