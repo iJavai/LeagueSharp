@@ -30,6 +30,7 @@ namespace Assemblies {
 
             Game.OnGameUpdate += onUpdate;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
+            LXOrbwalker.BeforeAttack += onBeforeAttack;
             Drawing.OnDraw += onDraw;
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
         }
@@ -107,7 +108,6 @@ namespace Assemblies {
                 E.Cast(position2, true);
             }
 
-
             if (E2.IsReady() && player.Distance(position2) < 10 && jumpStage == FizzJump.TRICKSTER &&
                 player.SummonerSpellbook.CanUseSpell(smite) == SpellState.Cooldown) {
                 E2.Cast(position1, true);
@@ -135,6 +135,16 @@ namespace Assemblies {
                 if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
                     E2.Cast(target.ServerPosition, true);
                 }
+            }
+        }
+
+        private void onBeforeAttack(Obj_AI_Base unit, Obj_AI_Base target) {
+            switch (LXOrbwalker.CurrentMode) {
+                case LXOrbwalker.Mode.Combo:
+                    if (W.IsReady() && target.Distance(unit) < W.Range && !target.IsMinion &&
+                        target.IsValidTarget(W.Range))
+                        W.Cast(unit, true);
+                    break;
             }
         }
 
