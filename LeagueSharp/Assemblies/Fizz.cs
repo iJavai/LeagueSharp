@@ -17,8 +17,9 @@ using Color = System.Drawing.Color;
 namespace Assemblies {
     internal class Fizz : Champion {
         private Spell E2;
+        //private Dictionary<Vector3, Vector3> dragonPositions;
         private bool isCalled;
-        private FizzJump jumpStage; // 0 = playful, 1 = trickster :3
+        private FizzJump jumpStage; // 0 = playful, 1 = trickster
         private Dictionary<Vector3, Vector3> positions;
         private float time;
 
@@ -26,6 +27,7 @@ namespace Assemblies {
             loadMenu();
             loadSpells();
             addFleeSpots();
+            //fillDragonSpots();
 
             Game.OnGameUpdate += onUpdate;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
@@ -67,7 +69,8 @@ namespace Assemblies {
 
         private void onUpdate(EventArgs args) {
             //Console.WriteLine(player.Position.X + ", " + player.Position.Y);
-            dragonStealerino();
+            //Console.WriteLine(player.Position);
+            //dragonStealerino();
             if (time + 1f < Game.Time && !isCalled) {
                 isCalled = true;
                 jumpStage = FizzJump.PLAYFUL;
@@ -83,18 +86,33 @@ namespace Assemblies {
                 case LXOrbwalker.Mode.Flee:
                     //if (menu.Item("FleeKey").GetValue<KeyBind>().Active)
                     fleeMode();
+                    qFlee();
                     break;
-            }
-
-            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-            foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
-                Utility.DrawCircle(target.Position, R.Range, Color.Coral);
             }
             //Game.PrintChat(jumpStage == FizzJump.PLAYFUL ? "playful" : "trickster");
         }
 
         private void dragonStealerino() {
-            foreach (var entry in positions) {}
+            /*foreach (var entry in dragonPositions) {
+                Obj_AI_Base minion =
+                    MinionManager.GetMinions(player.Position, 1500, MinionTypes.All, MinionTeam.NotAlly).FirstOrDefault(
+                        i => i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1");
+                Vector3 eBack = entry.Key;
+                Vector3 eTowards = entry.Value;
+                SpellSlot smite = player.GetSpellSlot("SummonerSmite");
+
+                if (Game.CursorPos == eTowards) {
+                    sendMovementPacket(eBack.To2D());
+                    if (minion != null && minion.IsVisible
+                        /*player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) >= minion.Healt/) {
+                        if (E.IsReady()) {
+                            E.Cast(eTowards, true); // TODO check this shit?
+                            player.SummonerSpellbook.CastSpell(smite, minion);
+                            E2.Cast(eBack, true);
+                        }
+                    }
+                }
+            }*/
         }
 
         private void castEGapclose(Obj_AI_Hero target) {
@@ -124,36 +142,55 @@ namespace Assemblies {
             }
         }
 
+        private void fillDragonSpots() {
+            /*dragonPositions = new Dictionary<Vector3, Vector3> {
+                {new Vector3(8567, 4231, 55.78798f), new Vector3(8949, 4207, -63.27847f)}, // Spot 1 
+                {new Vector3(0, 0, 0), new Vector3(0, 0, 0)}, // Spot 2
+                {new Vector3(0, 0, 0), new Vector3(0, 0, 0)} // Spot 3
+            };*/
+        }
+
+        private void qFlee() {
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None); // minions to loop through
+            sendMovementPacket(Game.CursorPos.To2D());
+            foreach (Obj_AI_Base minion in minions) {
+                if (minion.IsValidTarget(Q.Range) && minion.Distance(Game.CursorPos.To2D()) < Q.Range &&
+                    Q.InRange(minion.Position))
+                    Q.Cast(minion, true); // todo make sure this works i guess? idk
+            }
+        }
+
         private void fleeMode() {
-            if (menu.Item("FleeKey").GetValue<KeyBind>().Active) {
-                sendMovementPacket(Game.CursorPos.To2D());
-                foreach (var entry in positions) {
-                    if (player.Distance(entry.Key) <= E.Range || player.Distance(entry.Value) <= E.Range) {
-                        Vector3 closest = entry.Key;
-                        Vector3 furthest = entry.Value;
-                        if (player.Distance(entry.Key) < player.Distance(entry.Value)) {
-                            closest = entry.Key;
-                            furthest = entry.Value;
-                        }
-                        if (player.Distance(entry.Key) > player.Distance(entry.Value)) {
-                            closest = entry.Value;
-                            furthest = entry.Key;
-                        }
-                        //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(closest.X, closest.Y)).Send();
-                        sendMovementPacket(new Vector2(closest.X, closest.Y));
-                        E.Cast(closest, true);
-                        E2.Cast(furthest, true);
+            sendMovementPacket(Game.CursorPos.To2D());
+            foreach (var entry in positions) {
+                if (player.Distance(entry.Key) <= E.Range || player.Distance(entry.Value) <= E.Range) {
+                    Vector3 closest = entry.Key;
+                    Vector3 furthest = entry.Value;
+                    if (player.Distance(entry.Key) < player.Distance(entry.Value)) {
+                        closest = entry.Key;
+                        furthest = entry.Value;
                     }
+                    if (player.Distance(entry.Key) > player.Distance(entry.Value)) {
+                        closest = entry.Value;
+                        furthest = entry.Key;
+                    }
+                    //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(closest.X, closest.Y)).Send();
+                    sendMovementPacket(new Vector2(closest.X, closest.Y));
+                    E.Cast(closest, true);
+                    E2.Cast(furthest, true);
                 }
             }
         }
 
         private void onDraw(EventArgs args) {
-            foreach (var entry in positions) {
-                if (player.Distance(entry.Key) <= 1500f && player.Distance(entry.Value) <= 1500f) {
-                    Drawing.DrawCircle(entry.Key, 75f, Color.Cyan);
-                    Drawing.DrawCircle(entry.Value, 75f, Color.Cyan);
-                }
+            foreach (
+                var entry in
+                    positions.Where(
+                        entry => player.Distance(entry.Key) <= 1500f && player.Distance(entry.Value) <= 1500f)) {
+                Drawing.DrawCircle(entry.Key, 75f, Color.Cyan);
+                Drawing.DrawCircle(entry.Value, 75f, Color.Cyan);
             }
         }
 
@@ -341,20 +378,24 @@ namespace Assemblies {
         private void goFishyGo() {
             //TODO rework pl0x
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-            PredictionOutput prediction = R.GetPrediction(target, true);
+            //PredictionOutput prediction = R.GetPrediction(target, true);
 
             if (target.IsValidTarget(R.Range)) {
                 if (E.IsReady()) // TODO this combo is a pile of shit atm, just basic as fk
-                    castEGapclose(target);
+                    castEGapclose(target); // Gapcloses with E First if not withing QRange
                 if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                    if (prediction.Hitchance >= HitChance.High && target.IsValidTarget()) {
+                    // then fires R ofc
+                    if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh) {
                         R.Cast(target, true);
                     }
                 }
                 if (W.IsReady())
-                    W.Cast();
+                    W.Cast(); // Casts W for proc
                 if (Q.IsReady())
-                    Q.CastOnUnit(target);
+                    Q.CastOnUnit(target); // then Q's
+            }
+            foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
+                Utility.DrawCircle(target.Position, R.Range, Color.Coral);
             }
         }
 

@@ -10,7 +10,7 @@ namespace Assemblies {
         protected Spell R;
         protected Spell W;
         protected Menu menu;
-        //protected Orbwalking.Orbwalker orbwalker;
+        protected Orbwalking.Orbwalker orbwalker;
         private WardJumper wardJumper;
 
         public Champion() {
@@ -21,17 +21,17 @@ namespace Assemblies {
         }
 
         private void addBasicMenu() {
-            menu = new Menu("Assemblies - " + player.ChampionName, "Assemblies - " + ObjectManager.Player.ChampionName,
+            menu = new Menu("Assemblies - " + player.ChampionName, "Assemblies - " + player.ChampionName,
                 true);
-            var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
+
+            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
             menu.AddSubMenu(targetSelectorMenu);
+
+            //Orbwalker submenu
             var orbwalkerMenu = new Menu("LX-Orbwalker", "orbwalker");
             LXOrbwalker.AddToMenu(orbwalkerMenu);
             menu.AddSubMenu(orbwalkerMenu);
-            //Menu orbwalking = menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            //orbwalker = new Orbwalking.Orbwalker(orbwalking);
-            menu.Item("FarmDelay").SetValue(new Slider(0, 0, 200));
 
             menu.AddToMainMenu();
         }
