@@ -27,7 +27,6 @@ namespace Assemblies {
             loadMenu();
             loadSpells();
             addFleeSpots();
-            //fillDragonSpots();
 
             Game.OnGameUpdate += onUpdate;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
@@ -47,9 +46,9 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
 
-            menu.AddSubMenu(new Menu("Flee Options", "FleeMode"));
-            //menu.SubMenu("FleeMode").AddItem(
-            //  new MenuItem("FleeKey", "Flee").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
+            menu.AddSubMenu(new Menu("Steal Options", "steal"));
+            menu.SubMenu("steal").AddItem(
+                new MenuItem("stealKey", "Steal Boss").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eDodge", "Use E to dodge spells").SetValue(false));
@@ -68,9 +67,6 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            //Console.WriteLine(player.Position.X + ", " + player.Position.Y);
-            //Console.WriteLine(player.Position);
-            //dragonStealerino();
             if (time + 1f < Game.Time && !isCalled) {
                 isCalled = true;
                 jumpStage = FizzJump.PLAYFUL;
@@ -84,35 +80,45 @@ namespace Assemblies {
                     //TODO harass
                     break;
                 case LXOrbwalker.Mode.Flee:
-                    //if (menu.Item("FleeKey").GetValue<KeyBind>().Active)
                     fleeMode();
                     qFlee();
                     break;
+            }
+            if (menu.Item("stealKey").GetValue<KeyBind>().Active) {
+                dragonStealerino();
             }
             //Game.PrintChat(jumpStage == FizzJump.PLAYFUL ? "playful" : "trickster");
         }
 
         private void dragonStealerino() {
-            /*foreach (var entry in dragonPositions) {
-                Obj_AI_Base minion =
-                    MinionManager.GetMinions(player.Position, 1500, MinionTypes.All, MinionTeam.NotAlly).FirstOrDefault(
-                        i => i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1");
-                Vector3 eBack = entry.Key;
-                Vector3 eTowards = entry.Value;
-                SpellSlot smite = player.GetSpellSlot("SummonerSmite");
+            var position1 = new Vector2(8567, 4231);
+            var position2 = new Vector2(8949, 4207);
+            SpellSlot smite = player.GetSpellSlot("SummonerSmite");
+            Obj_AI_Base minion =
+                MinionManager.GetMinions(player.Position, 1500, MinionTypes.All, MinionTeam.NotAlly).FirstOrDefault(
+                    i => i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1");
+            //TODO smite and e is rdy
 
-                if (Game.CursorPos == eTowards) {
-                    sendMovementPacket(eBack.To2D());
-                    if (minion != null && minion.IsVisible
-                        /*player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) >= minion.Healt/) {
-                        if (E.IsReady()) {
-                            E.Cast(eTowards, true); // TODO check this shit?
-                            player.SummonerSpellbook.CastSpell(smite, minion);
-                            E2.Cast(eBack, true);
-                        }
-                    }
+            if (E.IsReady() && player.Distance(position1) > 10 && jumpStage == FizzJump.PLAYFUL) {
+                sendMovementPacket(position1);
+            }
+
+            if (E.IsReady() && player.Distance(position1) < 10 && jumpStage == FizzJump.PLAYFUL) {
+                E.Cast(position2, true);
+            }
+
+
+            if (E2.IsReady() && player.Distance(position2) < 10 && jumpStage == FizzJump.TRICKSTER &&
+                player.SummonerSpellbook.CanUseSpell(smite) == SpellState.Cooldown) {
+                E2.Cast(position1, true);
+            }
+
+            if (minion != null && minion.Distance(player) <= 625) {
+                if (smite != SpellSlot.Unknown && player.SummonerSpellbook.CanUseSpell(smite) == SpellState.Ready &&
+                    player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) >= minion.Health) {
+                    player.SummonerSpellbook.CastSpell(smite, minion);
                 }
-            }*/
+            } // TODO check health
         }
 
         private void castEGapclose(Obj_AI_Hero target) {
@@ -140,14 +146,6 @@ namespace Assemblies {
                     isCalled = false;
                 }
             }
-        }
-
-        private void fillDragonSpots() {
-            /*dragonPositions = new Dictionary<Vector3, Vector3> {
-                {new Vector3(8567, 4231, 55.78798f), new Vector3(8949, 4207, -63.27847f)}, // Spot 1 
-                {new Vector3(0, 0, 0), new Vector3(0, 0, 0)}, // Spot 2
-                {new Vector3(0, 0, 0), new Vector3(0, 0, 0)} // Spot 3
-            };*/
         }
 
         private void qFlee() {
