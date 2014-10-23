@@ -202,7 +202,6 @@ namespace Assemblies {
             return false;
         }
 
-        //Credits to princer007
         private static bool IsPassWall(Vector3 start, Vector3 end) {
             double count = Vector3.Distance(start, end);
             for (uint i = 0; i <= count; i += 10) {
