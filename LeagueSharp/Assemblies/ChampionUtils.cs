@@ -171,7 +171,7 @@ namespace Assemblies {
         /// <summary>
         ///     sends a movement packet to a given position
         /// </summary>
-        public void sendMovementPacket(Vector2 position) {
+        protected void sendMovementPacket(Vector2 position) {
             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(position.X, position.Y)).Send();
         }
 
