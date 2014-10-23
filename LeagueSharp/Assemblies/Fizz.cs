@@ -71,13 +71,14 @@ namespace Assemblies {
                 isCalled = true;
                 jumpStage = FizzJump.PLAYFUL;
             }
+            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    goFishyGo();
+                    goFishyGo(target);
                     break;
                 case LXOrbwalker.Mode.Harass:
                     //TODO harass
-                    harassMode();
+                    harassMode(target);
                     break;
                 case LXOrbwalker.Mode.Flee:
                     fleeMode();
@@ -89,10 +90,8 @@ namespace Assemblies {
             }
         }
 
-        private void goFishyGo() {
+        private void goFishyGo(Obj_AI_Hero target) {
             //TODO rework pl0x
-            Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-            //PredictionOutput prediction = R.GetPrediction(target, true);
 
             if (target.IsValidTarget(R.Range)) {
                 if (E.IsReady()) // TODO this combo is a pile of shit atm, just basic as fk
@@ -140,7 +139,7 @@ namespace Assemblies {
             }
         }
 
-        private void harassMode() {
+        private void harassMode(Obj_AI_Hero objAiHero) {
             Obj_AI_Hero target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
 
             if (target != null && target.IsValidTarget(E.Range)) {
@@ -197,10 +196,12 @@ namespace Assemblies {
                 MinionTeam.Enemy,
                 MinionOrderTypes.None); // minions to loop through
             sendMovementPacket(Game.CursorPos.To2D());
-            foreach (Obj_AI_Base minion in minions) {
-                if (minion.IsValidTarget(Q.Range) && minion.Distance(Game.CursorPos.To2D()) < Q.Range &&
-                    Q.InRange(minion.Position))
-                    Q.Cast(minion, true); // todo make sure this works i guess? idk
+            foreach (
+                Obj_AI_Base minion in
+                    minions.Where(
+                        minion => minion.IsValidTarget(Q.Range) && minion.Distance(Game.CursorPos.To2D()) < Q.Range &&
+                                  Q.InRange(minion.Position))) {
+                Q.Cast(minion, true); // todo make sure this works i guess? idk
             }
         }
 
@@ -237,7 +238,6 @@ namespace Assemblies {
 
         private void addFleeSpots() {
             //TODO flee spots
-            Vector2[] originalPosition = {new Vector2(1, 1), new Vector2(1, 2)};
         }
 
         private enum FizzJump {

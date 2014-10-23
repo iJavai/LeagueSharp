@@ -22,6 +22,11 @@ namespace Assemblies {
             }
         }
 
+        protected bool isWall(Vector3 pos) {
+            return (NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Wall ||
+                    NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Building);
+        }
+
         /// <summary>
         ///     Gets the nearest enemy from your position
         /// </summary>
