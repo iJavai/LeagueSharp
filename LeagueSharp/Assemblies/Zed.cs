@@ -18,7 +18,7 @@ namespace Assemblies {
         private ZedShadow RShadow;
         private bool WOut;
         private ZedShadow WShadow;
-        private HitChance customHitchance = HitChance.High;
+        private const HitChance customHitchance = HitChance.High;
         private Obj_AI_Hero deathMarkTarget;
 
         private bool isChampKill; //but what if champ is not kill Kappa

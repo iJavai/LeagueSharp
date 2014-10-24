@@ -45,13 +45,14 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
+            menu.SubMenu("harass").AddItem(new MenuItem("eTower", "E back to closest tower").SetValue(true));
 
             menu.AddSubMenu(new Menu("Steal Options", "steal"));
             menu.SubMenu("steal").AddItem(
                 new MenuItem("stealKey", "Steal Boss").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
-            menu.SubMenu("misc").AddItem(new MenuItem("eDodge", "Use E to dodge spells").SetValue(false));
+            menu.SubMenu("misc").AddItem(new MenuItem("qWithR", "Use R whilst Q").SetValue(false));
         }
 
         private void loadSpells() {
@@ -74,7 +75,10 @@ namespace Assemblies {
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    goFishyGo(target);
+                    if (player.Distance(target) > Q.Range)
+                        goFishyGo(target);
+                    else
+                        otherCombo(target);
                     break;
                 case LXOrbwalker.Mode.Harass:
                     harassMode(target);
@@ -90,28 +94,67 @@ namespace Assemblies {
             // Game.PrintChat(player.Position.X + " - " + player.Position.Y + " - " + player.Position.Z + "");
         }
 
-        private void goFishyGo(Obj_AI_Hero target) {
+        private void otherCombo(Obj_AI_Hero target) {
             if (target.IsValidTarget(R.Range)) {
-                if (target.Distance(player) < Q.Range) {
-                    W.Cast(player);
-                    if (Q.IsReady())
-                        Q.CastOnUnit(target, true);
+                if (menu.Item("initR").GetValue<bool>() && menu.Item("useRC").GetValue<bool>()) {
                     if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                        if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh) {
+                        if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh &&
+                            !menu.Item("qWithR").GetValue<bool>()) {
                             R.Cast(target, true);
                         }
                     }
-                    if (E.IsReady()) {
-                        if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
-                            E.Cast(target.ServerPosition, true);
+                }
+            }
+
+            if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>()) {
+                if (menu.Item("qWithR").GetValue<bool>()) {
+                    if (Q.IsReady() && R.IsReady()) {
+                        Q.CastOnUnit(target, true);
+                        if (R.IsReady() && !isUnderEnemyTurret(target)) {
+                            if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh) {
+                                R.Cast(target, true);
+                            }
                         }
-                    }
-                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                        E2.Cast(target.ServerPosition, true);
                     }
                 }
                 else {
-                    castEGapclose(target);
+                    if (Q.IsReady())
+                        Q.CastOnUnit(target, true);
+                }
+            }
+
+            if (target.IsValidTarget(E.Range) && menu.Item("useEC").GetValue<bool>()) {
+                if (E.IsReady()) {
+                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
+                        E.Cast(target.ServerPosition, true);
+                    }
+                }
+                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                    E2.Cast(target.ServerPosition, true);
+                }
+            }
+        }
+
+        private void goFishyGo(Obj_AI_Hero target) {
+            if (target.IsValidTarget(R.Range)) {
+                if (target.Distance(player) < Q.Range && menu.Item("useQC").GetValue<bool>()) {
+                    if (Q.IsReady())
+                        Q.CastOnUnit(target, true);
+                }
+                if (R.IsReady() && !isUnderEnemyTurret(target) && menu.Item("useRC").GetValue<bool>() &&
+                    menu.Item("initR").GetValue<bool>()) {
+                    if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh &&
+                        !menu.Item("qWithR").GetValue<bool>()) {
+                        R.Cast(target, true);
+                    }
+                }
+                if (E.IsReady() && menu.Item("useEC").GetValue<bool>()) {
+                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
+                        E.Cast(target.ServerPosition, true);
+                    }
+                }
+                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                    E2.Cast(target.ServerPosition, true);
                 }
             }
             foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
@@ -149,17 +192,27 @@ namespace Assemblies {
         }
 
         private void harassMode(Obj_AI_Hero target) {
-            Vector3 startPosition = player.Position;
-
+            Obj_AI_Turret closest_tower =
+                ObjectManager.Get<Obj_AI_Turret>()
+                    .Where(tur => tur.IsAlly)
+                    .OrderBy(tur => tur.Distance(player.Position))
+                    .First();
             if (target != null && target.IsValidTarget(E.Range)) {
-                if (player.Distance(target) < Q.Range) {
-                    W.Cast();
-                    Q.Cast(target);
-                }
-                if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
-                    E.Cast(target.ServerPosition, true);
+                if (Q.IsReady() && menu.Item("useQH").GetValue<bool>())
+                    Q.CastOnUnit(target, true);
+                if (W.IsReady() && menu.Item("useWH").GetValue<bool>())
+                    W.Cast(player, true);
+                if (E.IsReady() && menu.Item("eTower").GetValue<bool>()) {
+                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
+                        E.Cast(closest_tower.ServerPosition, true);
+                    }
+                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                        E2.Cast(closest_tower.ServerPosition, true);
+                    }
                 }
             }
+            //Player.IssueOrder(GameObjectOrder.MoveTo, closest_tower.ServerPosition
+            //IF e is rdy e.cast closest turret position
         }
 
         private void castEGapclose(Obj_AI_Hero target) {
@@ -179,13 +232,11 @@ namespace Assemblies {
             if (!args.Unit.IsMe) return;
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    if (W.IsReady() && args.Target.Distance(args.Unit) < W.Range && !args.Target.IsMinion &&
-                        args.Target.IsValidTarget(W.Range))
+                    if (W.IsReady() && !args.Target.IsMinion && menu.Item("useWC").GetValue<bool>())
                         W.Cast(args.Unit, true);
                     break;
                 case LXOrbwalker.Mode.Harass:
-                    if (W.IsReady() && args.Target.Distance(args.Unit) < W.Range && !args.Target.IsMinion &&
-                        args.Target.IsValidTarget(W.Range))
+                    if (W.IsReady() && !args.Target.IsMinion && menu.Item("useWH").GetValue<bool>())
                         W.Cast(args.Unit, true);
                     break;
             }
