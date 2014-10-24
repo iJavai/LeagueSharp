@@ -78,7 +78,7 @@ namespace Assemblies {
                     if (player.Distance(target) > Q.Range)
                         goFishyGo(target);
                     else
-                        otherCombo(target);
+                        QRCombo(target);
                     break;
                 case LXOrbwalker.Mode.Harass:
                     harassMode(target);
@@ -94,7 +94,7 @@ namespace Assemblies {
             // Game.PrintChat(player.Position.X + " - " + player.Position.Y + " - " + player.Position.Z + "");
         }
 
-        private void otherCombo(Obj_AI_Hero target) {
+        private void QRCombo(Obj_AI_Hero target) {
             if (target.IsValidTarget(R.Range)) {
                 if (menu.Item("initR").GetValue<bool>() && menu.Item("useRC").GetValue<bool>()) {
                     if (R.IsReady() && !isUnderEnemyTurret(target)) {
