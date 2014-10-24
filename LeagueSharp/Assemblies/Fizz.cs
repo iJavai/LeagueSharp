@@ -1,11 +1,4 @@
-﻿// fizzmarinerdoombomb = R, fizzmarinerdoomslow = slow buff for R 
-
-/**
- * IDEA - Flee mode over walls should be easy - ish, Cast E on first vector point then cast E2 on second vector point on the other side of the wall? :3
- *
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
@@ -192,7 +185,7 @@ namespace Assemblies {
         }
 
         private void harassMode(Obj_AI_Hero target) {
-            Obj_AI_Turret closest_tower =
+            Obj_AI_Turret closestTower =
                 ObjectManager.Get<Obj_AI_Turret>()
                     .Where(tur => tur.IsAlly)
                     .OrderBy(tur => tur.Distance(player.Position))
@@ -204,10 +197,10 @@ namespace Assemblies {
                     W.Cast(player, true);
                 if (E.IsReady() && menu.Item("eTower").GetValue<bool>()) {
                     if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
-                        E.Cast(closest_tower.ServerPosition, true);
+                        E.Cast(closestTower.ServerPosition, true);
                     }
                     if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                        E2.Cast(closest_tower.ServerPosition, true);
+                        E2.Cast(closestTower.ServerPosition, true);
                     }
                 }
             }
