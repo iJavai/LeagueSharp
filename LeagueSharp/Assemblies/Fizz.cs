@@ -163,6 +163,12 @@ namespace Assemblies {
                         Q.Cast(target, true);
                 }
             }
+            
+             if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>() &&
+                    menu.Item("qWithR").GetValue<bool>() && !R.IsReady()) { //TODO check if works ?
+                    if (Q.IsReady())
+                        Q.Cast(target, true);
+                }
 
             if (target.IsValidTarget(E.Range) && menu.Item("useEC").GetValue<bool>()) {
                 if (E.IsReady()) {
