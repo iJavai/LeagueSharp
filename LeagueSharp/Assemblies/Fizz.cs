@@ -133,16 +133,19 @@ namespace Assemblies {
             }
             if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>()) {
                 if (menu.Item("qWithR").GetValue<bool>()) {
-                    if (Q.IsReady() && R.IsReady()) {
+                    if (Q.IsReady() && R.IsReady() && getPercentValue(target, false) > 30) {
                         Q.Cast(target, true);
                         if (R.IsReady() && !isUnderEnemyTurret(target)) {
                             R.Cast(target, true);
                         }
                     }
-                    else {
-                        if (Q.IsReady())
-                            Q.Cast(target, true);
-                    }
+                }
+            }
+            else {
+                if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>() &&
+                    !menu.Item("qWithR").GetValue<bool>()) {
+                    if (Q.IsReady())
+                        Q.Cast(target, true);
                 }
             }
 
