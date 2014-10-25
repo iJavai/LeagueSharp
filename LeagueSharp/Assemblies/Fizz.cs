@@ -141,8 +141,11 @@ namespace Assemblies {
                             }
                         }
                     }
+                    else {
+                        if (Q.IsReady())
+                            Q.Cast(target, true);
+                    }
                 }
-                Q.Cast(target, true);
             }
 
             if (target.IsValidTarget(E.Range) && menu.Item("useEC").GetValue<bool>()) {
