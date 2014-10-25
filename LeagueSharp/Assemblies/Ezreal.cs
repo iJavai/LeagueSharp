@@ -137,7 +137,7 @@ namespace Assemblies {
             if (useAutoQ && Q.IsReady() && qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
             }
-            if (menu.Item("useQLCH").GetValue<bool>()) {
+            if (menu.Item("useQLCH").GetValue<bool>() && LXOrbwalker.CurrentMode == LXOrbwalker.Mode.LaneClear) {
                 castQ();
             }
         }
