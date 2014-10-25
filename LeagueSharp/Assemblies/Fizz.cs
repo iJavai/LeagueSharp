@@ -124,7 +124,7 @@ namespace Assemblies {
             if (target.IsValidTarget(R.Range)) {
                 if (menu.Item("initR").GetValue<bool>() && menu.Item("useRC").GetValue<bool>()) {
                     if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                        if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh &&
+                        if (R.GetPrediction(target, true).Hitchance >= HitChance.High &&
                             !menu.Item("qWithR").GetValue<bool>()) {
                             R.Cast(target, true);
                         }
@@ -136,9 +136,7 @@ namespace Assemblies {
                     if (Q.IsReady() && R.IsReady()) {
                         Q.Cast(target, true);
                         if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                            if (R.GetPrediction(target, true).Hitchance >= HitChance.High) {
-                                R.Cast(target, true);
-                            }
+                            R.Cast(target, true);
                         }
                     }
                     else {
@@ -183,7 +181,7 @@ namespace Assemblies {
                 }
             }
             //foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
-              //  Utility.DrawCircle(target.Position, R.Range, Color.Coral);
+            //  Utility.DrawCircle(target.Position, R.Range, Color.Coral);
             //}
         }
 
