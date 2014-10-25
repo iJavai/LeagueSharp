@@ -43,6 +43,8 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
             menu.SubMenu("laneclear").AddItem(new MenuItem("AutoQLC", "Auto Q to farm").SetValue(false));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("useQLCH", "Harass while laneclearing").SetValue(false));
+
 
             menu.AddSubMenu(new Menu("Lasthit Options", "lastHit"));
             menu.SubMenu("lastHit").AddItem(new MenuItem("lastHitq", "Use Q Last Hit").SetValue(false));
@@ -134,6 +136,9 @@ namespace Assemblies {
             }
             if (useAutoQ && Q.IsReady() && qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
+            }
+            if (menu.Item("useQLCH").GetValue<bool>()) {
+                castQ();
             }
         }
 
