@@ -1,6 +1,9 @@
 LeagueSharp
 ===========
 
-BaseUlt credits to beaving, its all his work.
+Supported Champions
+- Ezreal
+- Fizz
+- Vayne
 
-Assemblies WIP
+More assemblies WIP.
