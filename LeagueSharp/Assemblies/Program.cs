@@ -12,10 +12,6 @@ namespace Assemblies {
 
         private static void Game_OnGameLoad(EventArgs args) {
             try {
-                /*ObjectHandle handle = Activator.CreateInstance(null,
-                    "Assemblies." + ObjectManager.Player.ChampionName);
-
-                champion = (Champion) handle.Unwrap();*/
                 switch (ObjectManager.Player.ChampionName) {
                     case "Ezreal":
                         champion = new Ezreal();
