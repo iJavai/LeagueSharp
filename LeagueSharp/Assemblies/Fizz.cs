@@ -290,7 +290,25 @@ namespace Assemblies {
                 Q.Cast(minion, true); // todo make sure this works i guess? idk
             }
         }
-
+        //Added a better Q flee, should select the farthest minion to gain the max distance.
+        //Not added in the method yet. To be tested.
+        private void QFlee2()
+        {
+             sendMovementPacket(Game.CursorPos.To2D());
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None); // minions to loop through
+            Obj_AI_Base FarthestMinion = minions.FirstOrDefault();
+            foreach(var Minion in minions.Where(minion => minion.IsValidTarget(Q.Range) && minion.Distance(Game.CursorPos.To2D()) < Q.Range &&
+                                  Q.InRange(minion.Position)))
+            {
+                if (player.Distance(Minion) > player.Distance(FarthestMinion))
+                {
+                    FarthestMinion = Minion;
+                }
+            }
+            Q.Cast(FarthestMinion, true);
+        }
         private void fleeMode() {
             sendMovementPacket(Game.CursorPos.To2D());
             foreach (var entry in positions) {
