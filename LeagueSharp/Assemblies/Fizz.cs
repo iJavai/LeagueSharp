@@ -282,6 +282,7 @@ namespace Assemblies {
         }
 
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+            //TODO Test the new jumpstage detection method
             /**
             if (sender.IsMe) {
                 if (args.SData.Name == "FizzJump") {
