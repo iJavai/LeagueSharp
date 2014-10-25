@@ -136,7 +136,7 @@ namespace Assemblies {
                     if (Q.IsReady() && R.IsReady()) {
                         Q.Cast(target, true);
                         if (R.IsReady() && !isUnderEnemyTurret(target)) {
-                            if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh) {
+                            if (R.GetPrediction(target, true).Hitchance >= HitChance.High) {
                                 R.Cast(target, true);
                             }
                         }
