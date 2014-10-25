@@ -65,12 +65,12 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            /**
+           
             if (time + 1f < Game.Time && !isCalled) {
                 isCalled = true;
                 jumpStage = FizzJump.PLAYFUL;
             }
-             * */
+ /**
             if (player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump")
             {
                 jumpStage = FizzJump.PLAYFUL;
@@ -83,6 +83,7 @@ namespace Assemblies {
             {
                 jumpStage = FizzJump.TRICKSTER;
             }
+  * */
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
@@ -283,7 +284,7 @@ namespace Assemblies {
 
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
             //TODO Test the new jumpstage detection method
-            /**
+
             if (sender.IsMe) {
                 if (args.SData.Name == "FizzJump") {
                     jumpStage = FizzJump.TRICKSTER;
@@ -291,7 +292,6 @@ namespace Assemblies {
                     isCalled = false;
                 }
             }
-             * */
         }
 
         private void qFlee() {
