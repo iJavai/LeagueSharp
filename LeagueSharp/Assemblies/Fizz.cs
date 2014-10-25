@@ -134,7 +134,7 @@ namespace Assemblies {
             if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>()) {
                 if (menu.Item("qWithR").GetValue<bool>()) {
                     if (Q.IsReady() && R.IsReady()) {
-                        if (R.IsReady() && !isUnderEnemyTurret(target) && getPercentValue(target, false) > 30) {
+                        if (R.IsReady() && !isUnderEnemyTurret(target)) {
                             Q.Cast(target, true);
                             R.Cast(target, true);
                         }
