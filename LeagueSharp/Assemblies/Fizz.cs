@@ -40,7 +40,7 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
             menu.SubMenu("harass").AddItem(new MenuItem("eTower", "E back to closest tower").SetValue(true));
 
-            menu.AddSubMenu(new Menu("Laneclear Options", "lanclear"));
+            menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQL", "Use Q in laneclear").SetValue(false));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useEL", "Use E in laneclear").SetValue(false));
 
@@ -101,7 +101,7 @@ namespace Assemblies {
                     Obj_AI_Base minion in
                         allMinions.Where(minion => minion.IsValidTarget()).Where(
                             minion => player.Distance(minion) < Q.Range)) {
-                    Q.CastOnUnit(minion, true);
+                    Q.Cast(minion, true);
                 }
             }
             if (menu.Item("useEL").GetValue<bool>() && E.IsReady()) {
@@ -131,11 +131,10 @@ namespace Assemblies {
                     }
                 }
             }
-
             if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>()) {
                 if (menu.Item("qWithR").GetValue<bool>()) {
                     if (Q.IsReady() && R.IsReady()) {
-                        Q.CastOnUnit(target, true);
+                        Q.Cast(target, true);
                         if (R.IsReady() && !isUnderEnemyTurret(target)) {
                             if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh) {
                                 R.Cast(target, true);
@@ -143,10 +142,7 @@ namespace Assemblies {
                         }
                     }
                 }
-                else {
-                    if (Q.IsReady())
-                        Q.CastOnUnit(target, true);
-                }
+                Q.Cast(target, true);
             }
 
             if (target.IsValidTarget(E.Range) && menu.Item("useEC").GetValue<bool>()) {
@@ -163,9 +159,9 @@ namespace Assemblies {
 
         private void goFishyGo(Obj_AI_Hero target) {
             if (target.IsValidTarget(R.Range)) {
-                if (target.Distance(player) < Q.Range && menu.Item("useQC").GetValue<bool>()) {
+                if (menu.Item("useQC").GetValue<bool>()) {
                     if (Q.IsReady())
-                        Q.CastOnUnit(target, true);
+                        Q.Cast(target, true);
                 }
                 if (R.IsReady() && !isUnderEnemyTurret(target) && menu.Item("useRC").GetValue<bool>() &&
                     menu.Item("initR").GetValue<bool>()) {
@@ -225,7 +221,7 @@ namespace Assemblies {
                     .First();
             if (target != null && target.IsValidTarget(E.Range)) {
                 if (Q.IsReady() && menu.Item("useQH").GetValue<bool>())
-                    Q.CastOnUnit(target, true);
+                    Q.Cast(target, true);
                 if (W.IsReady() && menu.Item("useWH").GetValue<bool>())
                     W.Cast(player, true);
                 if (E.IsReady() && menu.Item("eTower").GetValue<bool>()) {
