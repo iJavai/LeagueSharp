@@ -40,9 +40,13 @@ namespace Assemblies {
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(false));
             menu.SubMenu("harass").AddItem(new MenuItem("eTower", "E back to closest tower").SetValue(true));
 
+            menu.AddSubMenu(new Menu("Laneclear Options", "lanclear"));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("useQL", "Use Q in laneclear").SetValue(false));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("useEL", "Use E in laneclear").SetValue(false));
+
             menu.AddSubMenu(new Menu("Steal Options", "steal"));
             menu.SubMenu("steal").AddItem(
-                new MenuItem("stealKey", "Steal Boss").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
+                new MenuItem("stealKey", "Steal Drake").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("qWithR", "Use R whilst Q").SetValue(false));
@@ -76,6 +80,9 @@ namespace Assemblies {
                 case LXOrbwalker.Mode.Harass:
                     harassMode(target);
                     break;
+                case LXOrbwalker.Mode.LaneClear:
+                    goLaneclearGo();
+                    break;
                 case LXOrbwalker.Mode.Flee:
                     fleeMode();
                     qFlee();
@@ -85,6 +92,32 @@ namespace Assemblies {
                 dragonStealerino();
             }
             // Game.PrintChat(player.Position.X + " - " + player.Position.Y + " - " + player.Position.Z + "");
+        }
+
+        private void goLaneclearGo() {
+            List<Obj_AI_Base> allMinions = MinionManager.GetMinions(player.ServerPosition, E.Range);
+            if (menu.Item("useQL").GetValue<bool>() && Q.IsReady()) {
+                foreach (
+                    Obj_AI_Base minion in
+                        allMinions.Where(minion => minion.IsValidTarget()).Where(
+                            minion => player.Distance(minion) < Q.Range)) {
+                    Q.CastOnUnit(minion, true);
+                }
+            }
+            if (menu.Item("useEL").GetValue<bool>() && E.IsReady()) {
+                MinionManager.FarmLocation bestLocation =
+                    MinionManager.GetBestCircularFarmLocation(
+                        MinionManager.GetMinions(player.Position, 800).Select(minion => minion.ServerPosition.To2D())
+                            .ToList(), E.Width, 800);
+                if (player.Distance(bestLocation.Position) < E.Range) {
+                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
+                        E.Cast(bestLocation.Position, true);
+                    }
+                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                        E2.Cast(bestLocation.Position, true);
+                    }
+                }
+            }
         }
 
         private void QRCombo(Obj_AI_Hero target) {
@@ -150,9 +183,9 @@ namespace Assemblies {
                     E2.Cast(target.ServerPosition, true);
                 }
             }
-            foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
-                Utility.DrawCircle(target.Position, R.Range, Color.Coral);
-            }
+            //foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
+              //  Utility.DrawCircle(target.Position, R.Range, Color.Coral);
+            //}
         }
 
         private void dragonStealerino() {
@@ -196,6 +229,7 @@ namespace Assemblies {
                 if (W.IsReady() && menu.Item("useWH").GetValue<bool>())
                     W.Cast(player, true);
                 if (E.IsReady() && menu.Item("eTower").GetValue<bool>()) {
+                    sendMovementPacket(closestTower.ServerPosition.To2D());
                     if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
                         E.Cast(closestTower.ServerPosition, true);
                     }
@@ -204,8 +238,6 @@ namespace Assemblies {
                     }
                 }
             }
-            //Player.IssueOrder(GameObjectOrder.MoveTo, closest_tower.ServerPosition
-            //IF e is rdy e.cast closest turret position
         }
 
         private void castEGapclose(Obj_AI_Hero target) {
