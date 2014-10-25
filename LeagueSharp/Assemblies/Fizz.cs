@@ -160,16 +160,16 @@ namespace Assemblies {
 
         private void goFishyGo(Obj_AI_Hero target) {
             if (target.IsValidTarget(R.Range)) {
-                if (menu.Item("useQC").GetValue<bool>()) {
-                    if (Q.IsReady())
-                        Q.Cast(target, true);
-                }
                 if (R.IsReady() && !isUnderEnemyTurret(target) && menu.Item("useRC").GetValue<bool>() &&
                     menu.Item("initR").GetValue<bool>()) {
                     if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh &&
                         !menu.Item("qWithR").GetValue<bool>()) {
                         R.Cast(target, true);
                     }
+                }
+                if (menu.Item("useQC").GetValue<bool>()) {
+                    if (Q.IsReady())
+                        Q.Cast(target, true);
                 }
                 if (E.IsReady() && menu.Item("useEC").GetValue<bool>()) {
                     if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
