@@ -156,12 +156,11 @@ namespace Assemblies {
                     }
                 }
             }
-            else {
-                if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>() &&
-                    !menu.Item("qWithR").GetValue<bool>()) {
-                    if (Q.IsReady())
-                        Q.Cast(target, true);
-                }
+
+            if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>() &&
+                   !menu.Item("qWithR").GetValue<bool>()) {
+                if (Q.IsReady())
+                    Q.Cast(target, true);
             }
             
              if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>() &&
