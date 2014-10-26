@@ -150,13 +150,15 @@ namespace Assemblies {
             }
 
             if (target.IsValidTarget(E.Range) && menu.Item("useEC").GetValue<bool>()) {
-                if (E.IsReady()) {
+                if (E.IsReady() && menu.Item("useEC").GetValue<bool>()) {
                     if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
                         E.Cast(target.ServerPosition, true);
                     }
                 }
-                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                    E2.Cast(target.ServerPosition, true);
+                if (E2.IsReady() && menu.Item("useEC").GetValue<bool>()) {
+                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                        E2.Cast(target.ServerPosition, true);
+                    }
                 }
             }
         }
@@ -165,7 +167,7 @@ namespace Assemblies {
             if (target.IsValidTarget(R.Range)) {
                 if (R.IsReady() && !isUnderEnemyTurret(target) && menu.Item("useRC").GetValue<bool>() &&
                     menu.Item("initR").GetValue<bool>()) {
-                    if (R.GetPrediction(target, true).Hitchance >= HitChance.VeryHigh &&
+                    if (R.GetPrediction(target, true).Hitchance >= HitChance.High &&
                         !menu.Item("qWithR").GetValue<bool>()) {
                         R.Cast(target, true);
                     }
@@ -179,8 +181,10 @@ namespace Assemblies {
                         E.Cast(target.ServerPosition, true);
                     }
                 }
-                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                    E2.Cast(target.ServerPosition, true);
+                if (E2.IsReady() && menu.Item("useEC").GetValue<bool>()) {
+                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                        E2.Cast(target.ServerPosition, true);
+                    }
                 }
             }
             //foreach (BuffInstance buff in target.Buffs.Where(buff => hasBuff(target, "fizzmarinerdoombomb"))) {
