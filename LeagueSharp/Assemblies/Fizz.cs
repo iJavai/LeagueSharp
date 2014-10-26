@@ -65,10 +65,25 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
+           
             if (time + 1f < Game.Time && !isCalled) {
                 isCalled = true;
                 jumpStage = FizzJump.PLAYFUL;
             }
+ /**
+            if (player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump")
+            {
+                jumpStage = FizzJump.PLAYFUL;
+            }
+            if (player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumpbuffer")
+            {
+                jumpStage = FizzJump.PLAYFUL;
+            }
+            if (player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo")
+            {
+                jumpStage = FizzJump.TRICKSTER;
+            }
+  * */
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
@@ -148,6 +163,12 @@ namespace Assemblies {
                         Q.Cast(target, true);
                 }
             }
+            
+             if (target.IsValidTarget(Q.Range) && menu.Item("useQC").GetValue<bool>() &&
+                    menu.Item("qWithR").GetValue<bool>() && !R.IsReady()) { //TODO check if works ?
+                    if (Q.IsReady())
+                        Q.Cast(target, true);
+                }
 
             if (target.IsValidTarget(E.Range) && menu.Item("useEC").GetValue<bool>()) {
                 if (E.IsReady() && menu.Item("useEC").GetValue<bool>()) {
@@ -272,6 +293,8 @@ namespace Assemblies {
         }
 
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+            //TODO Test the new jumpstage detection method
+
             if (sender.IsMe) {
                 if (args.SData.Name == "FizzJump") {
                     jumpStage = FizzJump.TRICKSTER;
@@ -294,7 +317,25 @@ namespace Assemblies {
                 Q.Cast(minion, true); // todo make sure this works i guess? idk
             }
         }
-
+        //Added a better Q flee, should select the farthest minion to gain the max distance.
+        //Not added in the method yet. To be tested.
+        private void QFlee2()
+        {
+             sendMovementPacket(Game.CursorPos.To2D());
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None); // minions to loop through
+            Obj_AI_Base FarthestMinion = minions.FirstOrDefault();
+            foreach(var Minion in minions.Where(minion => minion.IsValidTarget(Q.Range) && minion.Distance(Game.CursorPos.To2D()) < Q.Range &&
+                                  Q.InRange(minion.Position)))
+            {
+                if (player.Distance(Minion) > player.Distance(FarthestMinion))
+                {
+                    FarthestMinion = Minion;
+                }
+            }
+            Q.Cast(FarthestMinion, true);
+        }
         private void fleeMode() {
             sendMovementPacket(Game.CursorPos.To2D());
             foreach (var entry in positions) {
