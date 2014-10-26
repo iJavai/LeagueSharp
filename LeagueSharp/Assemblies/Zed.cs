@@ -9,6 +9,9 @@ using SharpDX;
 //TODO idea, use EvadeSpellDatabase or .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
 //TODO - reply here.
 //TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated..
+//zedulttargetmark
+//return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2";
+//return player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
 
 namespace Assemblies {
     //Kappa
@@ -73,23 +76,12 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            if (R.IsReady()) {
-                DoTheRDance();
-            } // this should work right TODO DZ191? 
-            else {
-                doNormalCombo();
-            }
+           
         }
 
         private void onDraw(EventArgs args) {
-            throw new NotImplementedException();
+            
         }
-
-        private void doNormalCombo() {
-            //TODO Q,W,E combo including shadows
-        }
-
-        private void fillShadowList() {} // todo wat? :S
 
         private Obj_AI_Hero getDeathmarkedTarget() {
             return
