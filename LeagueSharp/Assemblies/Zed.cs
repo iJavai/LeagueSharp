@@ -19,7 +19,6 @@ namespace Assemblies {
             loadMenu();
             loadSpells();
             Game.OnGameUpdate += onUpdate;
-            //Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Zed Loaded.");
         }
 

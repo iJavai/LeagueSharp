@@ -54,7 +54,7 @@ namespace Assemblies {
         /// </summary>
         /// <param name="pos">the position to send the ping. </param>
         protected void sendSimplePing(Vector3 pos) {
-            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos.X, pos.Y, 0, 0, Packet.PingType.NormalSound))
+            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos.X, pos.Y))
                 .Process();
         }
 
