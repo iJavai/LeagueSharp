@@ -1,36 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿//TODO idea, use EvadeSpellDatabase or .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
+//TODO - reply here.
+//TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated..
+
+using System;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LX_Orbwalker;
 using SharpDX;
 
-//TODO idea, use EvadeSpellDatabase or .dll to have an option to use ultimate to dodge dangeruous spells like Grag ult when evade can't dodge, so it doesn't waste ur R ? 
-//TODO - reply here.
-//TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated..
-//zedulttargetmark
-//return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2";
-//return player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
-
 namespace Assemblies {
+    //Kappa
     internal class Zed : Champion {
-
         public Zed() {
             if (player.ChampionName != "Zed") {
                 return;
             }
+            //targetPont = player.Position;
             loadMenu();
             loadSpells();
-
-            Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
-            GameObject.OnCreate += onProcessSpell;
-            GameObject.OnDelete += onDeleteObject;
-
+            //Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Zed Loaded.");
         }
-
 
         private void loadSpells() {
             Q = new Spell(SpellSlot.Q, 900);
@@ -49,6 +40,8 @@ namespace Assemblies {
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useWF", "Use W to follow").SetValue(true));
+
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -64,31 +57,11 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-           
-        }
-
-        private void onDraw(EventArgs args) {
-            
-        }
-
-        private bool isTargetKilled() {
-            return isChampKill;
-        }
-
-        private bool canGoBackW() {
-            return player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2";
-        }
-
-        private bool canGoBackR() {
-            return player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2";
-        }
-
-        private void onDeleteObject(GameObject sender, EventArgs args) {
-           
-        }
-
-        private void onProcessSpell(GameObject sender, EventArgs args) {
-            
+            switch (LXOrbwalker.CurrentMode) {
+                case LXOrbwalker.Mode.Combo:
+                    //TODO
+                    break;
+            }
         }
     }
 }
