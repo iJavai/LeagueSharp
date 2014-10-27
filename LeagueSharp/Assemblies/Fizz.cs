@@ -9,19 +9,21 @@ using Color = System.Drawing.Color;
 
 namespace Assemblies {
     internal class Fizz : Champion {
+        private readonly Items.Item DFG;
         private Spell E2;
         private bool isCalled;
         private FizzJump jumpStage;
         private Dictionary<Vector3, Vector3> positions;
         private float time;
-        private Items.Item DFG;
 
         public Fizz() {
             loadMenu();
             loadSpells();
             addFleeSpots();
 
-            DFG = Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline || Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
+            DFG = Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline ||
+                  Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar
+                ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
 
             Game.OnGameUpdate += onUpdate;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
@@ -59,7 +61,7 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("qWithR", "Use R whilst Q").SetValue(false));
             menu.SubMenu("misc").AddItem(new MenuItem("castEGap", "Gapclose with E").SetValue(false));
-            menu.SubMenu("misc").AddItem(new MenuItem("useDFG", "Use DFG in combo"));
+            menu.SubMenu("misc").AddItem(new MenuItem("useDFG", "Use DFG in combo").SetValue(true));
         }
 
         private void loadSpells() {
@@ -180,15 +182,13 @@ namespace Assemblies {
             }
 
             if (isMenuEnabled(menu, "useEC") && !isMenuEnabled(menu, "castEGap")) {
-                if (E.GetPrediction(target, true).Hitchance >= HitChance.Medium) {
-                    if (E.IsReady() && player.Distance(target) < 800) {
-                        if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
-                            E.Cast(target.ServerPosition, true);
-                        }
+                if (E.IsReady() && player.Distance(target) < 800) {
+                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
+                        E.Cast(target.ServerPosition, true);
                     }
-                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                        E2.Cast(target.ServerPosition, true);
-                    }
+                }
+                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                    E2.Cast(target.ServerPosition, true);
                 }
             }
 
@@ -250,15 +250,13 @@ namespace Assemblies {
         }
 
         private void castEGapclose(Obj_AI_Hero target) {
-            if (target.IsValidTarget(800)) {
-                if (E.IsReady() && player.Distance(target) > Q.Range) {
-                    if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
-                        E.Cast(target.ServerPosition, true);
-                    }
+            if (E.IsReady()) {
+                if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
+                    E.Cast(target.ServerPosition, true);
                 }
-                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                    E2.Cast(target.ServerPosition, true);
-                }
+            }
+            if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                E2.Cast(target.ServerPosition, true);
             }
         }
 
