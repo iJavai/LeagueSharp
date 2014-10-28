@@ -22,7 +22,8 @@ using SharpDX;
 
 namespace Assemblies {
     internal class Zed : Champion {
-        private Obj_AI_Minion wShadow,rShadow;
+        private Obj_AI_Minion rShadow;
+        private Obj_AI_Minion wShadow;
 
         public Zed() {
             if (player.ChampionName != "Zed") {
@@ -84,11 +85,13 @@ namespace Assemblies {
 
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    //Shouldn't +W.Range be added ?
                     Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2, SimpleTs.DamageType.Physical);
                     if (Q.IsReady() && target.Distance(wShadow) < Q.Range) {
                         Q.UpdateSourcePosition(wShadow.Position, wShadow.Position);
                         Q.Cast(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical), true);
+                    }
+                    if (E.IsReady() && target.Distance(wShadow) < E.Range || player.Distance(target) < E.Range) {
+                        E.Cast(target, true);
                     }
                     //Console.WriteLine(findShadow("W").Position);
                     break;
@@ -106,9 +109,10 @@ namespace Assemblies {
                 case RWEnum.R:
                     //TODO detuks is gonna handle shadows i think :^)
                     //TODO Done by DZ191. Think this should work.
-                    var WShadow = findShadows(RWEnum.W);
+                    Obj_AI_Minion WShadow = findShadows(RWEnum.W);
                     rShadow =
-                        ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly && obj!=WShadow);
+                        ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(
+                            obj => obj.Name == "Shadow" && obj.IsAlly && obj != WShadow);
                     if (rShadow != null)
                         return rShadow;
                     break;
@@ -116,16 +120,13 @@ namespace Assemblies {
             return null;
         }
 
-        private void onCreateObject(GameObject sender, EventArgs args)
-        {
+        private void onCreateObject(GameObject sender, EventArgs args) {
             //TODO Dunno,alternative method taht is called when shadows are created.
-            var spell = (Obj_SpellMissile)sender;
-            var unit = spell.SpellCaster;
-            var name = spell.SData.Name;
-            if (unit.IsMe)
-            {
-                switch (name)
-                {
+            var spell = (Obj_SpellMissile) sender;
+            Obj_AI_Base unit = spell.SpellCaster;
+            string name = spell.SData.Name;
+            if (unit.IsMe) {
+                switch (name) {
                     case "ZedShadowDashMissile":
 
                         break;
@@ -145,10 +146,8 @@ namespace Assemblies {
 
 
         private struct ZedShadow {
-            private Vector3 shadowPosition;
             private Obj_AI_Base sender;
-
+            private Vector3 shadowPosition;
         }
-
     }
 }

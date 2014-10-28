@@ -17,9 +17,6 @@ namespace Assemblies {
         public Champion() {
             addBasicMenu();
             wardJumper = new WardJumper();
-            Game.PrintChat("SkinChanger loaded - Credits to Screeder.");
-
-            Game.OnGameUpdate += onUpdate;
         }
 
         private void addBasicMenu() {
@@ -35,19 +32,10 @@ namespace Assemblies {
             LXOrbwalker.AddToMenu(orbwalkerMenu);
             menu.AddSubMenu(orbwalkerMenu);
 
-            var skinChangerMenu = new Menu("Skin Changer", "skinChanger");
-            skinChangerMenu.AddItem(
-                new MenuItem("skinName", "Skin").SetValue(new StringList(SkinChanger.getSkinList(player.ChampionName))));
-            menu.AddSubMenu(skinChangerMenu);
-
             if (wardJumper.isCompatibleChampion(player))
                 wardJumper.AddToMenu(menu);
 
             menu.AddToMainMenu();
-        }
-
-        private void onUpdate(EventArgs args) {
-            SkinChanger.update(menu);
         }
     }
 }
