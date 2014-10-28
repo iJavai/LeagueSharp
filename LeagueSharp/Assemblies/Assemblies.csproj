@@ -89,6 +89,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkinChanger.cs" />
     <Compile Include="VayneHunter.cs" />
     <Compile Include="WardJumper.cs" />
     <Compile Include="Zed.cs" />
