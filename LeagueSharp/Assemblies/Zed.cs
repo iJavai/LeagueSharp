@@ -85,7 +85,8 @@ namespace Assemblies {
 
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2+W.Range, SimpleTs.DamageType.Physical);
+                    //Shouldn't +W.Range be added ?
+                    Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2, SimpleTs.DamageType.Physical);
                     if (Q.IsReady() && target.Distance(wShadow) < Q.Range) {
                         Q.UpdateSourcePosition(wShadow.Position, wShadow.Position);
                         Q.Cast(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical), true);
