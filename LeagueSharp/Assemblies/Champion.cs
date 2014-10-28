@@ -6,19 +6,18 @@ using LX_Orbwalker;
 namespace Assemblies {
     internal class Champion : ChampionUtils {
         protected readonly Obj_AI_Hero player = ObjectManager.Player;
+        private readonly WardJumper wardJumper;
         protected Spell E;
         protected Spell Q;
         protected Spell R;
         protected Spell W;
         protected Menu menu;
         protected Orbwalking.Orbwalker orbwalker;
-        private WardJumper wardJumper;
 
         public Champion() {
             addBasicMenu();
             wardJumper = new WardJumper();
-            if (wardJumper.isCompatibleChampion(player))
-                wardJumper.AddToMenu(menu);
+            Game.PrintChat("SkinChanger loaded - Credits to Screeder.");
 
             Game.OnGameUpdate += onUpdate;
         }
@@ -38,8 +37,11 @@ namespace Assemblies {
 
             var skinChangerMenu = new Menu("Skin Changer", "skinChanger");
             skinChangerMenu.AddItem(
-                new MenuItem("skinName", "Skin").SetValue(new StringList(SkinChanger.GetSkinList(player.ChampionName))));
+                new MenuItem("skinName", "Skin").SetValue(new StringList(SkinChanger.getSkinList(player.ChampionName))));
             menu.AddSubMenu(skinChangerMenu);
+
+            if (wardJumper.isCompatibleChampion(player))
+                wardJumper.AddToMenu(menu);
 
             menu.AddToMainMenu();
         }

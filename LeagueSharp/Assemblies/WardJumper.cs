@@ -59,7 +59,7 @@ namespace Assemblies {
             menu = attachMenu;
             menu.AddSubMenu(new Menu("Ward Jumper", "wardJumper"));
             menu.SubMenu("wardJummper").AddItem(
-                new MenuItem("Wardjump", "Wardjump").SetValue(new KeyBind(71, KeyBindType.Press)));
+                new MenuItem("Wardjump", "Wardjump").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
             menu.AddToMainMenu();
             Game.PrintChat("Vis's WardJumper loaded.");
         }

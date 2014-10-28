@@ -8,8 +8,6 @@ namespace Assemblies {
         private static Dictionary<String, String[]> Skins = new Dictionary<string, string[]>();
         private static int _lastSkinId = -1;
 
-        private static Menu menu;
-
         static SkinChanger() {
             Skins.Add("Aatrox", new[] {
                 "Classic",
@@ -641,7 +639,8 @@ namespace Assemblies {
                 "Ironscale",
                 "Boneclaw",
                 "Darkflame",
-                "Ice Drake"
+                "Ice Drake",
+                "Championship"
             });
             Skins.Add("Singed", new[] {
                 "Classic",
@@ -850,7 +849,8 @@ namespace Assemblies {
                 "Classic",
                 "Volcanic",
                 "General",
-                "Jade Dragon"
+                "Jade Dragon",
+                "Underworld"
             });
             Skins.Add("Xerath", new[] {
                 "Classic",
@@ -908,22 +908,21 @@ namespace Assemblies {
         }
 
         public static void update(Menu menu) {
-            SkinChanger.menu = menu;
             var mode = menu.Item("skinName").GetValue<StringList>();
             if (mode.SelectedIndex != _lastSkinId) {
                 _lastSkinId = mode.SelectedIndex;
-                GenAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
+                generateAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
             }
         }
 
-        public static String[] GetSkinList(String championName) {
+        public static String[] getSkinList(String championName) {
             if (Skins.ContainsKey(championName)) {
                 return Skins[championName];
             }
             return null;
         }
 
-        private static void GenAndSendModelPacket(String champName, int skinId) {
+        private static void generateAndSendModelPacket(String champName, int skinId) {
             GamePacket gPacket = Skin.Encoded(new Skin.Struct(champName, 0, skinId));
             gPacket.Process();
         }
