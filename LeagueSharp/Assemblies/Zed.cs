@@ -18,10 +18,9 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LX_Orbwalker;
+using SharpDX;
 
 namespace Assemblies {
-    //Kappa
-
     internal class Zed : Champion {
         private Obj_AI_Minion wShadow;
 
@@ -76,6 +75,7 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("SwapHP", "%HP").SetValue(new Slider(5, 1)));
             menu.SubMenu("misc").AddItem(new MenuItem("SwapRKill", "Swap R when target dead").SetValue(true));
             menu.SubMenu("misc").AddItem(new MenuItem("SafeRBack", "Safe swap calculation").SetValue(true));
+
             Game.PrintChat("Zed by iJava and DZ191 Loaded.");
         }
 
@@ -92,28 +92,6 @@ namespace Assemblies {
                     //Console.WriteLine(findShadow("W").Position);
                     break;
             }
-        }
-
-        private Obj_AI_Minion findShadow(string shadow) {
-            if (shadow == "W") {
-                Obj_AI_Minion wShadow =
-                    ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly);
-                if (wShadow != null) {
-                    return wShadow;
-                }
-            }
-            if (shadow == "R") {
-                Obj_AI_Minion rShadow =
-                    ObjectManager.Get<Obj_AI_Minion>()
-                        .FirstOrDefault(
-                            obj =>
-                                obj.Name == "Shadow" && player.Distance(obj) < 50 && obj.IsAlly &&
-                                player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2");
-                if (rShadow != null) {
-                    return rShadow;
-                }
-            }
-            return null;
         }
 
         private Obj_AI_Minion findShadows(RWEnum RW) {
@@ -137,5 +115,13 @@ namespace Assemblies {
             R,
             W
         };
+
+
+        private struct ZedShadow {
+            private Vector3 shadowPosition;
+            private Obj_AI_Base sender;
+
+        }
+
     }
 }
