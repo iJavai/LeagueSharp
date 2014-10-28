@@ -22,8 +22,18 @@ using SharpDX;
 
 namespace Assemblies {
     internal class Zed : Champion {
+        private bool isKillable;
         private Obj_AI_Minion rShadow;
+        private bool rShadowCreated;
+        private bool rShadowFound;
+        private Vector3 rShadowPosition;
+        private int rShadowTick;
         private Obj_AI_Minion wShadow;
+
+        private bool wShadowCreated;
+        private bool wShadowFound;
+        private int wShadowTick;
+
 
         public Zed() {
             if (player.ChampionName != "Zed") {
@@ -78,30 +88,107 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
-            wShadow = findShadows(RWEnum.W);
+            if (wShadowCreated && !wShadowFound)
+                findShadow(RWEnum.W);
+            if (rShadowCreated && !rShadowFound)
+                findShadow(RWEnum.R);
+
+            if (wShadow != null && (wShadowTick < Environment.TickCount - 4000)) {
+                wShadow = null;
+                wShadowCreated = false;
+                wShadowFound = false;
+            }
+            if (rShadow != null && (rShadowTick < Environment.TickCount - 6000)) {
+                rShadow = null;
+                rShadowCreated = false;
+                rShadowFound = false;
+                isKillable = false;
+            }
 
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2, SimpleTs.DamageType.Physical);
-                    if (Q.IsReady() && target.Distance(player) < Q.Range || target.Distance(wShadow) < Q.Range) {
-                        Q.UpdateSourcePosition(wShadow.Position, wShadow.Position);
-                        Q.Cast(target, true);
-                    }
-                    if (Q.IsReady() && target.Distance(rShadow) < Q.Range || target.Distance(player) < Q.Range) {
-                        Q.UpdateSourcePosition(rShadow.Position, rShadow.Position);
-                        Q.Cast(target, true);
-                    }
+                    deathMarkCombo();
                     //Console.WriteLine(findShadow("W").Position);
                     break;
             }
         }
 
         private void deathMarkCombo() {
-            //TODO Cast R use items place W behind target, cast Triple Q to target, Cast E, ignite.
-
+            Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+            Vector3 wPositionToCast = target.Position + Vector3.Normalize(target.Position - player.Position)*150;
+            //WRange - 100 so its close to target
+            if (R.IsReady()) {
+                //TODO death mark combo mate.
+                if (player.Distance(target) < R.Range) { //Maybe add an option to gapclose with W to target
+                    R.Cast(target, true);
+                    //TODO use items here.
+                    if (W.IsReady() && wShadow == null)
+                        W.Cast(wPositionToCast, true);
+                    if (wShadow != null && rShadow != null) {
+                        if (target.Distance(wShadow) < Q.Range || target.Distance(rShadow) < Q.Range)
+                            Q.Cast(target, true);
+                        if (target.Distance(wShadow) <= E.Range || target.Distance(rShadow) <= E.Range ||
+                            target.Distance(player) <= E.Range)
+                            E.Cast(player, true);
+                        foreach (
+                            Obj_AI_Hero enemy in
+                                ObjectManager.Get<Obj_AI_Hero>().Where(
+                                    hero => hero.IsValidTarget() && hasBuff(hero, "zedulttargetmark"))) {
+                            LXOrbwalker.ForcedTarget = enemy;
+                        }
+                        /*if (canGoToShadow(RWEnum.R)) {
+                            R.Cast(player, true);
+                        }*/
+                    }
+                }
+            }
         }
 
-        private Obj_AI_Minion findShadows(RWEnum RW) {
+        private bool canGoToShadow(RWEnum RW) {
+            switch (RW) {
+                case RWEnum.W:
+                    if (player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2")
+                        return true;
+                    break;
+                case RWEnum.R:
+                    if (player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2")
+                        return true;
+                    break;
+            }
+            return false;
+        }
+
+        private bool isMarkKillable() {
+            return isKillable;
+        }
+
+        private void findShadow(RWEnum shadowName) {
+            Obj_AI_Minion shadow;
+            if (shadowName == RWEnum.W) {
+                shadow =
+                    ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(
+                        hero => (hero.Name == "Shadow" && hero.IsAlly && (hero != rShadow)));
+                if (shadow != null) {
+                    wShadow = shadow;
+                    wShadowFound = true;
+                    wShadowTick = Environment.TickCount;
+                }
+            }
+            if (shadowName != RWEnum.R)
+                return;
+            shadow =
+                ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(
+                    hero =>
+                        ((hero.ServerPosition.Distance(rShadowPosition)) < 50) && hero.Name == "Shadow" && hero.IsAlly &&
+                        hero != wShadow);
+            if (shadow == null)
+                return;
+            rShadow = shadow;
+            rShadowFound = true;
+            rShadowTick = Environment.TickCount;
+        }
+
+        /* private Obj_AI_Minion findShadows(RWEnum RW) {
             switch (RW) {
                 case RWEnum.W:
                     wShadow =
@@ -121,31 +208,35 @@ namespace Assemblies {
                     break;
             }
             return null;
-        }
+        }*/
 
         private void onCreateObject(GameObject sender, EventArgs args) {
             //TODO Dunno,alternative method taht is called when shadows are created.
             var spell = (Obj_SpellMissile) sender;
             Obj_AI_Base unit = spell.SpellCaster;
             string name = spell.SData.Name;
-            if (unit.IsMe) {
-                switch (name) {
-                    case "ZedShadowDashMissile":
-                        break;
-                    case "ZedUltMissile":
-                        break;
-                }
+            if (!unit.IsMe) return;
+            switch (name) {
+                case "ZedShadowDashMissile":
+                    wShadowCreated = true;
+                    break;
+                case "ZedUltMissile":
+                    rShadowCreated = true;
+                    rShadowPosition = player.Position;
+                    break;
             }
+            if (sender.Name.Contains("Zed_Base_R_buf_tell.troy"))
+                Game.PrintChat("Killable mate get outta here <3");
         }
+    }
 
-        private enum RWEnum {
-            R,
-            W
-        };
+    internal enum RWEnum {
+        R,
+        W
+    };
 
-        private struct ZedShadow {
-            private Obj_AI_Base sender;
-            private Vector3 shadowPosition;
-        }
+    internal struct ZedShadow {
+        private Obj_AI_Base sender;
+        private Vector3 shadowPosition;
     }
 }
