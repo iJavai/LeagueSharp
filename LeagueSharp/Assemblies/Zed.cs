@@ -22,7 +22,7 @@ using SharpDX;
 
 namespace Assemblies {
     internal class Zed : Champion {
-        private Obj_AI_Minion wShadow;
+        private Obj_AI_Minion wShadow,rShadow;
 
         public Zed() {
             if (player.ChampionName != "Zed") {
@@ -38,6 +38,7 @@ namespace Assemblies {
         }
 
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+            //TODO Can this detect R ?
             if (sender.IsMe && args.SData.Name == "ZedShadowDash") {
                 Game.PrintChat("WUSED NIGGA");
             }
@@ -60,7 +61,7 @@ namespace Assemblies {
             menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use W in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWF", "Use W to follow").SetValue(true));
 
@@ -75,8 +76,7 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("SwapHP", "%HP").SetValue(new Slider(5, 1)));
             menu.SubMenu("misc").AddItem(new MenuItem("SwapRKill", "Swap R when target dead").SetValue(true));
             menu.SubMenu("misc").AddItem(new MenuItem("SafeRBack", "Safe swap calculation").SetValue(true));
-
-            Game.PrintChat("Zed by iJava and DZ191 Loaded.");
+            Game.PrintChat("Zed by iJava,DZ191 and DETUKS Loaded.");
         }
 
         private void onUpdate(EventArgs args) {
@@ -84,6 +84,7 @@ namespace Assemblies {
 
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
+                    //Shouldn't +W.Range be added ?
                     Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2, SimpleTs.DamageType.Physical);
                     if (Q.IsReady() && target.Distance(wShadow) < Q.Range) {
                         Q.UpdateSourcePosition(wShadow.Position, wShadow.Position);
@@ -104,12 +105,38 @@ namespace Assemblies {
                     break;
                 case RWEnum.R:
                     //TODO detuks is gonna handle shadows i think :^)
+                    //TODO Done by DZ191. Think this should work.
+                    var WShadow = findShadows(RWEnum.W);
+                    rShadow =
+                        ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly && obj!=WShadow);
+                    if (rShadow != null)
+                        return rShadow;
                     break;
             }
             return null;
         }
 
-        private void onCreateObject(GameObject sender, EventArgs args) {}
+        private void onCreateObject(GameObject sender, EventArgs args)
+        {
+            //TODO Dunno,alternative method taht is called when shadows are created.
+            var spell = (Obj_SpellMissile)sender;
+            var unit = spell.SpellCaster;
+            var name = spell.SData.Name;
+            if (unit.IsMe)
+            {
+                switch (name)
+                {
+                    case "ZedShadowDashMissile":
+
+                        break;
+                    case "ZedUltMissile":
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         private enum RWEnum {
             R,
