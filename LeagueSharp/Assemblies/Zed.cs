@@ -3,14 +3,17 @@
 //TODO - when hes played more we will finish this tbh, i doubt he can carry solo q anyway too team orientated..
 
 using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LX_Orbwalker;
-using SharpDX;
 
 namespace Assemblies {
     //Kappa
+
     internal class Zed : Champion {
+        private Obj_AI_Minion wShadow;
+
         public Zed() {
             if (player.ChampionName != "Zed") {
                 return;
@@ -19,7 +22,17 @@ namespace Assemblies {
             loadMenu();
             loadSpells();
             Game.OnGameUpdate += onUpdate;
+            GameObject.OnCreate += onCreateObject;
+            Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Zed Loaded.");
+        }
+
+        private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+            if (sender.IsMe && args.SData.Name == "ZedShadowDash") {
+                Game.PrintChat("WUSED NIGGA");
+            }
+            if (sender.IsMe)
+                Game.PrintChat("spell casted: " + args.SData.Name); // zedw2
         }
 
         private void loadSpells() {
@@ -56,11 +69,55 @@ namespace Assemblies {
         }
 
         private void onUpdate(EventArgs args) {
+            wShadow = findShadow("W");
+
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
-                    //TODO
+                    Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2, SimpleTs.DamageType.Physical);
+                    if (Q.IsReady() && target.Distance(wShadow) < Q.Range) {
+                        Q.UpdateSourcePosition(wShadow.Position, wShadow.Position);
+                        Q.Cast(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical), true);
+                    }
+                    //Console.WriteLine(findShadow("W").Position);
                     break;
             }
         }
+
+        private Obj_AI_Minion findShadow(string shadow) {
+            if (shadow == "W") {
+                Obj_AI_Minion wShadow =
+                    ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(obj => obj.Name == "Shadow" && obj.IsAlly);
+                if (wShadow != null) {
+                    return wShadow;
+                }
+            }
+            if (shadow == "R") {
+                Obj_AI_Minion rShadow =
+                    ObjectManager.Get<Obj_AI_Minion>()
+                        .FirstOrDefault(
+                            obj =>
+                                obj.Name == "Shadow" && player.Distance(obj) < 50 && obj.IsAlly &&
+                                player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2");
+                if (rShadow != null) {
+                    return rShadow;
+                }
+            }
+            return null;
+        }
+
+        private Obj_AI_Minion findShadows(RWEnum RW) {
+            switch (RW) {
+                case RWEnum.W:
+                    break;
+            }
+            return null;
+        }
+
+        private void onCreateObject(GameObject sender, EventArgs args) {}
+
+        private enum RWEnum {
+            R,
+            W
+        };
     }
 }
