@@ -29,7 +29,6 @@ namespace Assemblies {
             if (player.ChampionName != "Zed") {
                 return;
             }
-            //targetPont = player.Position;
             loadMenu();
             loadSpells();
             Game.OnGameUpdate += onUpdate;
@@ -43,8 +42,6 @@ namespace Assemblies {
             if (sender.IsMe && args.SData.Name == "ZedShadowDash") {
                 Game.PrintChat("WUSED NIGGA");
             }
-            if (sender.IsMe)
-                Game.PrintChat("spell casted: " + args.SData.Name); // zedw2
         }
 
         private void loadSpells() {
@@ -86,16 +83,22 @@ namespace Assemblies {
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
                     Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range*2, SimpleTs.DamageType.Physical);
-                    if (Q.IsReady() && target.Distance(wShadow) < Q.Range) {
+                    if (Q.IsReady() && target.Distance(player) < Q.Range || target.Distance(wShadow) < Q.Range) {
                         Q.UpdateSourcePosition(wShadow.Position, wShadow.Position);
-                        Q.Cast(SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical), true);
+                        Q.Cast(target, true);
                     }
-                    if (E.IsReady() && target.Distance(wShadow) < E.Range || player.Distance(target) < E.Range) {
-                        E.Cast(target, true);
+                    if (Q.IsReady() && target.Distance(rShadow) < Q.Range || target.Distance(player) < Q.Range) {
+                        Q.UpdateSourcePosition(rShadow.Position, rShadow.Position);
+                        Q.Cast(target, true);
                     }
                     //Console.WriteLine(findShadow("W").Position);
                     break;
             }
+        }
+
+        private void deathMarkCombo() {
+            //TODO Cast R use items place W behind target, cast Triple Q to target, Cast E, ignite.
+
         }
 
         private Obj_AI_Minion findShadows(RWEnum RW) {
@@ -128,12 +131,8 @@ namespace Assemblies {
             if (unit.IsMe) {
                 switch (name) {
                     case "ZedShadowDashMissile":
-
                         break;
                     case "ZedUltMissile":
-
-                        break;
-                    default:
                         break;
                 }
             }
@@ -143,7 +142,6 @@ namespace Assemblies {
             R,
             W
         };
-
 
         private struct ZedShadow {
             private Obj_AI_Base sender;

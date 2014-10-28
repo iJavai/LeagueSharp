@@ -17,6 +17,8 @@ namespace Assemblies {
         public Champion() {
             addBasicMenu();
             wardJumper = new WardJumper();
+            if (wardJumper.isCompatibleChampion(player))
+                wardJumper.AddToMenu(menu);
         }
 
         private void addBasicMenu() {
@@ -31,9 +33,6 @@ namespace Assemblies {
             var orbwalkerMenu = new Menu("LX-Orbwalker", "orbwalker");
             LXOrbwalker.AddToMenu(orbwalkerMenu);
             menu.AddSubMenu(orbwalkerMenu);
-
-            if (wardJumper.isCompatibleChampion(player))
-                wardJumper.AddToMenu(menu);
 
             menu.AddToMainMenu();
         }
