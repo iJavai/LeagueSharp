@@ -14,7 +14,6 @@
  */
 
 using System;
-using System.Drawing.Text;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -23,6 +22,7 @@ using SharpDX;
 
 namespace Assemblies {
     internal class Zed : Champion {
+        private const HitChance customHitChance = HitChance.High;
         private bool isKillable;
         private Obj_AI_Minion rShadow;
         private bool rShadowCreated;
@@ -34,7 +34,6 @@ namespace Assemblies {
         private bool wShadowCreated;
         private bool wShadowFound;
         private int wShadowTick;
-        private HitChance customHitChance = HitChance.High;
 
         public Zed() {
             if (player.ChampionName != "Zed") {
@@ -117,34 +116,30 @@ namespace Assemblies {
             }
         }
 
-        private void HeroMenuCreate()
-        {
-            foreach (var Enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
-            {
-                menu.SubMenu("ultOn").AddItem(new MenuItem("use" + Enemy.ChampionName, Enemy.ChampionName));
+        private void HeroMenuCreate() {
+            foreach (Obj_AI_Hero Enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy)) {
+                menu.SubMenu("ultOn").AddItem(new MenuItem("use" + Enemy.ChampionName, Enemy.ChampionName).SetValue(true));
             }
         }
+
         private void deathMarkCombo() {
             Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
             Vector3 wPositionToCast = target.Position + Vector3.Normalize(target.Position - player.Position)*150;
             //WRange - 100 so its close to target
-            if (R.IsReady() && isMenuEnabled(menu, "use" + target.ChampionName))
-            {
+            if (R.IsReady() && isMenuEnabled(menu, "use" + target.ChampionName)) {
                 //TODO death mark combo mate.
-                if (player.Distance(target) < R.Range) { //Maybe add an option to gapclose with W to target
+                if (player.Distance(target) < R.Range) {
+                    //Maybe add an option to gapclose with W to target
                     R.Cast(target, true);
                     findShadow(RWEnum.R);
                     //TODO use items here.
-                    if (W.IsReady() && wShadow == null)
-                    {
+                    if (W.IsReady() && wShadow == null) {
                         W.Cast(wPositionToCast, true);
                         findShadow(RWEnum.W);
                     }
                     if (wShadow != null && rShadow != null) {
-                        if (target.Distance(wShadow) < Q.Range || target.Distance(rShadow) < Q.Range)
-                        {
-                            var CustomQPredictionW = Prediction.GetPrediction(new PredictionInput
-                            {
+                        if (target.Distance(wShadow) < Q.Range || target.Distance(rShadow) < Q.Range) {
+                            PredictionOutput CustomQPredictionW = Prediction.GetPrediction(new PredictionInput {
                                 Unit = target,
                                 Delay = Q.Delay,
                                 Radius = Q.Width,
@@ -155,8 +150,7 @@ namespace Assemblies {
                                 RangeCheckFrom = player.ServerPosition,
                                 Aoe = false
                             });
-                            var CustomQPredictionR = Prediction.GetPrediction(new PredictionInput
-                            {
+                            PredictionOutput CustomQPredictionR = Prediction.GetPrediction(new PredictionInput {
                                 Unit = target,
                                 Delay = Q.Delay,
                                 Radius = Q.Width,
@@ -167,13 +161,13 @@ namespace Assemblies {
                                 RangeCheckFrom = player.ServerPosition,
                                 Aoe = false
                             });
-                            if (CustomQPredictionR.Hitchance >= customHitChance)//Q From R
+                            if (CustomQPredictionR.Hitchance >= customHitChance) //Q From R
                                 Q.Cast(CustomQPredictionR.CastPosition, true);
-                            if (CustomQPredictionW.Hitchance >= customHitChance)//Q from W
+                            if (CustomQPredictionW.Hitchance >= customHitChance) //Q from W
                                 Q.Cast(CustomQPredictionW.CastPosition, true);
                             if (Q.GetPrediction(target).Hitchance >= customHitChance) //Normal Q
                                 Q.Cast(Q.GetPrediction(target).CastPosition, true);
-                        }         
+                        }
                         if (target.Distance(wShadow) <= E.Range || target.Distance(rShadow) <= E.Range ||
                             target.Distance(player) <= E.Range)
                             E.CastOnUnit(player, true); // THIS WONT CAST IDK why js
