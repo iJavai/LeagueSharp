@@ -121,7 +121,7 @@ namespace Assemblies {
         {
             foreach (var Enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
             {
-                menu.SubMenu("ultOn").AddItem(new MenuItem("use" + Enemy.ChampionName, Enemy.ChampionName));
+                menu.SubMenu("ultOn").AddItem(new MenuItem("use" + Enemy.ChampionName, Enemy.ChampionName).SetValue(true));
             }
         }
         private void deathMarkCombo() {
