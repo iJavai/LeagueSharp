@@ -62,6 +62,11 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("qWithR", "Use R whilst Q").SetValue(false));
             menu.SubMenu("misc").AddItem(new MenuItem("castEGap", "Gapclose with E").SetValue(false));
             menu.SubMenu("misc").AddItem(new MenuItem("useDFG", "Use DFG in combo").SetValue(true));
+            menu.AddSubMenu(new Menu("Drawing Options", "draw"));
+            menu.SubMenu("draw").AddItem(new MenuItem("drawFlee", "Draw Flee Spots").SetValue(new Circle(true,Color.Cyan)));
+            menu.SubMenu("draw").AddItem(new MenuItem("drawQ", "Draw Q").SetValue(new Circle(true, Color.Red)));
+            menu.SubMenu("draw").AddItem(new MenuItem("drawE", "Draw E").SetValue(new Circle(true, Color.Red)));
+            menu.SubMenu("draw").AddItem(new MenuItem("drawR", "Draw R").SetValue(new Circle(true, Color.Red)));
         }
 
         private void loadSpells() {
@@ -342,12 +347,30 @@ namespace Assemblies {
         }
 
         private void onDraw(EventArgs args) {
-            foreach (
-                var entry in
-                    positions.Where(
-                        entry => player.Distance(entry.Key) <= 1500f && player.Distance(entry.Value) <= 1500f)) {
-                Drawing.DrawCircle(entry.Key, 75f, Color.Cyan);
-                Drawing.DrawCircle(entry.Value, 75f, Color.Cyan);
+            //TODO Drawing
+            if (menu.Item("drawQ").GetValue<Circle>().Active)
+            {
+                Utility.DrawCircle(player.Position, Q.Range, menu.Item("drawQ").GetValue<Circle>().Color);
+            }
+            if (menu.Item("drawE").GetValue<Circle>().Active)
+            {
+                Utility.DrawCircle(player.Position, E.Range, menu.Item("drawE").GetValue<Circle>().Color);
+            }
+            if (menu.Item("drawR").GetValue<Circle>().Active)
+            {
+                Utility.DrawCircle(player.Position, R.Range, menu.Item("drawR").GetValue<Circle>().Color);
+            }
+            if (menu.Item("drawFlee").GetValue<Circle>().Active)
+            {
+                if (Game.MapId != GameMapId.SummonersRift) return;
+                foreach (
+                    var entry in
+                        positions.Where(
+                            entry => player.Distance(entry.Key) <= 1500f && player.Distance(entry.Value) <= 1500f))
+                {
+                    Utility.DrawCircle(entry.Key, 75f, menu.Item("drawFlee").GetValue<Circle>().Color);
+                    Utility.DrawCircle(entry.Value, 75f, menu.Item("drawFlee").GetValue<Circle>().Color);
+                }
             }
         }
 
