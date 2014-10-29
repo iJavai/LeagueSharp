@@ -129,7 +129,7 @@ namespace Assemblies {
                             Q.Cast(target, true);
                         if (target.Distance(wShadow) <= E.Range || target.Distance(rShadow) <= E.Range ||
                             target.Distance(player) <= E.Range)
-                            E.Cast(player, true);
+                            E.Cast(player, true); // THIS WONT CAST IDK why js
                         foreach (
                             Obj_AI_Hero enemy in
                                 ObjectManager.Get<Obj_AI_Hero>().Where(
