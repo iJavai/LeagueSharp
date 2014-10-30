@@ -38,7 +38,7 @@ namespace Assemblies {
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("initR", "Initiate with R").SetValue(false));
+            menu.SubMenu("combo").AddItem(new MenuItem("initR", "Initiate with R").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -178,7 +178,7 @@ namespace Assemblies {
                 }
             }
 
-            if (isMenuEnabled(menu, "initR")) {
+            if (menu.Item("initR").GetValue<KeyBind>().Active) {
                 if (player.Distance(target) > Q.Range) {
                     if (R.IsReady() && R.GetPrediction(target).Hitchance >= HitChance.High) {
                         R.Cast(target, true);
