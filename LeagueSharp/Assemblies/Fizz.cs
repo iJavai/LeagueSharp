@@ -242,8 +242,10 @@ namespace Assemblies {
                 }
             }
             if (E.IsReady() && target.Distance(player) < E.Range + E2.Range && isMenuEnabled(menu, "useEKS")) {
-                E.Cast(target, true);
-                E2.Cast(target, true);
+                if (E.IsKillable(target) && E2.IsKillable(target)) {
+                    E.Cast(target, true);
+                    E2.Cast(target, true);
+                }
             }
         }
 
