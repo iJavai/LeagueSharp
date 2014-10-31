@@ -49,10 +49,13 @@ namespace Assemblies {
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQL", "Use Q in laneclear").SetValue(false));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useEL", "Use E in laneclear").SetValue(false));
 
+            menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
+            menu.SubMenu("killsteal").AddItem(new MenuItem("useQKS", "Use Q to killsteal").SetValue(true));
+            menu.SubMenu("killsteal").AddItem(new MenuItem("useEKS", "Use E to killsteal").SetValue(false));
+
             menu.AddSubMenu(new Menu("Flee Options", "flee"));
             menu.SubMenu("flee").AddItem(new MenuItem("useQFlee", "Use Q to flee").SetValue(true));
             menu.SubMenu("flee").AddItem(new MenuItem("useEFlee", "Use E to flee").SetValue(true));
-
 
             menu.AddSubMenu(new Menu("Steal Options", "steal"));
             menu.SubMenu("steal").AddItem(
@@ -62,6 +65,7 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("qWithR", "Use R whilst Q").SetValue(false));
             menu.SubMenu("misc").AddItem(new MenuItem("castEGap", "Gapclose with E").SetValue(false));
             menu.SubMenu("misc").AddItem(new MenuItem("useDFG", "Use DFG in combo").SetValue(true));
+
             menu.AddSubMenu(new Menu("Drawing Options", "draw"));
             menu.SubMenu("draw").AddItem(new MenuItem("drawFlee", "Draw Flee Spots").SetValue(new Circle(true,Color.Cyan)));
             menu.SubMenu("draw").AddItem(new MenuItem("drawQ", "Draw Q").SetValue(new Circle(true, Color.Red)));
@@ -101,6 +105,7 @@ namespace Assemblies {
             }
   * */
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
+            killsteal(target);
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
                     combo(target);
@@ -121,7 +126,6 @@ namespace Assemblies {
             if (menu.Item("stealKey").GetValue<KeyBind>().Active) {
                 dragonStealerino();
             }
-            // Game.PrintChat(player.Position.X + " - " + player.Position.Y + " - " + player.Position.Z + "");
         }
 
         private void goLaneclearGo() {
@@ -228,6 +232,18 @@ namespace Assemblies {
                     player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) >= minion.Health) {
                     player.SummonerSpellbook.CastSpell(smite, minion);
                 }
+            }
+        }
+
+        private void killsteal(Obj_AI_Hero target) {
+            if (Q.IsReady() && target.Distance(player) < Q.Range && isMenuEnabled(menu, "useQKS")) {
+                if (Q.IsKillable(target)) {
+                    Q.Cast(target, true);
+                }
+            }
+            if (E.IsReady() && target.Distance(player) < E.Range + E2.Range && isMenuEnabled(menu, "useEKS")) {
+                E.Cast(target, true);
+                E2.Cast(target, true);
             }
         }
 
