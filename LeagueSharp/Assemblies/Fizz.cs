@@ -38,7 +38,18 @@ namespace Assemblies {
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("initR", "Initiate with R").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
+            menu.SubMenu("combo").AddItem(
+                new MenuItem("initR", "Initiate with R").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
+
+            MenuItem dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
+            Utility.HpBarDamageIndicator.DamageToUnit = getComboDamage;
+            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
+            dmgAfterComboItem.ValueChanged +=
+                delegate(object sender, OnValueChangeEventArgs eventArgs) {
+                    Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                };
+
+            menu.SubMenu("combo").AddItem(dmgAfterComboItem);
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -67,7 +78,8 @@ namespace Assemblies {
             menu.SubMenu("misc").AddItem(new MenuItem("useDFG", "Use DFG in combo").SetValue(true));
 
             menu.AddSubMenu(new Menu("Drawing Options", "draw"));
-            menu.SubMenu("draw").AddItem(new MenuItem("drawFlee", "Draw Flee Spots").SetValue(new Circle(true,Color.Cyan)));
+            menu.SubMenu("draw").AddItem(
+                new MenuItem("drawFlee", "Draw Flee Spots").SetValue(new Circle(true, Color.Cyan)));
             menu.SubMenu("draw").AddItem(new MenuItem("drawQ", "Draw Q").SetValue(new Circle(true, Color.Red)));
             menu.SubMenu("draw").AddItem(new MenuItem("drawE", "Draw E").SetValue(new Circle(true, Color.Red)));
             menu.SubMenu("draw").AddItem(new MenuItem("drawR", "Draw R").SetValue(new Circle(true, Color.Red)));
@@ -297,6 +309,24 @@ namespace Assemblies {
             }
         }
 
+        private float getComboDamage(Obj_AI_Hero target) {
+            double damage = 0d;
+
+            if (Q.IsReady())
+                damage += player.GetSpellDamage(target, SpellSlot.Q);
+
+            if (W.IsReady())
+                damage += player.GetSpellDamage(target, SpellSlot.W);
+
+            if (E.IsReady())
+                damage += player.GetSpellDamage(target, SpellSlot.E);
+
+            if (R.IsReady())
+                damage += player.GetSpellDamage(target, SpellSlot.R);
+
+            return (float) damage*(DFG.IsReady() ? 1.2f : 1);
+        }
+
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
             //TODO Test the new jumpstage detection method
 
@@ -366,26 +396,21 @@ namespace Assemblies {
 
         private void onDraw(EventArgs args) {
             //TODO Drawing
-            if (menu.Item("drawQ").GetValue<Circle>().Active)
-            {
+            if (menu.Item("drawQ").GetValue<Circle>().Active) {
                 Utility.DrawCircle(player.Position, Q.Range, menu.Item("drawQ").GetValue<Circle>().Color);
             }
-            if (menu.Item("drawE").GetValue<Circle>().Active)
-            {
+            if (menu.Item("drawE").GetValue<Circle>().Active) {
                 Utility.DrawCircle(player.Position, E.Range, menu.Item("drawE").GetValue<Circle>().Color);
             }
-            if (menu.Item("drawR").GetValue<Circle>().Active)
-            {
+            if (menu.Item("drawR").GetValue<Circle>().Active) {
                 Utility.DrawCircle(player.Position, R.Range, menu.Item("drawR").GetValue<Circle>().Color);
             }
-            if (menu.Item("drawFlee").GetValue<Circle>().Active)
-            {
+            if (menu.Item("drawFlee").GetValue<Circle>().Active) {
                 if (Game.MapId != GameMapId.SummonersRift) return;
                 foreach (
                     var entry in
                         positions.Where(
-                            entry => player.Distance(entry.Key) <= 1500f && player.Distance(entry.Value) <= 1500f))
-                {
+                            entry => player.Distance(entry.Key) <= 1500f && player.Distance(entry.Value) <= 1500f)) {
                     Utility.DrawCircle(entry.Key, 75f, menu.Item("drawFlee").GetValue<Circle>().Color);
                     Utility.DrawCircle(entry.Value, 75f, menu.Item("drawFlee").GetValue<Circle>().Color);
                 }
