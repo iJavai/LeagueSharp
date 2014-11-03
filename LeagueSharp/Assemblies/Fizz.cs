@@ -183,7 +183,8 @@ namespace Assemblies {
                     if (isMenuEnabled(menu, "useQC") && Q.IsReady())
                         Q.Cast(target, true);
                     if (R.IsReady()) {
-                        R.Cast(target, true);
+                        Vector3 position = target.Position + Vector3.Normalize(target.Position - player.Position)*250;
+                        R.Cast(position, true);
                     }
                 }
                 else {
