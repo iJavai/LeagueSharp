@@ -82,6 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AntiRengar.cs" />
     <Compile Include="Champion.cs" />
     <Compile Include="ChampionUtils.cs" />
     <Compile Include="Ezreal.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VayneHunter.cs" />
+    <Compile Include="Vayne.cs" />
     <Compile Include="WardJumper.cs" />
   </ItemGroup>
   <ItemGroup>

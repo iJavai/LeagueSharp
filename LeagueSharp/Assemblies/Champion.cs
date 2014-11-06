@@ -7,6 +7,7 @@ namespace Assemblies {
     internal class Champion : ChampionUtils {
         protected readonly Obj_AI_Hero player = ObjectManager.Player;
         private readonly WardJumper wardJumper;
+        public AntiRengar antiRengar;
         protected Spell E;
         protected Spell Q;
         protected Spell R;
@@ -17,6 +18,7 @@ namespace Assemblies {
         public Champion() {
             addBasicMenu();
             wardJumper = new WardJumper();
+            antiRengar = new AntiRengar();
             if (wardJumper.isCompatibleChampion(player))
                 wardJumper.AddToMenu(menu);
         }
