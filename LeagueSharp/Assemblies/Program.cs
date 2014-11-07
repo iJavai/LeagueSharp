@@ -23,9 +23,6 @@ namespace Assemblies {
                     case "Ezreal":
                         champion = new Ezreal();
                         break;
-                    case "Vayne":
-                        champion = new Vayne();
-                        break;
                     case "Fizz":
                         champion = new Fizz();
                         break;
