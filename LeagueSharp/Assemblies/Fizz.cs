@@ -32,6 +32,12 @@ namespace Assemblies {
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
         }
 
+        private void onInput(GameInputEventArgs args) {
+            if (args.Input.Contains("cunt")) {
+               // args.Input.Replace("", "");
+            }
+        }
+
         private void loadMenu() {
             menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
