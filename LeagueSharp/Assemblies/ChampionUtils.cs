@@ -112,7 +112,7 @@ namespace Assemblies {
                     break;
             }
             // the damage reduction calculations minus percentage for each unit it passes through!
-            return spell.GetDamage(target)*damageReduction - 15 >= (target.Health + (distance/2000)*target.HPRegenRate);
+            return spell.GetDamage(target)*damageReduction >= (target.Health + (distance/2000)*target.HPRegenRate);
             // - 15 is a safeguard for certain kill.
         }
 
