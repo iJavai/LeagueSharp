@@ -190,7 +190,7 @@ namespace Assemblies {
                         Q.Cast(target, true);
                     if (R.IsReady()) {
                         Vector3 position = target.Position + Vector3.Normalize(target.Position - player.Position)*250;
-                        R.Cast(position, true);
+                        R.Cast(target, true);
                     }
                 }
                 else {
