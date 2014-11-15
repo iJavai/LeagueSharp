@@ -34,7 +34,7 @@ namespace Assemblies {
 
         private void onInput(GameInputEventArgs args) {
             if (args.Input.Contains("cunt")) {
-               // args.Input.Replace("", "");
+                // args.Input.Replace("", "");
             }
         }
 
@@ -124,6 +124,13 @@ namespace Assemblies {
   * */
             Obj_AI_Hero target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
             killsteal(target);
+            if (menu.Item("initR").GetValue<KeyBind>().Active) {
+                if (player.Distance(target) > Q.Range) {
+                    if (R.IsReady() && R.GetPrediction(target).Hitchance >= HitChance.High) {
+                        R.Cast(target, true);
+                    }
+                }
+            }
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
                     combo(target);
@@ -181,30 +188,23 @@ namespace Assemblies {
                 }
             }
 
-            if (player.Distance(target) < Q.Range) {
+            if (player.Distance(target) <= Q.Range) {
                 //Logic = IF Q - R combo enabled then qr ofc
                 //DO REST OF COMBO
                 if (isMenuEnabled(menu, "qWithR")) {
                     //IF use q with r and not initiate R
                     if (isMenuEnabled(menu, "useQC") && Q.IsReady())
                         Q.Cast(target, true);
-                    if (R.IsReady()) {
-                        Vector3 position = target.Position + Vector3.Normalize(target.Position - player.Position)*250;
-                        R.Cast(position, true);
+                    if (isMenuEnabled(menu, "useRC") && R.IsReady()) {
+                        PredictionOutput prediction = R.GetPrediction(target, true);
+                        if (prediction.Hitchance >= HitChance.Medium)
+                            R.Cast(prediction.UnitPosition, true);
                     }
                 }
                 else {
                     if (isMenuEnabled(menu, "useQC")) {
                         if (Q.IsReady())
                             Q.Cast(target, true);
-                    }
-                }
-            }
-
-            if (menu.Item("initR").GetValue<KeyBind>().Active) {
-                if (player.Distance(target) > Q.Range) {
-                    if (R.IsReady() && R.GetPrediction(target).Hitchance >= HitChance.High) {
-                        R.Cast(target, true);
                     }
                 }
             }

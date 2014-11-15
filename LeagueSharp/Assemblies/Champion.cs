@@ -19,8 +19,6 @@ namespace Assemblies {
             addBasicMenu();
             wardJumper = new WardJumper();
             antiRengar = new AntiRengar();
-            if (wardJumper.isCompatibleChampion(player))
-                wardJumper.AddToMenu(menu);
         }
 
         private void addBasicMenu() {
