@@ -196,9 +196,7 @@ namespace Assemblies {
                     if (isMenuEnabled(menu, "useQC") && Q.IsReady())
                         Q.Cast(target, true);
                     if (isMenuEnabled(menu, "useRC") && R.IsReady()) {
-                        PredictionOutput prediction = R.GetPrediction(target, true);
-                        if (prediction.Hitchance >= HitChance.Medium)
-                            R.Cast(prediction.UnitPosition, true);
+                            R.Cast(target.Position, true);
                     }
                 }
                 else {
