@@ -107,9 +107,6 @@ namespace Assemblies {
                 case "Ezreal":
                     damageReduction = ((totalUnits >= 7)) ? 0.3 : (totalUnits == 0) ? 1.0 : (1 - ((totalUnits)/10));
                     break;
-                case "Lux":
-                    damageReduction = 0;
-                    break;
             }
             // the damage reduction calculations minus percentage for each unit it passes through!
             return spell.GetDamage(target)*damageReduction >= (target.Health + (distance/2000)*target.HPRegenRate);
