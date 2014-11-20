@@ -6,7 +6,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LX_Orbwalker;
 
-namespace Assemblies {
+namespace Assemblies.Champions {
     internal class Ezreal : Champion {
         public Ezreal() {
             if (player.ChampionName != "Ezreal") {

@@ -82,11 +82,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AntiRengar.cs" />
+    <Compile Include="Utilitys\AntiRengar.cs" />
     <Compile Include="Champion.cs" />
+    <Compile Include="Champions\Ezreal.cs" />
+    <Compile Include="Champions\Fizz.cs" />
     <Compile Include="ChampionUtils.cs" />
-    <Compile Include="Ezreal.cs" />
-    <Compile Include="Fizz.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,6 +3,7 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Assemblies.Champions;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -26,6 +27,9 @@ namespace Assemblies {
                     case "Fizz":
                         champion = new Fizz();
                         break;
+                    case "Kalista":
+
+                        break;;
                     default:
                         champion = new Champion();
                         break;

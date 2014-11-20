@@ -4,7 +4,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
-namespace Assemblies {
+namespace Assemblies.Utilitys {
     internal class AntiRengar {
         private readonly Spell gapcloseSpell;
         private readonly Obj_AI_Hero player = ObjectManager.Player;

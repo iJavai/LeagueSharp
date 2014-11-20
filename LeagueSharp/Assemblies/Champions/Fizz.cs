@@ -8,7 +8,7 @@ using LX_Orbwalker;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace Assemblies {
+namespace Assemblies.Champions {
     internal class Fizz : Champion {
         private readonly Items.Item DFG;
         private Spell E2;
