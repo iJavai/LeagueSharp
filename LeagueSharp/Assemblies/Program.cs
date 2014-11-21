@@ -28,7 +28,7 @@ namespace Assemblies {
                         champion = new Fizz();
                         break;
                     case "Kalista":
-
+                        champion = new Kalista();
                         break;;
                     default:
                         champion = new Champion();

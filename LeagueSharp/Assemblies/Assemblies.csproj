@@ -82,6 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Champions\Kalista.cs" />
     <Compile Include="Utilitys\AntiRengar.cs" />
     <Compile Include="Champion.cs" />
     <Compile Include="Champions\Ezreal.cs" />
