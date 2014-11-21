@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using LeagueSharp;
@@ -63,6 +64,10 @@ namespace Assemblies.Champions {
             menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
 
+            menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
+            menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
+            menu.SubMenu("drawing").AddItem(new MenuItem("drawE", "Draw E Range").SetValue(false));
+
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
             menu.SubMenu("misc").AddItem(new MenuItem("eKill", "Use e to Kill enemies").SetValue(true));
@@ -101,12 +106,18 @@ namespace Assemblies.Champions {
             }
         }
 
-        private void onDraw(EventArgs args) {}
+        private void onDraw(EventArgs args) {
+            if (menu.Item("drawQ").GetValue<bool>()) {
+                Utility.DrawCircle(player.Position, Q.Range, Color.Cyan);
+            }
+            if (menu.Item("drawE").GetValue<bool>()) {
+                Utility.DrawCircle(player.Position, W.Range, Color.Crimson);
+            }
+        }
 
         private bool hasCollision() {
             return false;
         }
-
 
         private void castQ(Obj_AI_Hero target) {
             if (target.IsValidTarget(Q.Range) && player.Distance(target) <= Q.Range) {
