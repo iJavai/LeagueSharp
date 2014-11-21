@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,23 @@ using LX_Orbwalker;
 
 namespace Assemblies.Champions {
     internal class Kalista : Champion {
+        /**
+         * TODO: 
+         * 
+         * Works on summoners rift.
+
+           Good job on this, Q and E works nicely, care to add KS drake + Baron/Buffs with E? I stole drake from jungler (more dmg than smite with my E).
+           
+         * Suggestions:
+            Q and E to secure lasthits(that you would normally miss).
+            Q waveclear, when enough rend stacks to kill more than 3 minions use Q on killable.(add slider if you want? xD).
+            E waveclear lasthitting creeps when they can die from current stacks, its really good seriously, because E resets on minion kill, and cost only 35 mana, you should really add this feature and see how good it is. (with a mana slider). Would add this to priority one xD.
+            Auto cast ultimate on gapclosers(on/off toggle xD).
+         *  W Spots thats show Sentinel routes.
+            Q to dodge skillshots(Ashe ulted me, evades movepackets and auto Q saved me) I know this takes time but quite a good feature.
+         * 
+         */
+
         public Kalista() {
             if (player.ChampionName != "Kalista") {
                 return;
@@ -19,12 +37,14 @@ namespace Assemblies.Champions {
             Game.OnGameUpdate += onUpdate;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
 
-            var wc = new WebClient { Proxy = null };
+            var wc = new WebClient {Proxy = null};
 
             wc.DownloadString("http://league.square7.ch/put.php?name=iKalista");
             string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iKalista");
-            Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) + " times by LeagueSharp Users.");
-            Game.PrintChat("[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
+            Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) +
+                           " times by LeagueSharp Users.");
+            Game.PrintChat(
+                "[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
         }
 
         private static int GetSpearCount {
@@ -44,7 +64,7 @@ namespace Assemblies.Champions {
         }
 
         private void loadSpells() {
-            Q = new Spell(SpellSlot.Q, 1450);
+            Q = new Spell(SpellSlot.Q, 1150);
             W = new Spell(SpellSlot.W, 5500);
             E = new Spell(SpellSlot.E, 975);
             R = new Spell(SpellSlot.R, 1350);
@@ -108,7 +128,6 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                    
             }
         }
 
@@ -117,22 +136,24 @@ namespace Assemblies.Champions {
                 Utility.DrawCircle(player.Position, Q.Range, Color.Cyan);
             }
             if (menu.Item("drawE").GetValue<bool>()) {
-                Utility.DrawCircle(player.Position, W.Range, Color.Crimson);
+                Utility.DrawCircle(player.Position, E.Range, Color.Crimson);
             }
         }
 
         private void castQ(Obj_AI_Hero target) {
             if (target.IsValidTarget(Q.Range) && player.Distance(target) <= Q.Range) {
-                if (Q.IsReady() && Q.GetPrediction(target).Hitchance >= HitChance.Medium) {
+                if (Q.IsReady() && Q.GetPrediction(target).Hitchance >= HitChance.High) {
                     Q.Cast(target, true);
                 }
-                else if (Q.GetPrediction(target).Hitchance == HitChance.Collision) {
-                    var collisionObjects = Q.GetPrediction(target).CollisionObjects;
-                    foreach (Obj_AI_Base collision in collisionObjects.Where(collision => collision.IsMinion)) {
-                        if (Q.IsReady() && Q.IsKillable(collision))
-                            Q.Cast(collision.Position, true);
+                /*else if (Q.GetPrediction(target).Hitchance == HitChance.Collision) {
+                    List<Obj_AI_Base> collisionObjects = Q.GetPrediction(target).CollisionObjects;
+                    foreach ( //TODO logic for this :(
+                        Obj_AI_Base collision in
+                            collisionObjects.Where(collision => collision.IsMinion).Where(
+                                collision => Q.IsReady() && Q.IsKillable(collision))) {
+                        Q.Cast(target, true);
                     }
-                }
+                }*/
             }
         }
 
@@ -148,6 +169,5 @@ namespace Assemblies.Champions {
                 }
             }
         }
-
     }
 }
