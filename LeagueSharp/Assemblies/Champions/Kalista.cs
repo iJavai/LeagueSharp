@@ -48,7 +48,7 @@ namespace Assemblies.Champions {
             E = new Spell(SpellSlot.E, 975);
             R = new Spell(SpellSlot.R, 1350);
 
-            Q.SetSkillshot(0.12f, 40, 1800, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.12f, 40, 1800, hasCollision(), SkillshotType.SkillshotLine);
         }
 
         private void loadMenu() {
@@ -61,8 +61,12 @@ namespace Assemblies.Champions {
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(true));
 
-            menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
-            menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
+            //menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
+            //menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
+
+            //TODO last hit
+
+            //TODO killsteal
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
@@ -116,7 +120,7 @@ namespace Assemblies.Champions {
         }
 
         private bool hasCollision() {
-            return false;
+            return true;
         }
 
         private void castQ(Obj_AI_Hero target) {
