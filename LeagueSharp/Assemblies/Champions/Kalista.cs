@@ -68,6 +68,9 @@ namespace Assemblies.Champions {
             //TODO last hit
 
             //TODO killsteal
+            menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
+            menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
+            menu.SubMenu("killsteal").AddItem(new MenuItem("useEK", "Use E for killsteal").SetValue(true));
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
@@ -75,7 +78,6 @@ namespace Assemblies.Champions {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
-            menu.SubMenu("misc").AddItem(new MenuItem("eKill", "Use e to Kill enemies").SetValue(true));
         }
 
         private void onUpdate(EventArgs args) {
@@ -83,8 +85,7 @@ namespace Assemblies.Champions {
 
             Obj_AI_Hero target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
 
-            if (isMenuEnabled(menu, "eKill"))
-                killsteal(target);
+            killsteal(target);
 
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
@@ -138,7 +139,13 @@ namespace Assemblies.Champions {
         private void killsteal(Obj_AI_Hero target) {
             if (target.IsValidTarget(E.Range) && E.IsReady() &&
                 player.GetSpellDamage(target, SpellSlot.E) - 10 > target.Health) {
-                E.Cast(true);
+                if (isMenuEnabled(menu, "useEK"))
+                    E.Cast(true);
+            }
+            if (target.IsValidTarget(Q.Range) && Q.IsReady() && Q.IsKillable(target)) {
+                if (isMenuEnabled(menu, "useQK")) {
+                    castQ(target);
+                }
             }
         }
 
