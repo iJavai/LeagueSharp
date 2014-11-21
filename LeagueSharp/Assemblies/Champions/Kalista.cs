@@ -187,7 +187,7 @@ namespace Assemblies.Champions {
                     var DistToPoint = player.Distance(Point);
                     var Time = (DistToPoint/Q.Speed)*1000; //Maybe *1000 should be removed ? not sure
                     var Pred = Prediction.GetPrediction(target, Time);
-                    if (Pred.UnitPosition.Distance(Point) <= QWidth)
+                    if (Pred.UnitPosition.Distance(Point) <= QWidth && !List.Any(m => m.Distance(Point)<= QWidth))
                     {
                         Q.Cast(Minion);
                         break;
