@@ -18,12 +18,11 @@ namespace Assemblies.Champions {
             Game.OnGameUpdate += onUpdate;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
 
-            var wc = new WebClient {Proxy = null};
+            var wc = new WebClient { Proxy = null };
 
             wc.DownloadString("http://league.square7.ch/put.php?name=iKalista");
             string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iKalista");
-            Game.PrintChat("[Assemblies] - Kalista has been loaded " + Convert.ToInt32(amount) +
-                           " times by LeagueSharp Users.");
+            Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) + " times by LeagueSharp Users.");
         }
 
         private static int GetSpearCount {
@@ -59,19 +58,23 @@ namespace Assemblies.Champions {
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
-            menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use W in harass").SetValue(true));
+            menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(true));
 
             menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
+            menu.SubMenu("misc").AddItem(new MenuItem("eKill", "Use e to Kill enemies").SetValue(true));
         }
 
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
 
             Obj_AI_Hero target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
+
+            if (isMenuEnabled(menu, "eKill"))
+                killsteal(target);
 
             switch (LXOrbwalker.CurrentMode) {
                 case LXOrbwalker.Mode.Combo:
@@ -94,7 +97,7 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                    ;
+                    
             }
         }
 
@@ -106,14 +109,25 @@ namespace Assemblies.Champions {
 
 
         private void castQ(Obj_AI_Hero target) {
-            Obj_AI_Base firstCollided = Q.GetPrediction(target).CollisionObjects[0];
-            Obj_AI_Base secondCollided = Q.GetPrediction(target).CollisionObjects[1];
-
-            if (firstCollided == target ||
-                firstCollided.IsMinion && firstCollided.IsEnemy && firstCollided.Health < Q.GetDamage(firstCollided) &&
-                secondCollided == target) {
-                Q.Cast(target, true);
+            if (target.IsValidTarget(Q.Range) && player.Distance(target) <= Q.Range) {
+                if (Q.IsReady() && Q.GetPrediction(target).Hitchance >= HitChance.Medium) {
+                    Q.Cast(target, true);
+                }
+                else if (Q.GetPrediction(target).Hitchance == HitChance.Collision) {
+                    var collisionObjects = Q.GetPrediction(target).CollisionObjects;
+                    foreach (Obj_AI_Base collision in collisionObjects.Where(collision => collision.IsMinion && Q.IsKillable(collision) && Q.IsReady())) {
+                        Q.Cast(collision.Position, true);
+                    }
+                }
             }
         }
+
+        private void killsteal(Obj_AI_Hero target) {
+            if (target.IsValidTarget(E.Range) && E.IsReady() &&
+                player.GetSpellDamage(target, SpellSlot.E) - 10 > target.Health) {
+                E.Cast(true);
+            }
+        }
+
     }
 }
