@@ -48,7 +48,7 @@ namespace Assemblies.Champions {
             E = new Spell(SpellSlot.E, 975);
             R = new Spell(SpellSlot.R, 1350);
 
-            Q.SetSkillshot(0.12f, 40, 1800, hasCollision(), SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.12f, 40, 1800, true, SkillshotType.SkillshotLine);
         }
 
         private void loadMenu() {
@@ -117,10 +117,6 @@ namespace Assemblies.Champions {
             if (menu.Item("drawE").GetValue<bool>()) {
                 Utility.DrawCircle(player.Position, W.Range, Color.Crimson);
             }
-        }
-
-        private bool hasCollision() {
-            return true;
         }
 
         private void castQ(Obj_AI_Hero target) {
