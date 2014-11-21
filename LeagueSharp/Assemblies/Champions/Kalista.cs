@@ -24,6 +24,7 @@ namespace Assemblies.Champions {
             wc.DownloadString("http://league.square7.ch/put.php?name=iKalista");
             string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iKalista");
             Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) + " times by LeagueSharp Users.");
+            Game.PrintChat("[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
         }
 
         private static int GetSpearCount {
