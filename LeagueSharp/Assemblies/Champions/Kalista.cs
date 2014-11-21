@@ -115,8 +115,9 @@ namespace Assemblies.Champions {
                 }
                 else if (Q.GetPrediction(target).Hitchance == HitChance.Collision) {
                     var collisionObjects = Q.GetPrediction(target).CollisionObjects;
-                    foreach (Obj_AI_Base collision in collisionObjects.Where(collision => collision.IsMinion && Q.IsKillable(collision) && Q.IsReady())) {
-                        Q.Cast(collision.Position, true);
+                    foreach (Obj_AI_Base collision in collisionObjects.Where(collision => collision.IsMinion)) {
+                        if (Q.IsReady() && Q.IsKillable(collision))
+                            Q.Cast(collision.Position, true);
                     }
                 }
             }
