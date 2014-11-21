@@ -4,6 +4,6 @@ LeagueSharp
 Supported Champions
 - Ezreal
 - Fizz
-- Vayne
+- Kalista - WIP
 
 More assemblies WIP.
