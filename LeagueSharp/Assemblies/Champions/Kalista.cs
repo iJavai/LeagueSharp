@@ -197,7 +197,7 @@ namespace Assemblies.Champions {
         }
         private void killsteal(Obj_AI_Hero target) {
             if (target.IsValidTarget(E.Range) && E.IsReady() &&
-                player.GetSpellDamage(target, SpellSlot.E) - 10 > target.Health) {
+                player.GetSpellDamage(target, SpellSlot.E) * GetSpearCount > target.Health) {
                 if (isMenuEnabled(menu, "useEK"))
                     E.Cast(true);
             }
