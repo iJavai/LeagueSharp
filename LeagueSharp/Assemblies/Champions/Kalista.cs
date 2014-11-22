@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -118,8 +117,8 @@ namespace Assemblies.Champions {
 
             killsteal(target);
 
-            switch (LXOrbwalker.CurrentMode) {
-                case LXOrbwalker.Mode.Combo:
+            switch (XSLxOrbwalker.CurrentMode) {
+                case XSLxOrbwalker.Mode.Combo:
                     if (isMenuEnabled(menu, "useQC"))
                         castQ(target);
                     if (isMenuEnabled(menu, "useEC") && E.IsReady()) {
@@ -135,7 +134,7 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                case LXOrbwalker.Mode.Harass:
+                case XSLxOrbwalker.Mode.Harass:
                     if (isMenuEnabled(menu, "useQH"))
                         castQ(target);
                     if (isMenuEnabled(menu, "useEH")) {
@@ -145,10 +144,10 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                case LXOrbwalker.Mode.LaneClear:
+                case XSLxOrbwalker.Mode.LaneClear:
                     AutoKillMinion();
                     break;
-                case LXOrbwalker.Mode.Flee:
+                case XSLxOrbwalker.Mode.Flee:
                     //TODO flee mode
                     break;
             }
@@ -173,9 +172,20 @@ namespace Assemblies.Champions {
         }
 
         private void castQ(Obj_AI_Hero target) {
+            PredictionOutput qPrediction = Q.GetPrediction(target);
             if (target.IsValidTarget(Q.Range) && player.Distance(target) <= Q.Range) {
-                if (Q.IsReady() && Q.GetPrediction(target).Hitchance >= HitChance.High) {
+                if (Q.IsReady() && qPrediction.Hitchance >= HitChance.High) {
                     Q.Cast(target, true);
+                }
+                if (qPrediction.Hitchance == HitChance.Collision) {
+                    List<Obj_AI_Base> qCollision = qPrediction.CollisionObjects;
+                    Obj_AI_Base minionToHit =
+                        qCollision.FirstOrDefault(
+                            obj =>
+                                Q.GetPrediction(obj).Hitchance >= HitChance.Medium && Q.GetDamage(target) > obj.Health);
+                    if (minionToHit != null && minionToHit.IsValid) {
+                        Q.Cast(minionToHit, true);
+                    }
                 }
             }
         }
@@ -193,7 +203,7 @@ namespace Assemblies.Champions {
                     Vector3 Point = Minion.Position.To2D().Extend(player.Position.To2D(), -i).To3D();
                     float DistToPoint = player.Distance(Point);
                     float Time = (DistToPoint/Q.Speed)*1000;
-                        //Maybe *1000 should be removed ? not sure //TODO - corey - idk im dumb.
+                    //Maybe *1000 should be removed ? not sure //TODO - corey - idk im dumb.
                     PredictionOutput Pred = Prediction.GetPrediction(target, Time);
                     if (Pred.UnitPosition.Distance(Point) <= QWidth && !List.Any(m => m.Distance(Point) <= QWidth)) {
                         Q.Cast(Minion);

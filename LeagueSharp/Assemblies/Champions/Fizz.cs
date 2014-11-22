@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -28,7 +27,7 @@ namespace Assemblies.Champions {
 
             Game.OnGameUpdate += onUpdate;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
-            LXOrbwalker.OnAttack += onAttack;
+            XSLxOrbwalker.OnAttack += onAttack;
             Drawing.OnDraw += onDraw;
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
 
@@ -138,17 +137,17 @@ namespace Assemblies.Champions {
                     }
                 }
             }
-            switch (LXOrbwalker.CurrentMode) {
-                case LXOrbwalker.Mode.Combo:
+            switch (XSLxOrbwalker.CurrentMode) {
+                case XSLxOrbwalker.Mode.Combo:
                     combo(target);
                     break;
-                case LXOrbwalker.Mode.Harass:
+                case XSLxOrbwalker.Mode.Harass:
                     harassMode(target);
                     break;
-                case LXOrbwalker.Mode.LaneClear:
+                case XSLxOrbwalker.Mode.LaneClear:
                     goLaneclearGo();
                     break;
-                case LXOrbwalker.Mode.Flee:
+                case XSLxOrbwalker.Mode.Flee:
                     if (isMenuEnabled(menu, "useEFlee"))
                         fleeMode();
                     if (isMenuEnabled(menu, "useQFlee"))
@@ -309,12 +308,12 @@ namespace Assemblies.Champions {
 
         private void onAttack(Obj_AI_Base unit, Obj_AI_Base target) {
             if (!unit.IsMe) return;
-            switch (LXOrbwalker.CurrentMode) {
-                case LXOrbwalker.Mode.Combo:
+            switch (XSLxOrbwalker.CurrentMode) {
+                case XSLxOrbwalker.Mode.Combo:
                     if (W.IsReady() && !target.IsMinion && menu.Item("useWC").GetValue<bool>())
                         W.Cast(unit, true);
                     break;
-                case LXOrbwalker.Mode.Harass:
+                case XSLxOrbwalker.Mode.Harass:
                     if (W.IsReady() && !target.IsMinion && menu.Item("useWH").GetValue<bool>())
                         W.Cast(unit, true);
                     break;

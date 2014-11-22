@@ -2,7 +2,6 @@
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 
 namespace Assemblies {
     internal class Champion : ChampionUtils {
@@ -32,7 +31,7 @@ namespace Assemblies {
 
             //Orbwalker submenu
             var orbwalkerMenu = new Menu("LX-Orbwalker", "orbwalker");
-            LXOrbwalker.AddToMenu(orbwalkerMenu);
+            XSLxOrbwalker.AddToMenu(orbwalkerMenu);
             menu.AddSubMenu(orbwalkerMenu);
 
             menu.AddToMainMenu();
