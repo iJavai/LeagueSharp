@@ -233,7 +233,7 @@ namespace Assemblies.Champions {
                 if (Q.IsReady() && qPrediction.Hitchance >= HitChance.High) {
                     Q.Cast(target, true);
                 }
-                if (qPrediction.Hitchance == HitChance.Collision) {
+                /*if (qPrediction.Hitchance == HitChance.Collision) {
                     List<Obj_AI_Base> qCollision = qPrediction.CollisionObjects;
                     Obj_AI_Base minionToHit =
                         qCollision.FirstOrDefault(
@@ -242,7 +242,7 @@ namespace Assemblies.Champions {
                     if (minionToHit != null && minionToHit.IsValid) {
                         Q.Cast(minionToHit, true);
                     }
-                }
+                }*/
             }
         }
 
