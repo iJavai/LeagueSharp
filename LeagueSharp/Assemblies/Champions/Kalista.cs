@@ -235,7 +235,7 @@ namespace Assemblies.Champions {
         private void castQ(Obj_AI_Hero target) {
             PredictionOutput qPrediction = Q.GetPrediction(target);
             if (target.IsValidTarget(Q.Range) && player.Distance(target) <= Q.Range) {
-                if (Q.IsReady() && qPrediction.Hitchance >= HitChance.High) {
+                if (Q.IsReady() && qPrediction.Hitchance >= HitChance.Medium) {
                     Q.Cast(target, true);
                 }
                 /*if (qPrediction.Hitchance == HitChance.Collision) {
