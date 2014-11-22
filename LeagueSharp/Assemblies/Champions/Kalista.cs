@@ -80,8 +80,8 @@ namespace Assemblies.Champions {
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             //menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useER", "Use E on fleeing").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("useEL", "Use E out of range").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("info", "^^ must get a stack on a minion first."));
+            //menu.SubMenu("combo").AddItem(new MenuItem("useEL", "Use E out of range").SetValue(true));
+            //menu.SubMenu("combo").AddItem(new MenuItem("info", "^^ must get a stack on a minion first."));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
