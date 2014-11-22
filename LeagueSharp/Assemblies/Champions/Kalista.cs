@@ -25,7 +25,7 @@ namespace Assemblies.Champions {
             Auto cast ultimate on gapclosers(on/off toggle xD).
          *  W Spots thats show Sentinel routes.
             Q to dodge skillshots(Ashe ulted me, evades movepackets and auto Q saved me) I know this takes time but quite a good feature.
-         * 
+         *  
          */
 
         public Kalista() {
@@ -79,17 +79,16 @@ namespace Assemblies.Champions {
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             //menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useER", "Use E out of range").SetValue(true));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(true));
 
-            //menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
-            //menu.SubMenu("laneclear").AddItem(new MenuItem("useQLC", "Use Q in laneclear").SetValue(true));
+            menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("autoE", "Auto E killable Minions").SetValue(true));
+            menu.SubMenu("laneclear").AddItem(new MenuItem("eNum", "Number of minions").SetValue(new Slider(3, 1, 10)));
 
-            //TODO last hit
-
-            //TODO killsteal
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useEK", "Use E for killsteal").SetValue(true));
@@ -123,10 +122,16 @@ namespace Assemblies.Champions {
                 case LXOrbwalker.Mode.Combo:
                     if (isMenuEnabled(menu, "useQC"))
                         castQ(target);
-                    if (isMenuEnabled(menu, "useEC")) {
+                    if (isMenuEnabled(menu, "useEC") && E.IsReady()) {
                         if (GetSpearCount >= menu.Item("eStacks").GetValue<Slider>().Value &&
                             player.Distance(target) <= E.Range) {
                             E.Cast(true);
+                        }
+                    }
+                    if (isMenuEnabled(menu, "useER")) {
+                        if (player.Distance(target) >= 965 && GetSpearCount >= 1) {
+                            if (E.IsReady())
+                                E.Cast(true);
                         }
                     }
                     break;
@@ -140,7 +145,22 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
+                case LXOrbwalker.Mode.LaneClear:
+                    AutoKillMinion();
+                    break;
+                case LXOrbwalker.Mode.Flee:
+                    //TODO flee mode
+                    break;
             }
+        }
+
+        private void AutoKillMinion() {
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
+            int count = minions.Count(minion => E.GetDamage(minion) > minion.Health);
+
+            if (count >= menu.Item("eNum").GetValue<Slider>().Value && menu.Item("autoE").GetValue<bool>() &&
+                E.IsReady())
+                E.Cast(true);
         }
 
         private void onDraw(EventArgs args) {
@@ -157,15 +177,6 @@ namespace Assemblies.Champions {
                 if (Q.IsReady() && Q.GetPrediction(target).Hitchance >= HitChance.High) {
                     Q.Cast(target, true);
                 }
-                /*else if (Q.GetPrediction(target).Hitchance == HitChance.Collision) {
-                    List<Obj_AI_Base> collisionObjects = Q.GetPrediction(target).CollisionObjects;
-                    foreach ( //TODO logic for this :(
-                        Obj_AI_Base collision in
-                            collisionObjects.Where(collision => collision.IsMinion).Where(
-                                collision => Q.IsReady() && Q.IsKillable(collision))) {
-                        Q.Cast(target, true);
-                    }
-                }*/
             }
         }
 
@@ -181,7 +192,8 @@ namespace Assemblies.Champions {
                 for (int i = 0; i < Diff; i += (int) target.BoundingRadius) {
                     Vector3 Point = Minion.Position.To2D().Extend(player.Position.To2D(), -i).To3D();
                     float DistToPoint = player.Distance(Point);
-                    float Time = (DistToPoint/Q.Speed)*1000; //Maybe *1000 should be removed ? not sure
+                    float Time = (DistToPoint/Q.Speed)*1000;
+                        //Maybe *1000 should be removed ? not sure //TODO - corey - idk im dumb.
                     PredictionOutput Pred = Prediction.GetPrediction(target, Time);
                     if (Pred.UnitPosition.Distance(Point) <= QWidth && !List.Any(m => m.Distance(Point) <= QWidth)) {
                         Q.Cast(Minion);
