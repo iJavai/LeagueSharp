@@ -80,7 +80,7 @@ namespace Assemblies.Champions {
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             //menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useER", "Use E on fleeing").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("useEL", "Use E on out of range target").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useEL", "Use E out of range").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("info", "^^ must get a stack on a minion first."));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
@@ -94,6 +94,7 @@ namespace Assemblies.Champions {
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useEK", "Use E for killsteal").SetValue(true));
+            //menu.SubMenu("killsteal").AddItem(new MenuItem("useEKO", "out of range killsteal").SetValue(true));
 
             menu.AddSubMenu(new Menu("Flee Options", "flee"));
             //menu.SubMenu("flee").AddItem(new MenuItem("useQF", "Use Q for fleeing").SetValue(true));
@@ -124,6 +125,7 @@ namespace Assemblies.Champions {
 
             killsteal(target);
             AutoKillMinion();
+            castELong(target);
 
             switch (XSLxOrbwalker.CurrentMode) {
                 case XSLxOrbwalker.Mode.Combo:
@@ -170,7 +172,7 @@ namespace Assemblies.Champions {
         public bool castELong(Obj_AI_Hero target) {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
-                if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > E.Range) {
+                if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > Q.Range) {
                     if (GetSpearCount >= menu.Item("eStacks").GetValue<Slider>().Value) {
                         E.Cast(true);
                     }
