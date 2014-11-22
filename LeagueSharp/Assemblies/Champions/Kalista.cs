@@ -55,7 +55,7 @@ namespace Assemblies.Champions {
                 foreach (
                     BuffInstance buff in
                         from enemy in
-                            ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(975))
+                            ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(1000))
                         from buff in enemy.Buffs
                         where buff.Name.Contains("kalistaexpungemarker")
                         select buff) {
@@ -79,7 +79,9 @@ namespace Assemblies.Champions {
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             //menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
-            menu.SubMenu("combo").AddItem(new MenuItem("useER", "Use E out of range").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useER", "Use E on fleeing").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("useEL", "Use E on out of range target").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("info", "^^ must get a stack on a minion first."));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -165,8 +167,21 @@ namespace Assemblies.Champions {
                 E.Cast(true);
         }
 
+        public bool castELong(Obj_AI_Hero target) {
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
+            foreach (Obj_AI_Base minion in minions) {
+                if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > E.Range) {
+                    if (GetSpearCount >= menu.Item("eStacks").GetValue<Slider>().Value) {
+                        E.Cast(true);
+                    }
+                }
+            }
+            return false;
+        }
+
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
-            if (sender.IsMe) { //Credits to Hellsing.
+            if (sender.IsMe) {
+                //Credits to Hellsing.
                 if (args.SData.Name == "KalistaExpungeWrapper")
                     Utility.DelayAction.Add(250, XSLxOrbwalker.ResetAutoAttackTimer);
             }
@@ -224,10 +239,13 @@ namespace Assemblies.Champions {
         }
 
         private void fleeMode() {
-            var minions = MinionManager.GetMinions(player.ServerPosition, XSLxOrbwalker.GetAutoAttackRange());
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition,
+                XSLxOrbwalker.GetAutoAttackRange());
             Obj_AI_Base bestMinion = null;
 
-            foreach (Obj_AI_Base minion in minions.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
+            foreach (
+                Obj_AI_Base minion in
+                    minions.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
                 bestMinion = minion;
             }
 
