@@ -41,12 +41,13 @@ namespace Assemblies.Champions {
 
             var wc = new WebClient {Proxy = null};
 
-            var dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
+            MenuItem dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
             Utility.HpBarDamageIndicator.DamageToUnit = getComboDamage;
             Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
-            dmgAfterComboItem.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs) {
-                Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
-            };
+            dmgAfterComboItem.ValueChanged +=
+                delegate(object sender, OnValueChangeEventArgs eventArgs) {
+                    Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                };
             menu.SubMenu("drawing").AddItem(dmgAfterComboItem);
 
             wc.DownloadString("http://league.square7.ch/put.php?name=iKalista");
@@ -82,7 +83,7 @@ namespace Assemblies.Champions {
             if (E.IsReady())
                 damage += E.GetDamage(target)*GetSpearCount;
 
-            damage += player.GetAutoAttackDamage(target) * 2;
+            damage += player.GetAutoAttackDamage(target)*2;
 
             return (float) damage;
         }
@@ -223,7 +224,11 @@ namespace Assemblies.Champions {
             if (menu.Item("drawStacks").GetValue<bool>()) {
                 Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
                 Vector2 wts = Drawing.WorldToScreen(target.Position);
-                Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + GetSpearCount);
+                int buffCount = 0;
+                foreach (BuffInstance buff in target.Buffs.Where(buff => buff.Name == "kalistaexpungemarker")) {
+                    buffCount = buff.Count;
+                }
+                Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + buffCount);
             }
         }
 
