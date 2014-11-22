@@ -30,7 +30,7 @@ namespace Assemblies {
             menu.AddSubMenu(targetSelectorMenu);
 
             //Orbwalker submenu
-            var orbwalkerMenu = new Menu("LX-Orbwalker", "orbwalker");
+            var orbwalkerMenu = new Menu("xSLx-Orbwalker", "orbwalker");
             XSLxOrbwalker.AddToMenu(orbwalkerMenu);
             menu.AddSubMenu(orbwalkerMenu);
 

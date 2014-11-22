@@ -94,7 +94,7 @@ namespace Assemblies.Champions {
             menu.SubMenu("killsteal").AddItem(new MenuItem("useEK", "Use E for killsteal").SetValue(true));
 
             menu.AddSubMenu(new Menu("Flee Options", "flee"));
-            menu.SubMenu("flee").AddItem(new MenuItem("useQF", "Use Q for fleeing").SetValue(true));
+            //menu.SubMenu("flee").AddItem(new MenuItem("useQF", "Use Q for fleeing").SetValue(true));
             menu.SubMenu("flee").AddItem(new MenuItem("useAAF", "Use AA's for fleeing").SetValue(true));
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
@@ -121,6 +121,7 @@ namespace Assemblies.Champions {
             Obj_AI_Hero target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
 
             killsteal(target);
+            AutoKillMinion();
 
             switch (XSLxOrbwalker.CurrentMode) {
                 case XSLxOrbwalker.Mode.Combo:
@@ -148,9 +149,6 @@ namespace Assemblies.Champions {
                             E.Cast(true);
                         }
                     }
-                    break;
-                case XSLxOrbwalker.Mode.LaneClear:
-                    AutoKillMinion();
                     break;
                 case XSLxOrbwalker.Mode.Flee:
                     fleeMode();
