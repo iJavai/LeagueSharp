@@ -103,6 +103,8 @@ namespace Assemblies.Champions {
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawE", "Draw E Range").SetValue(false));
+            menu.SubMenu("drawing").AddItem(new MenuItem("drawStacks", "Draw spear stacks").SetValue(false));
+
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
@@ -196,6 +198,11 @@ namespace Assemblies.Champions {
             }
             if (menu.Item("drawE").GetValue<bool>()) {
                 Utility.DrawCircle(player.Position, E.Range, Color.Crimson);
+            }
+            if (menu.Item("drawStacks").GetValue<bool>()) {
+                Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+                Vector2 wts = Drawing.WorldToScreen(target.Position);
+                Drawing.DrawText(wts[0] - 100, wts[1], Color.Red, "Spear Stacks: " + GetSpearCount);
             }
         }
 
