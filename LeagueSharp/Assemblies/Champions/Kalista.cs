@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LX_Orbwalker;
-using SharpDX.Win32;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Assemblies.Champions {
-    internal class Kalista : Champion
-    {
+    internal class Kalista : Champion {
         private static bool doneAA;
         /**
          * TODO: 
@@ -106,16 +105,16 @@ namespace Assemblies.Champions {
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
             // (player.IsAutoAttacking && !doneAA)
-         //   {
-           //     sendMovementPacket(Game.CursorPos.To2D());
-         //       doneAA = true;
-                //player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-         //   }
-         //   else
-         //   {
-         //       doneAA = false;
-         //   }
-           // Console.WriteLine(player..ToString());
+            //   {
+            //     sendMovementPacket(Game.CursorPos.To2D());
+            //       doneAA = true;
+            //player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+            //   }
+            //   else
+            //   {
+            //       doneAA = false;
+            //   }
+            // Console.WriteLine(player..ToString());
             Obj_AI_Hero target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
 
             killsteal(target);
@@ -170,34 +169,31 @@ namespace Assemblies.Champions {
             }
         }
 
-        private void QCalcs(Obj_AI_Hero target)
-        {
-            var List = MinionManager.GetMinions(player.Position, Q.Range);
-            var QDistance = Q.Range;
-            var QWidth = Q.Width;
-            var QSpeed = Q.Speed;
-            foreach (var Minion in List.Where(m => m.IsEnemy && Q.GetDamage(m) >= m.Health))
-            {
-                var Distance = player.Distance(Minion);
-                var PTD = player.Distance(target);
-                var Diff = PTD - Distance;
-                for (int i = 0; i < Diff; i += (int)target.BoundingRadius)
-                {
-                    var Point = Minion.Position.To2D().Extend(player.Position.To2D(), -i).To3D();
-                    var DistToPoint = player.Distance(Point);
-                    var Time = (DistToPoint/Q.Speed)*1000; //Maybe *1000 should be removed ? not sure
-                    var Pred = Prediction.GetPrediction(target, Time);
-                    if (Pred.UnitPosition.Distance(Point) <= QWidth && !List.Any(m => m.Distance(Point)<= QWidth))
-                    {
+        private void QCalcs(Obj_AI_Hero target) {
+            List<Obj_AI_Base> List = MinionManager.GetMinions(player.Position, Q.Range);
+            float QDistance = Q.Range;
+            float QWidth = Q.Width;
+            float QSpeed = Q.Speed;
+            foreach (Obj_AI_Base Minion in List.Where(m => m.IsEnemy && Q.GetDamage(m) >= m.Health)) {
+                float Distance = player.Distance(Minion);
+                float PTD = player.Distance(target);
+                float Diff = PTD - Distance;
+                for (int i = 0; i < Diff; i += (int) target.BoundingRadius) {
+                    Vector3 Point = Minion.Position.To2D().Extend(player.Position.To2D(), -i).To3D();
+                    float DistToPoint = player.Distance(Point);
+                    float Time = (DistToPoint/Q.Speed)*1000; //Maybe *1000 should be removed ? not sure
+                    PredictionOutput Pred = Prediction.GetPrediction(target, Time);
+                    if (Pred.UnitPosition.Distance(Point) <= QWidth && !List.Any(m => m.Distance(Point) <= QWidth)) {
                         Q.Cast(Minion);
                         break;
                     }
                 }
             }
         }
+
         private void killsteal(Obj_AI_Hero target) {
             if (target.IsValidTarget(E.Range) && E.IsReady() &&
-                player.GetSpellDamage(target, SpellSlot.E) * GetSpearCount > target.Health) {
+                player.GetSpellDamage(target, SpellSlot.E)*GetSpearCount > target.Health) {
                 if (isMenuEnabled(menu, "useEK"))
                     E.Cast(true);
             }
