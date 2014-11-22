@@ -175,7 +175,7 @@ namespace Assemblies.Champions {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
                 if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > E.Range) {
-                    if (GetSpearCount >= menu.Item("eStacks").GetValue<Slider>().Value && menu.Item("useEL").GetValue<bool>()) {
+                    if (menu.Item("useEL").GetValue<bool>()) {
                         E.Cast(true);
                     }
                 }
