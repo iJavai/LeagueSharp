@@ -10,11 +10,11 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal static class Program {
         private static Champion champion;
-        private static Version Version;
+      //  private static Version Version;
 
         private static void Main(string[] args) {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
-            Version = Assembly.GetExecutingAssembly().GetName().Version;
+           // Version = Assembly.GetExecutingAssembly().GetName().Version;
         }
 
         private static void Game_OnGameLoad(EventArgs args) {
@@ -39,7 +39,7 @@ namespace Assemblies {
                 Console.WriteLine("Fail.");
             }
         }
-
+/**
         private static void checkVersion() {
             Task.Factory.StartNew(() => {
                 try {
@@ -71,6 +71,7 @@ namespace Assemblies {
                     Console.WriteLine(e);
                 }
             });
-        }
+
+        }            */
     }
 }
