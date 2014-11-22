@@ -41,6 +41,14 @@ namespace Assemblies.Champions {
 
             var wc = new WebClient {Proxy = null};
 
+            var dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
+            Utility.HpBarDamageIndicator.DamageToUnit = getComboDamage;
+            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
+            dmgAfterComboItem.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs) {
+                Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+            };
+            menu.SubMenu("drawing").AddItem(dmgAfterComboItem);
+
             wc.DownloadString("http://league.square7.ch/put.php?name=iKalista");
             string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iKalista");
             Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) +
@@ -49,7 +57,7 @@ namespace Assemblies.Champions {
                 "[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
         }
 
-        private static int GetSpearCount {
+        private int GetSpearCount {
             get {
                 int xBuffCount = 0;
                 foreach (
@@ -63,6 +71,20 @@ namespace Assemblies.Champions {
                 }
                 return xBuffCount;
             }
+        }
+
+        private float getComboDamage(Obj_AI_Hero target) {
+            double damage = 0d;
+
+            if (Q.IsReady())
+                damage += Q.GetDamage(target);
+
+            if (E.IsReady())
+                damage += E.GetDamage(target)*GetSpearCount;
+
+            damage += player.GetAutoAttackDamage(target) * 2;
+
+            return (float) damage;
         }
 
         private void loadSpells() {
@@ -104,7 +126,6 @@ namespace Assemblies.Champions {
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawE", "Draw E Range").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawStacks", "Draw spear stacks").SetValue(false));
-
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
@@ -250,8 +271,8 @@ namespace Assemblies.Champions {
 
         private void fleeMode() {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition,
-                XSLxOrbwalker.GetAutoAttackRange());
-            IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>();
+                XSLxOrbwalker.GetAutoAttackRange(), MinionTypes.All, MinionTeam.NotAlly);
+            IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.IsEnemy);
             Obj_AI_Base bestMinion = null;
             Obj_AI_Hero bestChampion = null;
 
