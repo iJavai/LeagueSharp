@@ -18,7 +18,7 @@ namespace Assemblies {
         }
 
         private static void Game_OnGameLoad(EventArgs args) {
-            checkVersion();
+            //checkVersion();
             try {
                 switch (ObjectManager.Player.ChampionName) {
                     case "Ezreal":

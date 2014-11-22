@@ -169,7 +169,7 @@ namespace Assemblies.Champions {
             }
         }
 
-        private void QCalcs(Obj_AI_Hero target) {
+        private void QCalculation(Obj_AI_Hero target) {
             List<Obj_AI_Base> List = MinionManager.GetMinions(player.Position, Q.Range);
             float QDistance = Q.Range;
             float QWidth = Q.Width;
