@@ -129,7 +129,7 @@ namespace Assemblies.Champions {
 
             killsteal(target);
             AutoKillMinion();
-            castELong(target);
+            //castELong(target);
 
             switch (XSLxOrbwalker.CurrentMode) {
                 case XSLxOrbwalker.Mode.Combo:
@@ -202,7 +202,7 @@ namespace Assemblies.Champions {
             if (menu.Item("drawStacks").GetValue<bool>()) {
                 Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
                 Vector2 wts = Drawing.WorldToScreen(target.Position);
-                Drawing.DrawText(wts[0] - 100, wts[1], Color.Red, "Spear Stacks: " + GetSpearCount);
+                Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + GetSpearCount);
             }
         }
 
@@ -266,8 +266,8 @@ namespace Assemblies.Champions {
                     bestChampion = champion;
             }
 
-
-            //TODO aa minions to fleeaway
+            //TODO aa minions to fleeaway // DONE
+            //TODO q Fleeing over walls.
             if (menu.Item("useAAF").GetValue<bool>()) {
                 if (bestMinion != null)
                     XSLxOrbwalker.Orbwalk(Game.CursorPos, bestMinion);
