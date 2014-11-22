@@ -106,6 +106,8 @@ namespace Assemblies.Champions {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
+
+            menu.AddItem(new MenuItem("creds", "Made by iJabba & DZ191"));
         }
 
         private void onUpdate(EventArgs args) {
@@ -169,7 +171,7 @@ namespace Assemblies.Champions {
                 E.Cast(true);
         }
 
-        public bool castELong(Obj_AI_Hero target) {
+        private void castELong(Obj_AI_Hero target) {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
                 if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > Q.Range) {
@@ -178,7 +180,6 @@ namespace Assemblies.Champions {
                     }
                 }
             }
-            return false;
         }
 
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
@@ -243,7 +244,9 @@ namespace Assemblies.Champions {
         private void fleeMode() {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition,
                 XSLxOrbwalker.GetAutoAttackRange());
+            IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>();
             Obj_AI_Base bestMinion = null;
+            Obj_AI_Hero bestChampion = null;
 
             foreach (
                 Obj_AI_Base minion in
@@ -251,9 +254,18 @@ namespace Assemblies.Champions {
                 bestMinion = minion;
             }
 
+            foreach (Obj_AI_Hero champion in champions) {
+                if (champion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())
+                    bestChampion = champion;
+            }
+
+
             //TODO aa minions to fleeaway
             if (menu.Item("useAAF").GetValue<bool>()) {
-                XSLxOrbwalker.Orbwalk(Game.CursorPos, bestMinion);
+                if (bestMinion != null)
+                    XSLxOrbwalker.Orbwalk(Game.CursorPos, bestMinion);
+                else if (bestChampion != null)
+                    XSLxOrbwalker.Orbwalk(Game.CursorPos, bestChampion);
             }
         }
 
