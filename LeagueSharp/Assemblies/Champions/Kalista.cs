@@ -36,6 +36,7 @@ namespace Assemblies.Champions {
 
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
+            Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
 
             var wc = new WebClient {Proxy = null};
@@ -91,6 +92,10 @@ namespace Assemblies.Champions {
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q for killsteal").SetValue(true));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useEK", "Use E for killsteal").SetValue(true));
+
+            menu.AddSubMenu(new Menu("Flee Options", "flee"));
+            menu.SubMenu("flee").AddItem(new MenuItem("useQF", "Use Q for fleeing").SetValue(true));
+            menu.SubMenu("flee").AddItem(new MenuItem("useAAF", "Use AA's for fleeing").SetValue(true));
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
@@ -148,7 +153,7 @@ namespace Assemblies.Champions {
                     AutoKillMinion();
                     break;
                 case XSLxOrbwalker.Mode.Flee:
-                    //TODO flee mode
+                    fleeMode();
                     break;
             }
         }
@@ -160,6 +165,13 @@ namespace Assemblies.Champions {
             if (count >= menu.Item("eNum").GetValue<Slider>().Value && menu.Item("autoE").GetValue<bool>() &&
                 E.IsReady())
                 E.Cast(true);
+        }
+
+        private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+            if (sender.IsMe) { //Credits to Hellsing.
+                if (args.SData.Name == "KalistaExpungeWrapper")
+                    Utility.DelayAction.Add(250, XSLxOrbwalker.ResetAutoAttackTimer);
+            }
         }
 
         private void onDraw(EventArgs args) {
@@ -210,6 +222,20 @@ namespace Assemblies.Champions {
                         break;
                     }
                 }
+            }
+        }
+
+        private void fleeMode() {
+            var minions = MinionManager.GetMinions(player.ServerPosition, XSLxOrbwalker.GetAutoAttackRange());
+            Obj_AI_Base bestMinion = null;
+
+            foreach (Obj_AI_Base minion in minions.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
+                bestMinion = minion;
+            }
+
+            //TODO aa minions to fleeaway
+            if (menu.Item("useAAF").GetValue<bool>()) {
+                XSLxOrbwalker.Orbwalk(Game.CursorPos, bestMinion);
             }
         }
 
