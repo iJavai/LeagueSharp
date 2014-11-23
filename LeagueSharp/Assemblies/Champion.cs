@@ -13,7 +13,7 @@ namespace Assemblies {
         protected Spell R;
         protected Spell W;
         protected Menu menu;
-        protected Orbwalking.Orbwalker orbwalker;
+        //protected Orbwalking.Orbwalker orbwalker;
 
         public Champion() {
             addBasicMenu();
@@ -31,7 +31,7 @@ namespace Assemblies {
 
             //Orbwalker submenu
             var orbwalkerMenu = new Menu("xSLx-Orbwalker", "orbwalker");
-            XSLxOrbwalker.AddToMenu(orbwalkerMenu);
+            xSLxOrbwalker.AddToMenu(orbwalkerMenu);
             menu.AddSubMenu(orbwalkerMenu);
 
             menu.AddToMainMenu();

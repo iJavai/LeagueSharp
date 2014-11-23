@@ -88,12 +88,12 @@
     <Compile Include="Champion.cs" />
     <Compile Include="Champions\Ezreal.cs" />
     <Compile Include="Champions\Fizz.cs" />
-    <Compile Include="ChampionUtils.cs" />
+    <Compile Include="Utilitys\ChampionUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WardJumper.cs" />
-    <Compile Include="xSLxOrbwalker.cs" />
+    <Compile Include="Utilitys\WardJumper.cs" />
+    <Compile Include="Utilitys\xSLxOrbwalker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

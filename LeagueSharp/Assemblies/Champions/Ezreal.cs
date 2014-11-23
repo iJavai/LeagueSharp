@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
+using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -87,8 +88,8 @@ namespace Assemblies.Champions {
             }
             laneClear();
             lastHit();
-            switch (XSLxOrbwalker.CurrentMode) {
-                case XSLxOrbwalker.Mode.Combo:
+            switch (xSLxOrbwalker.CurrentMode) {
+                case xSLxOrbwalker.Mode.Combo:
                     if (menu.Item("useQC").GetValue<bool>())
                         castQ();
                     if (menu.Item("useWC").GetValue<bool>())
@@ -104,7 +105,7 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                case XSLxOrbwalker.Mode.Harass:
+                case xSLxOrbwalker.Mode.Harass:
                     if (menu.Item("useQH").GetValue<bool>())
                         castQ();
                     if (menu.Item("useWH").GetValue<bool>())
@@ -125,7 +126,7 @@ namespace Assemblies.Champions {
                     MinionManager.GetMinions(player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly)) {
                 if (autoQ && Q.IsReady() && Q.IsKillable(minion))
                     Q.Cast(minion.Position, getPackets());
-                if (lastHitNormal && Q.IsReady() && XSLxOrbwalker.CurrentMode == XSLxOrbwalker.Mode.Lasthit &&
+                if (lastHitNormal && Q.IsReady() && xSLxOrbwalker.CurrentMode == xSLxOrbwalker.Mode.Lasthit &&
                     Q.IsKillable(minion))
                     Q.Cast(minion.Position, getPackets());
             }
@@ -137,14 +138,14 @@ namespace Assemblies.Champions {
             var useQ = menu.Item("useQLC").GetValue<bool>();
             var useAutoQ = menu.Item("AutoQLC").GetValue<bool>();
             MinionManager.FarmLocation qPosition = Q.GetLineFarmLocation(minionforQ);
-            if (useQ && XSLxOrbwalker.CurrentMode == XSLxOrbwalker.Mode.LaneClear && Q.IsReady() &&
+            if (useQ && xSLxOrbwalker.CurrentMode == xSLxOrbwalker.Mode.LaneClear && Q.IsReady() &&
                 qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
             }
             if (useAutoQ && Q.IsReady() && qPosition.MinionsHit >= 1) {
                 Q.Cast(qPosition.Position, getPackets());
             }
-            if (menu.Item("useQLCH").GetValue<bool>() && XSLxOrbwalker.CurrentMode == XSLxOrbwalker.Mode.LaneClear) {
+            if (menu.Item("useQLCH").GetValue<bool>() && xSLxOrbwalker.CurrentMode == xSLxOrbwalker.Mode.LaneClear) {
                 castQ();
             }
         }

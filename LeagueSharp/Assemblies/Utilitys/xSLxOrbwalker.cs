@@ -6,9 +6,9 @@ using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace Assemblies {
+namespace Assemblies.Utilitys {
 // ReSharper disable once InconsistentNaming
-    public class XSLxOrbwalker {
+    public class xSLxOrbwalker {
         public delegate void AfterAttackEvenH(Obj_AI_Base unit, Obj_AI_Base target);
 
         public delegate void BeforeAttackEvenH(BeforeAttackEventArgs args);

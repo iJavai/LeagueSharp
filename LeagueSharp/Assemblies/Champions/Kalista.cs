@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -51,7 +52,7 @@ namespace Assemblies.Champions {
 
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
-            XSLxOrbwalker.AfterAttack += onAfterAttack;
+            xSLxOrbwalker.AfterAttack += onAfterAttack;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
             //fillPositions();
@@ -186,9 +187,9 @@ namespace Assemblies.Champions {
 
             //Game.PrintChat("Pos: "+ player.Position);
 
-            switch (XSLxOrbwalker.CurrentMode) {
-                case XSLxOrbwalker.Mode.Combo:
-                    if (player.Distance(target) > XSLxOrbwalker.GetAutoAttackRange()) {
+            switch (xSLxOrbwalker.CurrentMode) {
+                case xSLxOrbwalker.Mode.Combo:
+                    if (player.Distance(target) > xSLxOrbwalker.GetAutoAttackRange()) {
                         if (isMenuEnabled(menu, "useQC"))
                             castQ(target);
                     }
@@ -205,7 +206,7 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                case XSLxOrbwalker.Mode.Harass:
+                case xSLxOrbwalker.Mode.Harass:
                     if (isMenuEnabled(menu, "useQH"))
                         castQ(target);
                     if (isMenuEnabled(menu, "useEH")) {
@@ -215,7 +216,7 @@ namespace Assemblies.Champions {
                         }
                     }
                     break;
-                case XSLxOrbwalker.Mode.Flee:
+                case xSLxOrbwalker.Mode.Flee:
                     fleeMode();
                     break;
             }
@@ -247,7 +248,7 @@ namespace Assemblies.Champions {
             if (sender.IsMe) {
                 //Credits to Hellsing.
                 if (args.SData.Name == "KalistaExpungeMarker")
-                    Utility.DelayAction.Add(250, XSLxOrbwalker.ResetAutoAttackTimer);
+                    Utility.DelayAction.Add(250, xSLxOrbwalker.ResetAutoAttackTimer);
             }
         }
 
@@ -317,20 +318,20 @@ namespace Assemblies.Champions {
 
         private void fleeMode() {
             List<Obj_AI_Base> targets = MinionManager.GetMinions(player.ServerPosition,
-                XSLxOrbwalker.GetAutoAttackRange(), MinionTypes.All, MinionTeam.NotAlly);
+                xSLxOrbwalker.GetAutoAttackRange(), MinionTypes.All, MinionTeam.NotAlly);
             //IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.IsEnemy);
             Obj_AI_Base bestTarget = null;
 
             foreach (
                 Obj_AI_Base target in
-                    targets.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
+                    targets.Where(minion => minion.Distance(player) <= xSLxOrbwalker.GetAutoAttackRange())) {
                 bestTarget = target;
             }
             //TODO aa minions to fleeaway // DONE
             //TODO q Fleeing over walls.
             if (menu.Item("useAAF").GetValue<bool>()) {
                 if (bestTarget != null)
-                    XSLxOrbwalker.Orbwalk(Game.CursorPos, bestTarget);
+                    xSLxOrbwalker.Orbwalk(Game.CursorPos, bestTarget);
             }
 
             if (menu.Item("useQF").GetValue<bool>()) {

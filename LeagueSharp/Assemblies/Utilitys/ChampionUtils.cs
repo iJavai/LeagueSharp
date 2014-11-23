@@ -5,7 +5,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
-namespace Assemblies {
+namespace Assemblies.Utilitys {
     internal class ChampionUtils {
         /// <summary>
         ///     Uses a given spell at a teleporting location to immobilize the enemy
@@ -61,17 +61,17 @@ namespace Assemblies {
         /// <summary>
         ///     gets the percentage value of either health or mana.
         /// </summary>
-        /// <param name="player"> mainTarget to check percentage for I.E player </param>
+        /// <param name="unit"> mainTarget to check percentage for I.E unit </param>
         /// <param name="mana"> if you want to use mana make this true</param>
         /// <returns></returns>
-        protected float getPercentValue(Obj_AI_Hero player, bool mana) {
-            return mana ? (int) (player.Mana/player.MaxMana)*100 : (int) (player.Health/player.MaxHealth)*100;
+        protected float getPercentValue(Obj_AI_Hero unit, bool mana) {
+            return mana ? (int) (unit.Mana/unit.MaxMana)*100 : (int) (unit.Health/unit.MaxHealth)*100;
         }
 
         /// <summary>
         ///     gets minions and champs in a spells path.
         /// </summary>
-        /// <param name="player"> the player </param>
+        /// <param name="player"> the unit </param>
         /// <param name="target"> the target </param>
         /// <param name="spell"> the spell to do the calculations for </param>
         /// <returns>
@@ -114,11 +114,11 @@ namespace Assemblies {
         }
 
         /// <summary>
-        ///     Checks if a player has the given buff.
+        ///     Checks if a unit has the given buff.
         /// </summary>
         /// <param name="target"></param>
         /// <param name="buffName"></param>
-        /// <returns>true if buff is on player / mainTarget</returns>
+        /// <returns>true if buff is on unit / mainTarget</returns>
         protected bool hasBuff(Obj_AI_Hero target, string buffName) {
             return
                 target.Buffs.Any(buff => String.Equals(buff.Name, buffName, StringComparison.CurrentCultureIgnoreCase));
