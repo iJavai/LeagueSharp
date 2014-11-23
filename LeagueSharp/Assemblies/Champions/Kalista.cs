@@ -85,7 +85,8 @@ namespace Assemblies.Champions {
 
         private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
             if (unit.IsMe) {
-                castQ((Obj_AI_Hero) target);
+                if (isMenuEnabled(menu, "useQC"))
+                    castQ((Obj_AI_Hero) target);
             }
         }
 
@@ -194,8 +195,6 @@ namespace Assemblies.Champions {
 
             switch (XSLxOrbwalker.CurrentMode) {
                 case XSLxOrbwalker.Mode.Combo:
-                    if (isMenuEnabled(menu, "useQC"))
-                        castQ(target);
                     if (isMenuEnabled(menu, "useEC") && E.IsReady()) {
                         if (GetSpearCount >= menu.Item("eStacks").GetValue<Slider>().Value &&
                             player.Distance(target) <= E.Range) {
