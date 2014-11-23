@@ -10,10 +10,11 @@ using Color = System.Drawing.Color;
 namespace Assemblies.Champions {
     internal class Kalista : Champion {
         private static bool doneAA;
+
         /**
          * TODO: 
          * 
-         * Works on summoners rift.
+         * Works on summoners rift. // TODO autododgerprohax
 
            Good job on this, Q and E works nicely, care to add KS drake + Baron/Buffs with E? I stole drake from jungler (more dmg than smite with my E).
            
@@ -58,7 +59,7 @@ namespace Assemblies.Champions {
                 "[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
         }
 
-        private int GetSpearCount {
+        private int GetSpearCount { //TODO do more assemblies.
             get {
                 int xBuffCount = 0;
                 foreach (
@@ -66,7 +67,7 @@ namespace Assemblies.Champions {
                         from enemy in
                             ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(1000))
                         from buff in enemy.Buffs
-                        where buff.Name.Contains("kalistaexpungemarker")
+                        where buff.Name.Contains("KalistaExpungeMarker")
                         select buff) {
                     xBuffCount = buff.Count;
                 }
@@ -198,7 +199,7 @@ namespace Assemblies.Champions {
         private void castELong(Obj_AI_Hero target) {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
-                if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > E.Range) {
+                if (minion.HasBuff("KalistaExpungeMarker") && player.Distance(target) > E.Range) {
                     if (menu.Item("useEL").GetValue<bool>()) {
                         E.Cast(true);
                     }
@@ -209,7 +210,7 @@ namespace Assemblies.Champions {
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
             if (sender.IsMe) {
                 //Credits to Hellsing.
-                if (args.SData.Name == "KalistaExpungeWrapper")
+                if (args.SData.Name == "KalistaExpungeMarker")
                     Utility.DelayAction.Add(250, XSLxOrbwalker.ResetAutoAttackTimer);
             }
         }
@@ -222,10 +223,10 @@ namespace Assemblies.Champions {
                 Utility.DrawCircle(player.Position, E.Range, Color.Crimson);
             }
             if (menu.Item("drawStacks").GetValue<bool>()) {
-                Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+                Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range + E.Range, SimpleTs.DamageType.Physical);
                 Vector2 wts = Drawing.WorldToScreen(target.Position);
                 int buffCount = 0;
-                foreach (BuffInstance buff in target.Buffs.Where(buff => buff.Name == "kalistaexpungemarker")) {
+                foreach (BuffInstance buff in target.Buffs.Where(buff => buff.Name == "KalistaExpungeMarker")) {
                     buffCount = buff.Count;
                 }
                 Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + buffCount);

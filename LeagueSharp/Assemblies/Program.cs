@@ -9,7 +9,7 @@ using LeagueSharp.Common;
 
 namespace Assemblies {
     internal static class Program {
-        private static Champion champion;
+        private static Champion _champion;
       //  private static Version Version;
 
         private static void Main(string[] args) {
@@ -19,19 +19,20 @@ namespace Assemblies {
 
         private static void Game_OnGameLoad(EventArgs args) {
             //checkVersion();
+            _champion.player = ObjectManager.Player;
             try {
                 switch (ObjectManager.Player.ChampionName) {
                     case "Ezreal":
-                        champion = new Ezreal();
+                        _champion = new Ezreal();
                         break;
                     case "Fizz":
-                        champion = new Fizz();
+                        _champion = new Fizz();
                         break;
                     case "Kalista":
-                        champion = new Kalista();
+                        _champion = new Kalista();
                         break;;
                     default:
-                        champion = new Champion();
+                        _champion = new Champion();
                         break;
                 }
             }
