@@ -10,7 +10,20 @@ using Color = System.Drawing.Color;
 namespace Assemblies.Champions {
     internal class Kalista : Champion {
         private static bool doneAA;
-        public static Dictionary<Vector3, Vector3> jumpPos;
+
+        private readonly String[] jungleMinions = {
+            "SRU_Dragon",
+            "Sru_Crab",
+            "SRU_Baron",
+            "SRU_Blue",
+            "SRU_Red",
+            "SRU_Krug",
+            "SRU_Razorbeak",
+            "SRU_Murkwolf",
+            "SRU_Gromp"
+        };
+
+        private Dictionary<Vector3, Vector3> jumpPos;
 
         /**
          * TODO: 
@@ -76,6 +89,25 @@ namespace Assemblies.Champions {
             }
         }
 
+        private void killJungleMinion() {
+            List<Obj_AI_Base> jungleMinion = MinionManager.GetMinions(player.ServerPosition, E.Range, MinionTypes.All,
+                MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+
+            if (menu.Item("killJung").GetValue<KeyBind>().Active) {
+                foreach (Obj_AI_Base jungMinion in jungleMinion) {
+                    BuffInstance buff =
+                        jungMinion.Buffs.FirstOrDefault(xBuff => xBuff.DisplayName.ToLower() == "kalistaexpungemarker");
+                    foreach (string minionName in jungleMinions) {
+                        if (buff != null &&
+                            (jungMinion.Name == minionName && E.GetDamage(jungMinion)*buff.Count >= jungMinion.Health)) {
+                            E.Cast(true);
+                            Game.PrintChat("Kill Jungle Minion: " + jungMinion.Name);
+                        }
+                    }
+                }
+            }
+        }
+
         private float getComboDamage(Obj_AI_Hero target) {
             double damage = 0d;
 
@@ -133,6 +165,9 @@ namespace Assemblies.Champions {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
+            menu.SubMenu("misc").AddItem(
+                new MenuItem("killJung", "Killsteal Jungle Camp").SetValue(new KeyBind("T".ToCharArray()[0],
+                    KeyBindType.Toggle)));
 
             menu.AddItem(new MenuItem("creds", "Made by iJabba & DZ191"));
         }
@@ -154,6 +189,7 @@ namespace Assemblies.Champions {
 
             killsteal(target);
             AutoKillMinion();
+            killJungleMinion();
             //castELong(target);
 
             switch (XSLxOrbwalker.CurrentMode) {
@@ -331,7 +367,7 @@ namespace Assemblies.Champions {
             }
         }
 
-        public static void fillPositions() {
+        public void fillPositions() {
             jumpPos = new Dictionary<Vector3, Vector3>();
 
             switch (Game.MapId) {
