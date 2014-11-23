@@ -130,6 +130,8 @@ namespace Assemblies.Champions {
             R = new Spell(SpellSlot.R, 1475);
 
             Q.SetSkillshot(0.12f, 40, 1800, true, SkillshotType.SkillshotLine);
+
+            fillPositions();
         }
 
         private void loadMenu() {
@@ -175,23 +177,14 @@ namespace Assemblies.Champions {
 
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
-            // (player.IsAutoAttacking && !doneAA)
-            //   {
-            //     sendMovementPacket(Game.CursorPos.To2D());
-            //       doneAA = true;
-            //player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-            //   }
-            //   else
-            //   {
-            //       doneAA = false;
-            //   }
-            // Console.WriteLine(player..ToString());
             Obj_AI_Hero target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
 
             killsteal(target);
             AutoKillMinion();
             //killJungleMinion();
             //castELong(target);
+
+            //Game.PrintChat("Pos: "+ player.Position);
 
             switch (XSLxOrbwalker.CurrentMode) {
                 case XSLxOrbwalker.Mode.Combo:
@@ -274,20 +267,20 @@ namespace Assemblies.Champions {
                 }
                 Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + buffCount);
             }
-            /*if (isMenuEnabled(menu, "drawFlee")) {
+            if (menu.Item("drawFlee").GetValue<bool>()) {
                 foreach (var pos in jumpPos) {
-                    if (ObjectManager.Player.Distance(pos.Key) <= 500f ||
-                        ObjectManager.Player.Distance(pos.Value) <= 500f) {
+                    if (player.Distance(pos.Key) <= 500f ||
+                        player.Distance(pos.Value) <= 500f) {
                         Drawing.DrawCircle(pos.Key, 75f, Color.Aqua);
                         Drawing.DrawCircle(pos.Value, 75f, Color.Aqua);
                     }
-                    if (ObjectManager.Player.Distance(pos.Key) <= 35f ||
-                        ObjectManager.Player.Distance(pos.Value) <= 35f) {
+                    if (player.Distance(pos.Key) <= 35f ||
+                        player.Distance(pos.Value) <= 35f) {
                         Utility.DrawCircle(pos.Key, 70f, Color.GreenYellow);
                         Utility.DrawCircle(pos.Value, 70f, Color.GreenYellow);
                     }
                 }
-            }*/
+            }
         }
 
         private void castQ(Obj_AI_Hero target) {
@@ -323,14 +316,14 @@ namespace Assemblies.Champions {
         }
 
         private void fleeMode() {
-            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition,
+            List<Obj_AI_Base> targets = MinionManager.GetMinions(player.ServerPosition,
                 XSLxOrbwalker.GetAutoAttackRange(), MinionTypes.All, MinionTeam.NotAlly);
             //IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.IsEnemy);
             Obj_AI_Base bestTarget = null;
 
             foreach (
                 Obj_AI_Base target in
-                    minions.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
+                    targets.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
                 bestTarget = target;
             }
             //TODO aa minions to fleeaway // DONE
@@ -370,7 +363,7 @@ namespace Assemblies.Champions {
             }
         }
 
-        public void fillPositions() {
+        private void fillPositions() {
             jumpPos = new Dictionary<Vector3, Vector3>();
 
             switch (Game.MapId) {
@@ -390,6 +383,9 @@ namespace Assemblies.Champions {
                     var pNewMap6 = new Vector3(9356f, 4590f, -71.2406f);
                     var pNewMap7 = new Vector3(9076f, 4580f, 52.1311f);
                     jumpPos.Add(pNewMap6, pNewMap7);
+                    var pNewMap8 = new Vector3(11606f, 4770f, -71.2406f);
+                    var pNewMap9 = new Vector3(11838f, 4936f, 51.93488f);
+                    jumpPos.Add(pNewMap8, pNewMap9);
                     break;
 
                 case GameMapId.SummonersRift: /* thnx to DZ191 for this list - DZ191 is a fag ;)*/
