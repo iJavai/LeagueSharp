@@ -37,6 +37,7 @@ namespace Assemblies.Champions {
 
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
+            XSLxOrbwalker.AfterAttack += onAfterAttack;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
 
@@ -59,7 +60,8 @@ namespace Assemblies.Champions {
                 "[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
         }
 
-        private int GetSpearCount { //TODO do more assemblies.
+        private int GetSpearCount {
+            //TODO do more assemblies.
             get {
                 int xBuffCount = 0;
                 foreach (
@@ -72,6 +74,12 @@ namespace Assemblies.Champions {
                     xBuffCount = buff.Count;
                 }
                 return xBuffCount;
+            }
+        }
+
+        private void onAfterAttack(Obj_AI_Base unit, Obj_AI_Base target) {
+            if (unit.IsMe) {
+                castQ((Obj_AI_Hero) target);
             }
         }
 
@@ -90,10 +98,10 @@ namespace Assemblies.Champions {
         }
 
         private void loadSpells() {
-            Q = new Spell(SpellSlot.Q, 1150);
+            Q = new Spell(SpellSlot.Q, 1175);
             W = new Spell(SpellSlot.W, 5500);
             E = new Spell(SpellSlot.E, 975);
-            R = new Spell(SpellSlot.R, 1350);
+            R = new Spell(SpellSlot.R, 1475);
 
             Q.SetSkillshot(0.12f, 40, 1800, true, SkillshotType.SkillshotLine);
         }
@@ -199,7 +207,7 @@ namespace Assemblies.Champions {
         private void castELong(Obj_AI_Hero target) {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
-                if (minion.HasBuff("KalistaExpungeMarker") && player.Distance(target) > E.Range) {
+                if (minion.HasBuff("KalistaExpungeMarker") && player.Distance(target) > E.Range && target.IsVisible && target.HasBuff("KalistaExpungeMarker")) {
                     if (menu.Item("useEL").GetValue<bool>()) {
                         E.Cast(true);
                     }
@@ -239,16 +247,6 @@ namespace Assemblies.Champions {
                 if (Q.IsReady() && qPrediction.Hitchance >= HitChance.Medium) {
                     Q.Cast(target, true);
                 }
-                /*if (qPrediction.Hitchance == HitChance.Collision) {
-                    List<Obj_AI_Base> qCollision = qPrediction.CollisionObjects;
-                    Obj_AI_Base minionToHit =
-                        qCollision.FirstOrDefault(
-                            obj =>
-                                Q.GetPrediction(obj).Hitchance >= HitChance.Medium && Q.GetDamage(target) > obj.Health);
-                    if (minionToHit != null && minionToHit.IsValid) {
-                        Q.Cast(minionToHit, true);
-                    }
-                }*/
             }
         }
 
@@ -278,28 +276,19 @@ namespace Assemblies.Champions {
         private void fleeMode() {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition,
                 XSLxOrbwalker.GetAutoAttackRange(), MinionTypes.All, MinionTeam.NotAlly);
-            IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.IsEnemy);
-            Obj_AI_Base bestMinion = null;
-            Obj_AI_Hero bestChampion = null;
+            //IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.IsEnemy);
+            Obj_AI_Base bestTarget = null;
 
             foreach (
-                Obj_AI_Base minion in
+                Obj_AI_Base target in
                     minions.Where(minion => minion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())) {
-                bestMinion = minion;
+                bestTarget = target;
             }
-
-            foreach (Obj_AI_Hero champion in champions) {
-                if (champion.Distance(player) <= XSLxOrbwalker.GetAutoAttackRange())
-                    bestChampion = champion;
-            }
-
             //TODO aa minions to fleeaway // DONE
             //TODO q Fleeing over walls.
             if (menu.Item("useAAF").GetValue<bool>()) {
-                if (bestMinion != null)
-                    XSLxOrbwalker.Orbwalk(Game.CursorPos, bestMinion);
-                else if (bestChampion != null)
-                    XSLxOrbwalker.Orbwalk(Game.CursorPos, bestChampion);
+                if (bestTarget != null)
+                    XSLxOrbwalker.Orbwalk(Game.CursorPos, bestTarget);
             }
         }
 
