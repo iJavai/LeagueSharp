@@ -8,9 +8,6 @@ namespace Assemblies.Champions {
         public Irelia() {
             loadMenu();
             loadSpells();
-            DFG = Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline ||
-                  Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar
-                ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
 
             Game.OnGameUpdate += onUpdate;
             Drawing.OnDraw += onDraw;
