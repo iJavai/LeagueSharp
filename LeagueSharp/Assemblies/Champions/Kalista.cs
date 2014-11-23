@@ -195,6 +195,10 @@ namespace Assemblies.Champions {
 
             switch (XSLxOrbwalker.CurrentMode) {
                 case XSLxOrbwalker.Mode.Combo:
+                    if (player.Distance(target) > XSLxOrbwalker.GetAutoAttackRange()) {
+                        if (isMenuEnabled(menu, "useQC"))
+                            castQ(target);
+                    }
                     if (isMenuEnabled(menu, "useEC") && E.IsReady()) {
                         if (GetSpearCount >= menu.Item("eStacks").GetValue<Slider>().Value &&
                             player.Distance(target) <= E.Range) {
