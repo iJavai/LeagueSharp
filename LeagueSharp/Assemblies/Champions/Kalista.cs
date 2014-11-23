@@ -165,9 +165,9 @@ namespace Assemblies.Champions {
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
-            menu.SubMenu("misc").AddItem(
+            /*menu.SubMenu("misc").AddItem(
                 new MenuItem("killJung", "Killsteal Jungle Camp").SetValue(new KeyBind("T".ToCharArray()[0],
-                    KeyBindType.Toggle)));
+                    KeyBindType.Toggle)));*/
 
             menu.AddItem(new MenuItem("creds", "Made by iJabba & DZ191"));
         }
@@ -189,7 +189,7 @@ namespace Assemblies.Champions {
 
             killsteal(target);
             AutoKillMinion();
-            killJungleMinion();
+            //killJungleMinion();
             //castELong(target);
 
             switch (XSLxOrbwalker.CurrentMode) {
@@ -271,7 +271,7 @@ namespace Assemblies.Champions {
                 }
                 Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + buffCount);
             }
-            if (isMenuEnabled(menu, "drawFlee")) {
+            /*if (isMenuEnabled(menu, "drawFlee")) {
                 foreach (var pos in jumpPos) {
                     if (ObjectManager.Player.Distance(pos.Key) <= 500f ||
                         ObjectManager.Player.Distance(pos.Value) <= 500f) {
@@ -284,7 +284,7 @@ namespace Assemblies.Champions {
                         Utility.DrawCircle(pos.Value, 70f, Color.GreenYellow);
                     }
                 }
-            }
+            }*/
         }
 
         private void castQ(Obj_AI_Hero target) {
