@@ -54,7 +54,7 @@ namespace Assemblies.Champions {
             XSLxOrbwalker.AfterAttack += onAfterAttack;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
-            fillPositions();
+            //fillPositions();
 
             var wc = new WebClient {Proxy = null};
 
