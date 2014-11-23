@@ -10,6 +10,7 @@ using Color = System.Drawing.Color;
 namespace Assemblies.Champions {
     internal class Kalista : Champion {
         private static bool doneAA;
+        public static Dictionary<Vector3, Vector3> jumpPos;
 
         /**
          * TODO: 
@@ -129,13 +130,14 @@ namespace Assemblies.Champions {
             //menu.SubMenu("killsteal").AddItem(new MenuItem("useEKO", "out of range killsteal").SetValue(true));
 
             menu.AddSubMenu(new Menu("Flee Options", "flee"));
-            //menu.SubMenu("flee").AddItem(new MenuItem("useQF", "Use Q for fleeing").SetValue(true));
+            menu.SubMenu("flee").AddItem(new MenuItem("useQF", "Use Q for fleeing").SetValue(true));
             menu.SubMenu("flee").AddItem(new MenuItem("useAAF", "Use AA's for fleeing").SetValue(true));
 
             menu.AddSubMenu(new Menu("Drawing Options", "drawing"));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q Range").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawE", "Draw E Range").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawStacks", "Draw spear stacks").SetValue(false));
+            menu.SubMenu("drawing").AddItem(new MenuItem("drawFlee", "Draw Flee Spots").SetValue(true));
 
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
@@ -204,10 +206,12 @@ namespace Assemblies.Champions {
                 E.Cast(true);
         }
 
+
         private void castELong(Obj_AI_Hero target) {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
-                if (minion.HasBuff("KalistaExpungeMarker") && player.Distance(target) > E.Range && target.IsVisible && target.HasBuff("KalistaExpungeMarker")) {
+                if (minion.HasBuff("KalistaExpungeMarker") && player.Distance(target) > E.Range && target.IsVisible &&
+                    target.HasBuff("KalistaExpungeMarker")) {
                     if (menu.Item("useEL").GetValue<bool>()) {
                         E.Cast(true);
                     }
@@ -238,6 +242,20 @@ namespace Assemblies.Champions {
                     buffCount = buff.Count;
                 }
                 Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + buffCount);
+            }
+            if (isMenuEnabled(menu, "drawFlee")) {
+                foreach (var pos in jumpPos) {
+                    if (ObjectManager.Player.Distance(pos.Key) <= 500f ||
+                        ObjectManager.Player.Distance(pos.Value) <= 500f) {
+                        Drawing.DrawCircle(pos.Key, 75f, Color.Aqua);
+                        Drawing.DrawCircle(pos.Value, 75f, Color.Aqua);
+                    }
+                    if (ObjectManager.Player.Distance(pos.Key) <= 35f ||
+                        ObjectManager.Player.Distance(pos.Value) <= 35f) {
+                        Utility.DrawCircle(pos.Key, 70f, Color.GreenYellow);
+                        Utility.DrawCircle(pos.Value, 70f, Color.GreenYellow);
+                    }
+                }
             }
         }
 
@@ -289,6 +307,21 @@ namespace Assemblies.Champions {
             if (menu.Item("useAAF").GetValue<bool>()) {
                 if (bestTarget != null)
                     XSLxOrbwalker.Orbwalk(Game.CursorPos, bestTarget);
+            }
+
+            if (menu.Item("useQF").GetValue<bool>()) { // full credits to xQx
+                if (!Q.IsReady())
+                    return;
+                foreach (Vector3 xTo in from pos in jumpPos
+                    where ObjectManager.Player.Distance(pos.Key) <= 35f ||
+                          ObjectManager.Player.Distance(pos.Value) <= 35f
+                    let xTo = pos.Value
+                    select ObjectManager.Player.Distance(pos.Key) < ObjectManager.Player.Distance(pos.Value)
+                        ? pos.Value
+                        : pos.Key) {
+                    Q.Cast(new Vector2(xTo.X, xTo.Y), true);
+                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(xTo.X, xTo.Y)).Send();
+                }
             }
         }
 
