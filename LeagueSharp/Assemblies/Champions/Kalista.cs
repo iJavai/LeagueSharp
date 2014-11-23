@@ -67,7 +67,7 @@ namespace Assemblies.Champions {
                         from enemy in
                             ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(975))
                         from buff in enemy.Buffs
-                        where buff.Name.Contains("KalistaExpungeMarker")
+                        where buff.Name == "KalistaExpungeMarker"
                         select buff) {
                     xBuffCount = buff.Count;
                 }
