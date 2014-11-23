@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Assemblies.Champions;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -10,11 +6,11 @@ using LeagueSharp.Common;
 namespace Assemblies {
     internal static class Program {
         private static Champion _champion;
-      //  private static Version Version;
+        //  private static Version Version;
 
         private static void Main(string[] args) {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
-           // Version = Assembly.GetExecutingAssembly().GetName().Version;
+            // Version = Assembly.GetExecutingAssembly().GetName().Version;
         }
 
         private static void Game_OnGameLoad(EventArgs args) {
@@ -29,7 +25,10 @@ namespace Assemblies {
                         break;
                     case "Kalista":
                         _champion = new Kalista();
-                        break;;
+                        break;
+                    case "Irelia":
+                        //TODO irelia
+                        break;
                     default:
                         _champion = new Champion();
                         break;
@@ -39,6 +38,7 @@ namespace Assemblies {
                 Console.WriteLine("Fail.");
             }
         }
+
 /**
         private static void checkVersion() {
             Task.Factory.StartNew(() => {

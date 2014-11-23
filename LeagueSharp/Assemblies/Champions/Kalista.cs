@@ -65,7 +65,7 @@ namespace Assemblies.Champions {
                 foreach (
                     BuffInstance buff in
                         from enemy in
-                            ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(1000))
+                            ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(975))
                         from buff in enemy.Buffs
                         where buff.Name.Contains("KalistaExpungeMarker")
                         select buff) {
