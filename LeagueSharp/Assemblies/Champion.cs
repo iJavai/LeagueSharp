@@ -5,7 +5,7 @@ using LeagueSharp.Common;
 
 namespace Assemblies {
     internal class Champion : ChampionUtils {
-        public Obj_AI_Hero player;
+        public Obj_AI_Hero player = ObjectManager.Player;
         private readonly WardJumper wardJumper;
         public AntiRengar antiRengar;
         protected Spell E;
