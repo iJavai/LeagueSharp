@@ -13,13 +13,6 @@ namespace Assemblies.Champions {
             Game.OnGameUpdate += onUpdate;
             Drawing.OnDraw += onDraw;
             Game.PrintChat("[Assemblies] - Irelia Loaded.");
-
-            var wc = new WebClient {Proxy = null};
-
-            wc.DownloadString("http://league.square7.ch/put.php?name=iIrelia");
-            string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iIrelia");
-            Game.PrintChat("[Assemblies] - Irelia has been loaded " + Convert.ToInt32(amount) +
-                           " times by LeagueSharp Users.");
         }
 
         private void loadSpells() {
