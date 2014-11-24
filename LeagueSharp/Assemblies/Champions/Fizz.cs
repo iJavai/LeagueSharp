@@ -213,9 +213,10 @@ namespace Assemblies.Champions {
                     if (jumpStage == FizzJump.PLAYFUL && player.Spellbook.GetSpell(SpellSlot.E).Name == "FizzJump") {
                         E.Cast(target.ServerPosition, true);
                     }
-                }
-                if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
-                    E2.Cast(target.ServerPosition, true);
+
+                    if (jumpStage == FizzJump.TRICKSTER && player.Spellbook.GetSpell(SpellSlot.E).Name == "fizzjumptwo") {
+                        E2.Cast(target.ServerPosition, true);
+                    }
                 }
             }
 
@@ -230,7 +231,7 @@ namespace Assemblies.Champions {
             SpellSlot smite = player.GetSpellSlot("SummonerSmite");
             Obj_AI_Base minion =
                 MinionManager.GetMinions(player.Position, 1500, MinionTypes.All, MinionTeam.NotAlly).FirstOrDefault(
-                    i => i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1");
+                    i => i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1" || i.Name == "SRU_Dragon" || i.Name == "SRU_Baron");
 
             if (E.IsReady() && player.Distance(originalPosition) > 10 && jumpStage == FizzJump.PLAYFUL) {
                 sendMovementPacket(originalPosition);
