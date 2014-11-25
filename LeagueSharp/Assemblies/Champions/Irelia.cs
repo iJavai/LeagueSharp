@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -32,6 +33,7 @@ namespace Assemblies.Champions {
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("gapcloseQ", "Use Q to gapclose").SetValue(true));
+            menu.SubMenu("combo").AddItem(new MenuItem("OStunE", "Only Use E to stun").SetValue(true));
 
             menu.AddSubMenu(new Menu("Harass Options", "harass"));
             menu.SubMenu("harass").AddItem(new MenuItem("useQH", "Use Q in harass").SetValue(true));
@@ -70,11 +72,48 @@ namespace Assemblies.Champions {
 
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
+            var target = SimpleTs.GetTarget(isMenuEnabled(menu, "gapcloseQ") ? Q.Range : E.Range,
+                SimpleTs.DamageType.Physical);
 
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     //TODO onCombo
                     break;
+            }
+        }
+
+        private void Combo(Obj_AI_Hero target)
+        {
+            xSLxOrbwalker.ForcedTarget = target;
+            if (isMenuEnabled(menu, "gapcloseQ") &&
+                player.Distance(target) >= 375)
+            {
+                if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target)<=Q.Range)
+                {
+                    Q.Cast(target);
+                }
+            }
+            else
+            {
+                if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target) <= Q.Range)
+                {
+                    Q.Cast(target);
+                }
+            }
+            W.Cast();
+            if (isMenuEnabled(menu, "OStunE"))
+            {
+                if (canStun(target) && E.IsReady() && player.Distance(target)<=E.Range)
+                {
+                    E.Cast();
+                }
+            }
+            else
+            {
+                if (canStun(target) && E.IsReady() && player.Distance(target) <= E.Range)
+                {
+                    E.Cast();
+                }
             }
         }
 
