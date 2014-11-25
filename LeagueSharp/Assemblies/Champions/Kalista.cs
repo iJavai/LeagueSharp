@@ -17,11 +17,7 @@ namespace Assemblies.Champions {
             "Sru_Crab",
             "SRU_Baron",
             "SRU_Blue",
-            "SRU_Red",
-            "SRU_Krug",
-            "SRU_Razorbeak",
-            "SRU_Murkwolf",
-            "SRU_Gromp"
+            "SRU_Red"
         };
 
         private Dictionary<Vector3, Vector3> jumpPos;
@@ -62,7 +58,8 @@ namespace Assemblies.Champions {
             string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iKalista");
             Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) +
                            " times by LeagueSharp Users.");
-            Game.PrintChat("[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
+            Game.PrintChat(
+                "[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
             //fillPositions();
         }
 
@@ -75,7 +72,7 @@ namespace Assemblies.Champions {
                         from enemy in
                             ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.IsEnemy && enemy.IsValidTarget(975))
                         from buff in enemy.Buffs
-                        where buff.Name == "KalistaExpungeMarker"
+                        where buff.Name == "kalistaexpungemarker"
                         select buff) {
                     xBuffCount = buff.Count;
                 }
@@ -166,6 +163,16 @@ namespace Assemblies.Champions {
             menu.SubMenu("drawing").AddItem(new MenuItem("drawStacks", "Draw spear stacks").SetValue(false));
             menu.SubMenu("drawing").AddItem(new MenuItem("drawFlee", "Draw Flee Spots").SetValue(true));
 
+            MenuItem dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
+            Utility.HpBarDamageIndicator.DamageToUnit = getComboDamage;
+            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
+            dmgAfterComboItem.ValueChanged +=
+                delegate(object sender, OnValueChangeEventArgs eventArgs) {
+                    Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                };
+
+            menu.SubMenu("drawing").AddItem(dmgAfterComboItem);
+
             menu.AddSubMenu(new Menu("Misc Options", "misc"));
             menu.SubMenu("misc").AddItem(new MenuItem("eStacks", "Cast E on stacks").SetValue(new Slider(2, 1, 10)));
             /*menu.SubMenu("misc").AddItem(
@@ -183,9 +190,6 @@ namespace Assemblies.Champions {
             AutoKillMinion();
             //killJungleMinion();
             //castELong(target);
-
-            //Game.PrintChat("Pos: "+ player.Position);
-
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     if (player.Distance(target) > xSLxOrbwalker.GetAutoAttackRange()) {
@@ -234,8 +238,8 @@ namespace Assemblies.Champions {
         private void castELong(Obj_AI_Hero target) {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.ServerPosition, E.Range);
             foreach (Obj_AI_Base minion in minions) {
-                if (minion.HasBuff("KalistaExpungeMarker") && player.Distance(target) > E.Range && target.IsVisible &&
-                    target.HasBuff("KalistaExpungeMarker")) {
+                if (minion.HasBuff("kalistaexpungemarker") && player.Distance(target) > E.Range && target.IsVisible &&
+                    target.HasBuff("kalistaexpungemarker")) {
                     if (menu.Item("useEL").GetValue<bool>()) {
                         E.Cast(true);
                     }
@@ -246,7 +250,7 @@ namespace Assemblies.Champions {
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
             if (sender.IsMe) {
                 //Credits to Hellsing.
-                if (args.SData.Name == "KalistaExpungeMarker")
+                if (args.SData.Name == "kalistaexpungemarker")
                     Utility.DelayAction.Add(250, xSLxOrbwalker.ResetAutoAttackTimer);
             }
         }
@@ -265,7 +269,7 @@ namespace Assemblies.Champions {
                 foreach (BuffInstance buff in target.Buffs.Where(buff => buff.Name == "KalistaExpungeMarker")) {
                     buffCount = buff.Count;
                 }
-                Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.WhiteSmoke, "Spear Stacks: " + buffCount);
+                Drawing.DrawText(wts[0] - 100, wts[1] - 60, Color.Red, "Spear Stacks: " + buffCount);
             }
             if (menu.Item("drawFlee").GetValue<bool>()) {
                 foreach (var pos in jumpPos) {
@@ -318,7 +322,6 @@ namespace Assemblies.Champions {
         private void fleeMode() {
             List<Obj_AI_Base> targets = MinionManager.GetMinions(player.ServerPosition,
                 xSLxOrbwalker.GetAutoAttackRange(), MinionTypes.All, MinionTeam.NotAlly);
-            //IEnumerable<Obj_AI_Hero> champions = ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.IsEnemy);
             Obj_AI_Base bestTarget = null;
 
             foreach (

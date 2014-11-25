@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -27,7 +26,7 @@ namespace Assemblies.Champions {
         }
 
         private void loadMenu() {
-            menu.AddSubMenu(new Menu("Combo Options", "combo"));
+            menu.AddSubMenu(new Menu("DoCombo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
@@ -72,55 +71,58 @@ namespace Assemblies.Champions {
 
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
-            var target = SimpleTs.GetTarget(isMenuEnabled(menu, "gapcloseQ") ? Q.Range : E.Range,
+            Obj_AI_Hero target = SimpleTs.GetTarget(isMenuEnabled(menu, "gapcloseQ") ? Q.Range : E.Range,
                 SimpleTs.DamageType.Physical);
 
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
-                    //TODO onCombo
+                    DoCombo(target);
                     break;
             }
         }
 
-        private void Combo(Obj_AI_Hero target)
-        {
-            xSLxOrbwalker.ForcedTarget = target;
+        private void DoCombo(Obj_AI_Hero target) {
+            //xSLxOrbwalker.ForcedTarget = target; TODO not needed m8
             if (isMenuEnabled(menu, "gapcloseQ") &&
-                player.Distance(target) >= 375)
-            {
-                if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target)<=Q.Range)
-                {
-                    Q.Cast(target);
+                player.Distance(target) >= Q.Range) {
+                //TODO loop minions closest to target with /hp killable with Q :D
+            }
+            else {
+                if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target) <= Q.Range) {
+                    Q.Cast(target, true);
                 }
             }
-            else
-            {
-                if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target) <= Q.Range)
-                {
-                    Q.Cast(target);
+            if (isMenuEnabled(menu, "useWC") && W.IsReady()) {
+                W.Cast(true);
+            }
+            if (isMenuEnabled(menu, "OStunE")) {
+                if (canStun(target) && E.IsReady() && player.Distance(target) <= E.Range) {
+                    E.Cast(target, true);
                 }
             }
-            W.Cast();
-            if (isMenuEnabled(menu, "OStunE"))
-            {
-                if (canStun(target) && E.IsReady() && player.Distance(target)<=E.Range)
-                {
-                    E.Cast();
-                }
-            }
-            else
-            {
-                if (canStun(target) && E.IsReady() && player.Distance(target) <= E.Range)
-                {
-                    E.Cast();
+            else {
+                if (canStun(target) && E.IsReady() && player.Distance(target) <= E.Range) {
+                    E.Cast(target, true);
                 }
             }
         }
 
-        private void onDraw(EventArgs args) {}
+        private void onDraw(EventArgs args) {
+            
+        }
 
         private bool canStun(Obj_AI_Hero target) {
             return getPercentValue(target, false) > getPercentValue(player, false);
         }
+
+        private void laneclear() {
+            var minions = MinionManager.GetMinions(player.Position, Q.Range);
+            foreach (Obj_AI_Base minion in minions) {
+                if (minion.Distance(player) <= Q.Range && Q.GetDamage(minion) >= minion.Health && isMenuEnabled(menu, "useQL")) {
+                    Q.Cast(minion, true);
+                }
+            }
+        }
+
     }
 }
