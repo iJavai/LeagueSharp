@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -83,9 +84,19 @@ namespace Assemblies.Champions {
 
         private void doCombo(Obj_AI_Hero target) {
             //xSLxOrbwalker.ForcedTarget = target; TODO not needed m8
-            if (isMenuEnabled(menu, "gapcloseQ") &&
-                player.Distance(target) > Q.Range) {
+            if (isMenuEnabled(menu, new[] {"useQC", "gapcloseQ"}) && player.Distance(target) > Q.Range) {
                 //TODO minion jumping init to target
+                List<Obj_AI_Base> jumpMinions = MinionManager.GetMinions(player.Position, Q.Range);
+                foreach (Obj_AI_Base minion in jumpMinions) {
+                    if (Q.IsReady() && Q.GetDamage(minion) >= minion.Health &&
+                        minion.Distance(target.Position) < Q.Range && minion.IsValidTarget(Q.Range*3)) {
+                        Q.Cast(minion, true);
+                    }
+                }
+                /*if (target.IsValidTarget(Q.Range) && Q.IsReady())
+                    Q.Cast(target, true); 
+                 TODO idk if this is needed here.
+                 */ 
             }
             else {
                 if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target) <= Q.Range) {
@@ -107,22 +118,20 @@ namespace Assemblies.Champions {
             }
         }
 
-        private void onDraw(EventArgs args) {
-            
-        }
+        private void onDraw(EventArgs args) {}
 
         private bool canStun(Obj_AI_Hero target) {
             return getPercentValue(target, false) > getPercentValue(player, false);
         }
 
         private void laneclear() {
-            var minions = MinionManager.GetMinions(player.Position, Q.Range);
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.Position, Q.Range);
             foreach (Obj_AI_Base minion in minions) {
-                if (minion.Distance(player) <= Q.Range && Q.GetDamage(minion) >= minion.Health && isMenuEnabled(menu, "useQL")) {
+                if (minion.Distance(player) <= Q.Range && Q.GetDamage(minion) >= minion.Health &&
+                    isMenuEnabled(menu, "useQL")) {
                     Q.Cast(minion, true);
                 }
             }
         }
-
     }
 }

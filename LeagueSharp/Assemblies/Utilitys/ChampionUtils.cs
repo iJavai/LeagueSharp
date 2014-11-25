@@ -49,6 +49,10 @@ namespace Assemblies.Utilitys {
             return menu.Item(item).GetValue<bool>();
         }
 
+        protected bool isMenuEnabled(Menu menu , IEnumerable<string> items) {
+            return items.Select(item => menu.Item(item).GetValue<bool>()).FirstOrDefault();
+        }
+
         /// <summary>
         ///     Sends a simple ping to a given position.
         /// </summary>
