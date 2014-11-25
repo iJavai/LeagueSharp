@@ -26,7 +26,7 @@ namespace Assemblies.Champions {
         }
 
         private void loadMenu() {
-            menu.AddSubMenu(new Menu("DoCombo Options", "combo"));
+            menu.AddSubMenu(new Menu("doCombo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
@@ -71,21 +71,21 @@ namespace Assemblies.Champions {
 
         private void onUpdate(EventArgs args) {
             if (player.IsDead) return;
-            Obj_AI_Hero target = SimpleTs.GetTarget(isMenuEnabled(menu, "gapcloseQ") ? Q.Range : E.Range,
+            Obj_AI_Hero target = SimpleTs.GetTarget(isMenuEnabled(menu, "gapcloseQ") ? Q.Range*3 : Q.Range,
                 SimpleTs.DamageType.Physical);
 
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
-                    DoCombo(target);
+                    doCombo(target);
                     break;
             }
         }
 
-        private void DoCombo(Obj_AI_Hero target) {
+        private void doCombo(Obj_AI_Hero target) {
             //xSLxOrbwalker.ForcedTarget = target; TODO not needed m8
             if (isMenuEnabled(menu, "gapcloseQ") &&
-                player.Distance(target) >= Q.Range) {
-                //TODO loop minions closest to target with /hp killable with Q :D
+                player.Distance(target) > Q.Range) {
+                //TODO minion jumping init to target
             }
             else {
                 if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target) <= Q.Range) {
