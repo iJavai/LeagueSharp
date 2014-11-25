@@ -18,6 +18,13 @@ namespace Assemblies.Champions {
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
             Game.PrintChat("[Assemblies] - Ezreal Loaded.");
+
+            var wc = new WebClient {Proxy = null};
+
+            wc.DownloadString("http://league.square7.ch/put.php?name=iEzreal");
+            string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iEzreal");
+            Game.PrintChat("[Assemblies] - Ezreal has been loaded " + Convert.ToInt32(amount) +
+                           " times by LeagueSharp Users.");
         }
 
         private void loadSpells() {

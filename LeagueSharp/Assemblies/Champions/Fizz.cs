@@ -31,11 +31,18 @@ namespace Assemblies.Champions {
             xSLxOrbwalker.OnAttack += onAttack;
             Drawing.OnDraw += onDraw;
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
+
+            var wc = new WebClient {Proxy = null};
+
+            wc.DownloadString("http://league.square7.ch/put.php?name=iFizz");
+            string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iFizz");
+            Game.PrintChat("[Assemblies] - Fizz has been loaded " + Convert.ToInt32(amount) +
+                           " times by LeagueSharp Users.");
         }
 
         private void onInput(GameInputEventArgs args) {
             if (args.Input.Contains("cunt")) {
-               // args.Input.Replace("", "");
+                // args.Input.Replace("", "");
             }
         }
 
@@ -197,7 +204,7 @@ namespace Assemblies.Champions {
                     if (isMenuEnabled(menu, "useQC") && Q.IsReady())
                         Q.Cast(target, true);
                     if (isMenuEnabled(menu, "useRC") && R.IsReady()) {
-                            R.Cast(target.Position, true);
+                        R.Cast(target.Position, true);
                     }
                 }
                 else {
@@ -231,7 +238,9 @@ namespace Assemblies.Champions {
             SpellSlot smite = player.GetSpellSlot("SummonerSmite");
             Obj_AI_Base minion =
                 MinionManager.GetMinions(player.Position, 1500, MinionTypes.All, MinionTeam.NotAlly).FirstOrDefault(
-                    i => i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1" || i.Name == "SRU_Dragon" || i.Name == "SRU_Baron");
+                    i =>
+                        i.Name == "Worm12.1.1" || i.Name == "Dragon6.1.1" || i.Name == "SRU_Dragon" ||
+                        i.Name == "SRU_Baron");
 
             if (E.IsReady() && player.Distance(originalPosition) > 10 && jumpStage == FizzJump.PLAYFUL) {
                 sendMovementPacket(originalPosition);
