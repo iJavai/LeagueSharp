@@ -40,7 +40,7 @@ namespace Assemblies.Champions {
             menu.SubMenu("harass").AddItem(new MenuItem("useWH", "Use W in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useEH", "Use E in harass").SetValue(true));
             menu.SubMenu("harass").AddItem(new MenuItem("useRH", "Use R in harass").SetValue(true));
-            menu.SubMenu("harass").AddItem(new MenuItem("harassSlider", "hp to harass").SetValue(new Slider(30)));
+            menu.SubMenu("harass").AddItem(new MenuItem("harassSlider", "hp to harass R").SetValue(new Slider(30)));
 
             menu.AddSubMenu(new Menu("Laneclear Options", "laneclear"));
             menu.SubMenu("laneclear").AddItem(new MenuItem("useQL", "Use Q in laneclear").SetValue(true));
@@ -78,6 +78,9 @@ namespace Assemblies.Champions {
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
+                    break;
+                case xSLxOrbwalker.Mode.LaneClear:
+                    laneclear();
                     break;
             }
         }
