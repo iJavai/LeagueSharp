@@ -139,6 +139,42 @@ namespace Assemblies.Champions {
             }
         }
 
+        /* commented out u didnt add vars duh
+        private void SuperDuperOpChaseMode(Obj_AI_Hero target) {
+            if (!SelectedMinion.IsValid || !R.IsReady()) {
+                SelectedMinion = null;
+                NumberR = 0;
+            }
+            if (SelectedMinion.IsValidTarget() && R.IsReady() && NumberR > 0) {
+                R.Cast(SelectedMinion.Position);
+                NumberR -= 1;
+            }
+            if (QCastedMinion && Q.IsReady()) {
+                Q.Cast(target);
+                QCastedMinion = false;
+                return;
+            }
+            if (SelectedMinion == null) {
+                var MinionList = MinionManager.GetMinions(player.Position, Q.Range).ToList();
+                var List2 = new List<Obj_AI_Base>();
+                foreach (var min in MinionList) {
+                    if (min.Distance(target) <= Q.Range) { List2.Add(min); }
+                }
+                if (!List2.Any()) return;
+                var List3 = List2.OrderBy(m => m.Distance(target));
+                var minion = List3.First();
+                var NumberOfR = getNumberOfR(minion);
+                if (NumberOfR == 0) {
+                    Q.Cast(minion);
+                    QCastedMinion = true;
+                }
+                else {
+                    SelectedMinion = minion;
+                    NumberR = NumberOfR;
+                }
+            }
+        }*/
+
         private int getUltStacks() {
             foreach (BuffInstance buff in player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades")) {
                 return buff.Count; // might need to be buff.count - 1
