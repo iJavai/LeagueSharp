@@ -18,18 +18,6 @@ namespace Assemblies.Champions {
             Drawing.OnDraw += onDraw;
             Game.OnGameUpdate += onUpdate;
             Game.PrintChat("[Assemblies] - Ezreal Loaded.");
-
-            try {
-                using (var wc = new WebClient()) {
-                    wc.DownloadString("http://counter.lolbol.net/put.php?name=iEzreal");
-                    string amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=iEzreal");
-                    Game.PrintChat("[Assemblies] - Ezreal has been loaded " + Convert.ToInt32(amount) +
-                                   " times by LeagueSharp Users.");
-                }
-            }
-            catch (Exception) {
-                Game.PrintChat("Counter load failed.");
-            }
         }
 
         private void loadSpells() {

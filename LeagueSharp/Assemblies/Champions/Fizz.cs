@@ -31,18 +31,6 @@ namespace Assemblies.Champions {
             xSLxOrbwalker.OnAttack += onAttack;
             Drawing.OnDraw += onDraw;
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
-
-            try {
-                using (var wc = new WebClient()) {
-                    wc.DownloadString("http://counter.lolbol.net/put.php?name=iFizz");
-                    string amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=iFizz");
-                    Game.PrintChat("[Assemblies] - Fizz has been loaded " + Convert.ToInt32(amount) +
-                                   " times by LeagueSharp Users.");
-                }
-            }
-            catch (Exception) {
-                Game.PrintChat("Counter load failed.");
-            }
         }
 
         private void onInput(GameInputEventArgs args) {

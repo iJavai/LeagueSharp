@@ -51,18 +51,6 @@ namespace Assemblies.Champions {
             xSLxOrbwalker.AfterAttack += onAfterAttack;
             Obj_AI_Base.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Kalista Loaded.");
-
-            try {
-                using (var wc = new WebClient()) {
-                    wc.DownloadString("http://counter.lolbol.net/put.php?name=iKalista");
-                    string amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=iKalista");
-                    Game.PrintChat("[Assemblies] - iKalista has been loaded " + Convert.ToInt32(amount) +
-                                   " times by LeagueSharp Users.");
-                }
-            }
-            catch (Exception) {
-                Game.PrintChat("Counter load failed.");
-            }
             Game.PrintChat(
                 "[Assemblies] - This is only in BETA, please PM iJava or leave feedback on thread with suggestions and bugs.");
             //fillPositions();
