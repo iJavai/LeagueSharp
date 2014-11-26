@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 C:\Users\Corey\Documents\LeagueSharp\LeagueSharp\Assemblies\bin\Release\Assemblies.exe.config
+=======
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\iJavaLS\LeagueSharp\LeagueSharp\Assemblies\bin\Release\Assemblies.exe.config
+>>>>>>> origin/master
