@@ -19,7 +19,7 @@ namespace Assemblies.Champions {
 
         private void beforeAttack(xSLxOrbwalker.BeforeAttackEventArgs args) {
             if (args.Unit.IsMe) {
-                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range))
+                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) && !args.Target.IsMinion)
                     W.Cast(true);
             }
         }
