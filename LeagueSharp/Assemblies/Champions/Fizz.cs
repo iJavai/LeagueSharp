@@ -32,12 +32,17 @@ namespace Assemblies.Champions {
             Drawing.OnDraw += onDraw;
             Game.PrintChat("[Assemblies] - Fizz Loaded.");
 
-            var wc = new WebClient {Proxy = null};
-
-            wc.DownloadString("http://league.square7.ch/put.php?name=iFizz");
-            string amount = wc.DownloadString("http://league.square7.ch/get.php?name=iFizz");
-            Game.PrintChat("[Assemblies] - Fizz has been loaded " + Convert.ToInt32(amount) +
-                           " times by LeagueSharp Users.");
+            try {
+                using (var wc = new WebClient()) {
+                    wc.DownloadString("http://counter.lolbol.net/put.php?name=iFizz");
+                    string amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=iFizz");
+                    Game.PrintChat("[Assemblies] - Fizz has been loaded " + Convert.ToInt32(amount) +
+                                   " times by LeagueSharp Users.");
+                }
+            }
+            catch (Exception) {
+                Game.PrintChat("Counter load failed.");
+            }
         }
 
         private void onInput(GameInputEventArgs args) {
