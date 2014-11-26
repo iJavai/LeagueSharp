@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -136,6 +137,13 @@ namespace Assemblies.Champions {
                         R.Cast(rPrediction.UnitPosition, true);
                 }
             }
+        }
+
+        private int getUltStacks() {
+            foreach (BuffInstance buff in player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades")) {
+                return buff.Count; // might need to be buff.count - 1
+            }
+            return 4; // idk might work :^)
         }
 
         private void onDraw(EventArgs args) {}
