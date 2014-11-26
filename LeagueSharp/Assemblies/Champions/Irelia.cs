@@ -27,7 +27,7 @@ namespace Assemblies.Champions {
         }
 
         private void loadMenu() {
-            menu.AddSubMenu(new Menu("doCombo Options", "combo"));
+            menu.AddSubMenu(new Menu("Combo Options", "combo"));
             menu.SubMenu("combo").AddItem(new MenuItem("useQC", "Use Q in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useWC", "Use W in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(new MenuItem("useEC", "Use E in combo").SetValue(true));
@@ -84,7 +84,7 @@ namespace Assemblies.Champions {
 
         private void doCombo(Obj_AI_Hero target) {
             //xSLxOrbwalker.ForcedTarget = target; TODO not needed m8
-            if (isMenuEnabled(menu, new[] {"useQC", "gapcloseQ"}) && player.Distance(target) > Q.Range) {
+            if (isMenuEnabled(menu, "gapcloseQ") && player.Distance(target) > Q.Range) {
                 //TODO minion jumping init to target
                 List<Obj_AI_Base> jumpMinions = MinionManager.GetMinions(player.Position, Q.Range);
                 foreach (Obj_AI_Base minion in jumpMinions) {
@@ -93,16 +93,13 @@ namespace Assemblies.Champions {
                         Q.Cast(minion, true);
                     }
                 }
-                /*if (target.IsValidTarget(Q.Range) && Q.IsReady())
-                    Q.Cast(target, true); 
-                 TODO idk if this is needed here.
-                 */ 
             }
-            else {
-                if (isMenuEnabled(menu, "useQC") && Q.IsReady() && player.Distance(target) <= Q.Range) {
+            //TODO: note, removed the else statment, because not rly needed it may cause problems when target is actually in Q Range and doesn't need to be gapclosed.
+            if (isMenuEnabled(menu, "useQC") && player.Distance(target) <= Q.Range) {
+                if (target.IsValidTarget(Q.Range) && Q.IsReady())
                     Q.Cast(target, true);
-                }
             }
+
             if (isMenuEnabled(menu, "useWC") && W.IsReady()) {
                 W.Cast(true);
             }
@@ -112,7 +109,7 @@ namespace Assemblies.Champions {
                 }
             }
             else {
-                if (canStun(target) && E.IsReady() && player.Distance(target) <= E.Range) {
+                if (E.IsReady() && player.Distance(target) <= E.Range) {
                     E.Cast(target, true);
                 }
             }
@@ -127,9 +124,18 @@ namespace Assemblies.Champions {
         private void laneclear() {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(player.Position, Q.Range);
             foreach (Obj_AI_Base minion in minions) {
+                if (isMenuEnabled(menu, "useWL") && W.IsReady()) {
+                    W.Cast(true);
+                }
                 if (minion.Distance(player) <= Q.Range && Q.GetDamage(minion) >= minion.Health &&
                     isMenuEnabled(menu, "useQL")) {
                     Q.Cast(minion, true);
+                }
+                if (minion.Distance(player) <= E.Range && isMenuEnabled(menu, "useEL") && E.IsReady()) {
+                    E.Cast(minion, true);
+                }
+                if (R.IsReady() && isMenuEnabled(menu, "useRL") && minion.Distance(player) <= R.Range) {
+                    R.Cast(minion, true);
                 }
             }
         }
