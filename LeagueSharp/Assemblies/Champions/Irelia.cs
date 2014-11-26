@@ -88,7 +88,6 @@ namespace Assemblies.Champions {
         private void doCombo(Obj_AI_Hero target) {
             //xSLxOrbwalker.ForcedTarget = target; TODO not needed m8
             if (isMenuEnabled(menu, "gapcloseQ") && player.Distance(target) > Q.Range) {
-                //TODO minion jumping init to target
                 List<Obj_AI_Base> jumpMinions = MinionManager.GetMinions(player.Position, Q.Range);
                 foreach (Obj_AI_Base minion in jumpMinions) {
                     if (Q.IsReady() && Q.GetDamage(minion) >= minion.Health &&
@@ -114,6 +113,14 @@ namespace Assemblies.Champions {
             else {
                 if (E.IsReady() && player.Distance(target) <= E.Range) {
                     E.Cast(target, true);
+                }
+            }
+
+            if (R.IsReady() && player.Distance(target) <= R.Range) {
+                if (isMenuEnabled(menu, "useRC")) {
+                    PredictionOutput rPrediction = R.GetPrediction(target, true);
+                    if (rPrediction.Hitchance >= HitChance.Medium)
+                        R.Cast(rPrediction.UnitPosition, true);
                 }
             }
         }
