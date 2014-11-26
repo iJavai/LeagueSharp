@@ -12,7 +12,15 @@ namespace Assemblies.Champions {
 
             Game.OnGameUpdate += onUpdate;
             Drawing.OnDraw += onDraw;
+            xSLxOrbwalker.BeforeAttack += beforeAttack;
             Game.PrintChat("[Assemblies] - Irelia Loaded.");
+        }
+
+        private void beforeAttack(xSLxOrbwalker.BeforeAttackEventArgs args) {
+            if (args.Unit.IsMe) {
+                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range))
+                    W.Cast(true);
+            }
         }
 
         private void loadSpells() {
@@ -75,6 +83,10 @@ namespace Assemblies.Champions {
             Obj_AI_Hero target = SimpleTs.GetTarget(isMenuEnabled(menu, "gapcloseQ") ? Q.Range*3 : Q.Range,
                 SimpleTs.DamageType.Physical);
 
+            /*foreach (BuffInstance buff in player.Buffs) {
+                Game.PrintChat(buff.Name);   
+            }*/
+
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
@@ -102,9 +114,9 @@ namespace Assemblies.Champions {
                     Q.Cast(target, true);
             }
 
-            if (isMenuEnabled(menu, "useWC") && W.IsReady()) {
+            /*if (isMenuEnabled(menu, "useWC") && W.IsReady()) {
                 W.Cast(true);
-            }
+            }* TODO before attack mate/ */
             if (isMenuEnabled(menu, "OStunE")) {
                 if (canStun(target) && E.IsReady() && player.Distance(target) <= E.Range) {
                     E.Cast(target, true);
@@ -116,6 +128,7 @@ namespace Assemblies.Champions {
                 }
             }
 
+            //TODO find buff name for keeping count of charges?
             if (R.IsReady() && player.Distance(target) <= R.Range) {
                 if (isMenuEnabled(menu, "useRC")) {
                     PredictionOutput rPrediction = R.GetPrediction(target, true);
@@ -128,7 +141,7 @@ namespace Assemblies.Champions {
         private void onDraw(EventArgs args) {}
 
         private bool canStun(Obj_AI_Hero target) {
-            return getPercentValue(target, false) > getPercentValue(player, false);
+            return target.Health / target.MaxHealth * 100 > player.Health / player.MaxHealth * 100;
         }
 
         private void laneclear() {

@@ -27,7 +27,7 @@ namespace Assemblies {
                         _champion = new Kalista();
                         break;
                     case "Irelia":
-                        //TODO irelia
+                        _champion = new Irelia();
                         break;
                     default:
                         _champion = new Champion();
