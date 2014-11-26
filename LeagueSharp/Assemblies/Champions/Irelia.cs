@@ -128,7 +128,7 @@ namespace Assemblies.Champions {
                 }
             }
 
-            //TODO find buff name for keeping count of charges?
+            //TODO find buff name for keeping count of charges? == IreliaTranscendentBlades
             if (R.IsReady() && player.Distance(target) <= R.Range) {
                 if (isMenuEnabled(menu, "useRC")) {
                     PredictionOutput rPrediction = R.GetPrediction(target, true);
