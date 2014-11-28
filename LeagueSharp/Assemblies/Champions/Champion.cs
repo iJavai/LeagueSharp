@@ -1,9 +1,8 @@
-﻿using System;
-using Assemblies.Utilitys;
+﻿using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
 
-namespace Assemblies {
+namespace Assemblies.Champions {
     internal class Champion : ChampionUtils {
         public Obj_AI_Hero player = ObjectManager.Player;
         private readonly WardJumper wardJumper;
@@ -13,6 +12,7 @@ namespace Assemblies {
         protected Spell R;
         protected Spell W;
         public static Menu menu;
+        public static Menu TargetSelectorMenu;
         //protected Orbwalking.Orbwalker orbwalker;
 
         public Champion() {
@@ -25,9 +25,9 @@ namespace Assemblies {
             menu = new Menu("Assemblies - " + player.ChampionName, "Assemblies - " + player.ChampionName,
                 true);
 
-            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            SimpleTs.AddToMenu(targetSelectorMenu);
-            menu.AddSubMenu(targetSelectorMenu);
+            TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
+            SimpleTs.AddToMenu(TargetSelectorMenu);
+            menu.AddSubMenu(TargetSelectorMenu);
 
             //Orbwalker submenu
             var orbwalkerMenu = new Menu("xSLx-Orbwalker", "orbwalker");

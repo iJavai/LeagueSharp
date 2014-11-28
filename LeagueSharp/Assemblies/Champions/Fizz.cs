@@ -22,7 +22,7 @@ namespace Assemblies.Champions {
             addFleeSpots();
 
             // ReSharper disable once ObjectCreationAsStatement
-            new AssassinManager();
+            //new AssassinManager();
 
             DFG = Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline ||
                   Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar

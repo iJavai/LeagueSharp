@@ -86,7 +86,7 @@
     <Compile Include="Champions\Irelia.cs" />
     <Compile Include="Champions\Kalista.cs" />
     <Compile Include="Utilitys\AntiRengar.cs" />
-    <Compile Include="Champion.cs" />
+    <Compile Include="Champions\Champion.cs" />
     <Compile Include="Champions\Ezreal.cs" />
     <Compile Include="Champions\Fizz.cs" />
     <Compile Include="Utilitys\AssassinManager.cs" />
