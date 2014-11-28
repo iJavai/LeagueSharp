@@ -89,6 +89,7 @@
     <Compile Include="Champion.cs" />
     <Compile Include="Champions\Ezreal.cs" />
     <Compile Include="Champions\Fizz.cs" />
+    <Compile Include="Utilitys\AssassinManager.cs" />
     <Compile Include="Utilitys\ChampionUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />

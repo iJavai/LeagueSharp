@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -21,6 +20,9 @@ namespace Assemblies.Champions {
             loadMenu();
             loadSpells();
             addFleeSpots();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            new AssassinManager();
 
             DFG = Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline ||
                   Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar
@@ -47,6 +49,8 @@ namespace Assemblies.Champions {
             menu.SubMenu("combo").AddItem(new MenuItem("useRC", "Use R in combo").SetValue(true));
             menu.SubMenu("combo").AddItem(
                 new MenuItem("initR", "Initiate with R").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
+            menu.SubMenu("combo")
+                .AddItem(new MenuItem("ActiveCombo", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
 
             MenuItem dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
             Utility.HpBarDamageIndicator.DamageToUnit = getComboDamage;
@@ -132,6 +136,24 @@ namespace Assemblies.Champions {
                     }
                 }
             }
+            /*if (menu.Item("ActiveCombo").GetValue<KeyBind>().Active) {
+                int assassinRange = menu.Item("AssassinSearchRange").GetValue<Slider>().Value;
+                IEnumerable<Obj_AI_Hero> xEnemy = ObjectManager.Get<Obj_AI_Hero>()
+                    .Where(
+                        enemy =>
+                            enemy.Team != ObjectManager.Player.Team && !enemy.IsDead && enemy.IsVisible &&
+                            menu.Item("Assassin" + enemy.ChampionName) != null &&
+                            menu.Item("Assassin" + enemy.ChampionName).GetValue<bool>() &&
+                            ObjectManager.Player.Distance(enemy) < assassinRange);
+                Obj_AI_Hero[] objAiHeroes = xEnemy as Obj_AI_Hero[] ?? xEnemy.ToArray();
+                if (objAiHeroes.Length > 2) {
+                    Game.PrintChat(objAiHeroes[0].Distance(objAiHeroes[1]).ToString());
+                }
+                Obj_AI_Hero t = !objAiHeroes.Any()
+                    ? SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical)
+                    : objAiHeroes[0];
+                combo(t);
+            }*/
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     combo(target);
@@ -180,7 +202,8 @@ namespace Assemblies.Champions {
             }
         }
 
-        private void combo(Obj_AI_Hero target) {
+        private void combo(Obj_AI_Hero t) {
+            Obj_AI_Hero target = t;
             if (target.HasBuffOfType(BuffType.Invulnerability)) return;
 
             if (target.IsValidTarget(DFG.Range)) {

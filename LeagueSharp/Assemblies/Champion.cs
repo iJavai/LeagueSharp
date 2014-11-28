@@ -12,7 +12,7 @@ namespace Assemblies {
         protected Spell Q;
         protected Spell R;
         protected Spell W;
-        protected Menu menu;
+        public static Menu menu;
         //protected Orbwalking.Orbwalker orbwalker;
 
         public Champion() {
