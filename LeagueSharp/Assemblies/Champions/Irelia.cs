@@ -189,14 +189,14 @@ namespace Assemblies.Champions {
 
         private int getNumberOfR(Obj_AI_Base target)
         {
-            var NUmberOfR = 0;
-            var H = target.Health;
-            while (H >= Q.GetDamage(target))
+            var rCount = 0;
+            var targetHealth = target.Health;
+            while (targetHealth >= Q.GetDamage(target))
             {
-                NUmberOfR += 1;
-                H -= Q.GetDamage(target);
+                rCount += 1;
+                targetHealth -= Q.GetDamage(target);
             }
-            return NUmberOfR;
+            return rCount;
         }
         private int getUltStacks() {
             foreach (BuffInstance buff in player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades")) {

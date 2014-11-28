@@ -29,6 +29,9 @@ namespace Assemblies {
                     case "Irelia":
                         _champion = new Irelia();
                         break;
+                    case "Gnar":
+                        _champion = new Gnar();
+                        break;
                     default:
                         _champion = new Champion();
                         break;
