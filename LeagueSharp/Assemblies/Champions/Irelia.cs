@@ -24,8 +24,7 @@ namespace Assemblies.Champions {
 
         private void beforeAttack(xSLxOrbwalker.BeforeAttackEventArgs args) {
             if (args.Unit.IsMe) {
-                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) &&
-                    !args.Target.IsMinion)
+                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) && !args.Target.IsMinion)
                     W.Cast(true);
             }
         }
@@ -94,8 +93,6 @@ namespace Assemblies.Champions {
                 Game.PrintChat(buff.Name);   
             }*/
 
-            Game.PrintChat(string.Format("Ultimate Stacks: {0}", getUltStacks()));
-
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
@@ -158,7 +155,7 @@ namespace Assemblies.Champions {
                 NumberR -= 1;
                 PredictedArrivalTime = Game.Time + (player.Distance(SelectedMinion)/R.Speed);
             }
-            if (NumberR == 0 && Q.IsReady() && SelectedMinion.IsValidTarget(Q.Range) && !QCastedMinion && Game.Time > PredictedArrivalTime))
+            if (NumberR == 0 && Q.IsReady() && SelectedMinion.IsValidTarget(Q.Range) && !QCastedMinion && Game.Time > PredictedArrivalTime)
             {
                 Q.Cast(SelectedMinion);
                 QCastedMinion = true;
@@ -202,15 +199,16 @@ namespace Assemblies.Champions {
             return NUmberOfR;
         }
         private int getUltStacks() {
-            return
-                player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades").Select(buff => buff.Count)
-                    .FirstOrDefault();
+            foreach (BuffInstance buff in player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades")) {
+                return buff.Count; // might need to be buff.count - 1
+            }
+            return 4; // idk might work :^)
         }
 
         private void onDraw(EventArgs args) {}
 
         private bool canStun(Obj_AI_Hero target) {
-            return target.Health/target.MaxHealth*100 > player.Health/player.MaxHealth*100;
+            return target.Health / target.MaxHealth * 100 > player.Health / player.MaxHealth * 100;
         }
 
         private void laneclear() {
