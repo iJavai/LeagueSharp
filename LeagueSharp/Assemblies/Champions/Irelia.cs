@@ -6,7 +6,12 @@ using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Assemblies.Champions {
-    internal class Irelia : Champion {
+    internal class Irelia : Champion
+    {
+        public Obj_AI_Base SelectedMinion;
+        public bool QCastedMinion = false;
+        public int NumberR = 0;
+        public float PredictedArrivalTime;
         public Irelia() {
             loadMenu();
             loadSpells();
@@ -142,17 +147,24 @@ namespace Assemblies.Champions {
             }
         }
 
-        /* commented out u didnt add vars duh
+       
         private void SuperDuperOpChaseMode(Obj_AI_Hero target) {
             if (!SelectedMinion.IsValid || !R.IsReady()) {
                 SelectedMinion = null;
                 NumberR = 0;
             }
-            if (SelectedMinion.IsValidTarget() && R.IsReady() && NumberR > 0) {
+            if (SelectedMinion.IsValidTarget(R.Range) && R.IsReady() && NumberR > 0) {
                 R.Cast(SelectedMinion.Position);
                 NumberR -= 1;
+                PredictedArrivalTime = Game.Time + (player.Distance(SelectedMinion)/R.Speed);
             }
-            if (QCastedMinion && Q.IsReady()) {
+            if (NumberR == 0 && Q.IsReady() && SelectedMinion.IsValidTarget(Q.Range) && !QCastedMinion && Game.Time > PredictedArrivalTime))
+            {
+                Q.Cast(SelectedMinion);
+                QCastedMinion = true;
+                PredictedArrivalTime = Game.Time;
+            }
+            if (QCastedMinion && Q.IsReady() && target.IsValidTarget(Q.Range)) {
                 Q.Cast(target);
                 QCastedMinion = false;
                 return;
@@ -167,7 +179,7 @@ namespace Assemblies.Champions {
                 var List3 = List2.OrderBy(m => m.Distance(target));
                 var minion = List3.First();
                 var NumberOfR = getNumberOfR(minion);
-                if (NumberOfR == 0) {
+                if (NumberOfR == 0 && Q.IsReady() && minion.IsValidTarget(Q.Range)) {
                     Q.Cast(minion);
                     QCastedMinion = true;
                 }
@@ -176,8 +188,19 @@ namespace Assemblies.Champions {
                     NumberR = NumberOfR;
                 }
             }
-        }*/
+        }
 
+        private int getNumberOfR(Obj_AI_Base target)
+        {
+            var NUmberOfR = 0;
+            var H = target.Health;
+            while (H >= Q.GetDamage(target))
+            {
+                NUmberOfR += 1;
+                H -= Q.GetDamage(target);
+            }
+            return NUmberOfR;
+        }
         private int getUltStacks() {
             return
                 player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades").Select(buff => buff.Count)
