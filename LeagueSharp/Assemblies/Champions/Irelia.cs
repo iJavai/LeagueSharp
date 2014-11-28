@@ -176,10 +176,7 @@ namespace Assemblies.Champions {
         }*/
 
         private int getUltStacks() {
-            foreach (BuffInstance buff in player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades")) {
-                return buff.Count; // might need to be buff.count - 1
-            }
-            return 4; // idk might work :^)
+            return player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades").Select(buff => buff.Count).FirstOrDefault();
         }
 
         private void onDraw(EventArgs args) {}
