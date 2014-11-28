@@ -16,12 +16,13 @@ namespace Assemblies.Champions {
 
             Game.OnGameUpdate += onUpdate;
             Drawing.OnDraw += onDraw;
+            Obj_AI_Hero.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Gnar Loaded.");
         }
 
         private void loadSpells() {
             Q = new Spell(SpellSlot.Q, 1100f);
-            Q.SetSkillshot(0.066f, 60f, 1400f, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.066f, 60f, 1400f, false, SkillshotType.SkillshotLine);
 
             qMega = new Spell(SpellSlot.Q, 1100f);
             qMega.SetSkillshot(0.60f, 90f, 2100f, true, SkillshotType.SkillshotLine);
@@ -73,9 +74,8 @@ namespace Assemblies.Champions {
             menu.SubMenu("misc").AddItem(new MenuItem("unitHop", "Always bounce off units for flee").SetValue(true));
             menu.SubMenu("misc").AddItem(
                 new MenuItem("throwPos", "Position to throw enemies").SetValue(
-                    new StringList(new[] {"Closest Wall", "Mouse Position"})));
+                    new StringList(new[] {"Closest Wall", "Mouse Position", "Closest Turret", "Closest Ally"})));
             menu.SubMenu("misc").AddItem(new MenuItem("alwaysR", "Always Ult if killable").SetValue(true));
-
         }
 
         private void onUpdate(EventArgs args) {
@@ -86,6 +86,9 @@ namespace Assemblies.Champions {
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
+                    break;
+                case xSLxOrbwalker.Mode.Flee:
+                    unitFlee();
                     break;
             }
         }
@@ -113,67 +116,79 @@ namespace Assemblies.Champions {
                     E.Cast(target, true);
             }
 
-            if (R.IsReady() && target.IsValidTarget(R.Range)) {
+            if (R.IsReady() && target.IsValidTarget(R.Width)) {
                 if (isMenuEnabled(menu, "useRC")) {
-                    if (player.GetSpellDamage(target, SpellSlot.R) >= target.Health) {
-                        R.Cast(target, true);
-                    }
-                    else {
-                        castR(target);
-                    }
+                    castR(target);
                 }
-                    
             }
         }
 
         private void castR(Obj_AI_Hero target) {
-            if (target == null || !target.IsValid ||
-                Vector3.DistanceSquared(player.Position, target.Position) > R.Range*R.Range) return;
+            if (target == null || !target.IsValidTarget(R.Width)) return;
 
-            if (countEnemiesNearPosition(player.Position, R.Range) >= menu.Item("minEnemies").GetValue<Slider>().Value) {
-                switch (menu.Item("throwPos").GetValue<StringList>().SelectedIndex) {
-                    case 0: // to wall
-                        castRCollision();
-                        break;
-                    case 1: // to mouse position
-                        R.Cast(Game.CursorPos, true);
-                        break;
-                }
+            Obj_AI_Turret closestTower =
+                ObjectManager.Get<Obj_AI_Turret>()
+                    .Where(tur => tur.IsAlly)
+                    .OrderBy(tur => tur.Distance(player.Position))
+                    .First();
+            Obj_AI_Hero allyHero =
+                ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly).OrderBy(
+                    hero => hero.Distance(player.Position)).First();
+            if (player.GetSpellDamage(target, SpellSlot.R) - 10 > target.Health && menu.Item("alwaysR").GetValue<bool>())
+                R.Cast(target, true);
+
+            switch (menu.Item("throwPos").GetValue<StringList>().SelectedIndex) {
+                case 0: // wall
+                    foreach (
+                        Obj_AI_Hero collisionTarget in
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                        CastRToCollision(collisionTarget);
+                    break;
+
+                case 1: // mouse
+                    if (R.IsReady())
+                        R.Cast(Game.CursorPos.To2D(), true);
+                    break;
+
+                case 2: // closest tower
+                    //TODO: check if will land under turret
+                    if (closestTower.Distance(target) <= 800 && R.IsReady())
+                        R.Cast(closestTower.Position, true);
+                    break;
+
+                case 3: // closest ally
+                    if (allyHero.IsValid && R.IsReady())
+                        R.Cast(allyHero.Position, true);
+                    break;
             }
         }
 
-        private void castRCollision() {
+        private void CastRToCollision(Obj_AI_Hero target) {
             Vector3 center = player.Position;
             const int points = 36;
             const int radius = 300;
-
             const double slice = 2*Math.PI/points;
-
             for (int i = 0; i < points; i++) {
                 double angle = slice*i;
-                double newX = center.X + radius*Math.Cos(angle);
-                double newY = center.Z + radius*Math.Sin(angle);
-                var position = new Vector3((float) newX, (float) newY, 0);
-
-                if (isWall(position)) {
-                    R.Cast(position, true);
-                }
+                var newX = (int) (center.X + radius*Math.Cos(angle));
+                var newY = (int) (center.Y + radius*Math.Sin(angle));
+                var p = new Vector3(newX, newY, 0);
+                if (isWall(p))
+                    R.Cast(p, true);
             }
         }
 
         private void unitFlee() {
             if (!E.IsReady() && !eMega.IsReady()) return;
-            const float distance = 300;
 
-            foreach (
+            /*foreach (
                 Obj_AI_Base minion in
                     MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.All,
-                        MinionOrderTypes.None).Where(minion => minion != null && minion.IsValid).Where(
-                            minion =>
-                                Vector3.DistanceSquared(player.Position, Game.CursorPos) <= distance*distance &&
-                                Vector3.DistanceSquared(player.Position, minion.Position) <= E.Range*E.Range)) {
+                        MinionOrderTypes.None).Where(minion => minion != null && minion.IsValid &&
+                                                               Vector3.DistanceSquared(player.Position, minion.Position) <=
+                                                               E.Range*E.Range)) {
                 E.Cast(minion, true);
-            }
+            }*/
         }
 
         private void onDraw(EventArgs args) {}
