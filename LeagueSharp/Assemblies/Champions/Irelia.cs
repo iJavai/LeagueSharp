@@ -19,7 +19,8 @@ namespace Assemblies.Champions {
 
         private void beforeAttack(xSLxOrbwalker.BeforeAttackEventArgs args) {
             if (args.Unit.IsMe) {
-                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) && !args.Target.IsMinion)
+                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) &&
+                    !args.Target.IsMinion)
                     W.Cast(true);
             }
         }
@@ -87,6 +88,8 @@ namespace Assemblies.Champions {
             /*foreach (BuffInstance buff in player.Buffs) {
                 Game.PrintChat(buff.Name);   
             }*/
+
+            Game.PrintChat(string.Format("Ultimate Stacks: {0}", getUltStacks()));
 
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
@@ -176,13 +179,15 @@ namespace Assemblies.Champions {
         }*/
 
         private int getUltStacks() {
-            return player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades").Select(buff => buff.Count).FirstOrDefault();
+            return
+                player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades").Select(buff => buff.Count)
+                    .FirstOrDefault();
         }
 
         private void onDraw(EventArgs args) {}
 
         private bool canStun(Obj_AI_Hero target) {
-            return target.Health / target.MaxHealth * 100 > player.Health / player.MaxHealth * 100;
+            return target.Health/target.MaxHealth*100 > player.Health/player.MaxHealth*100;
         }
 
         private void laneclear() {
