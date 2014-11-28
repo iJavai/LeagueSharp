@@ -6,12 +6,12 @@ using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Assemblies.Champions {
-    internal class Irelia : Champion
-    {
-        public Obj_AI_Base SelectedMinion;
-        public bool QCastedMinion = false;
-        public int NumberR = 0;
+    internal class Irelia : Champion {
+        public int NumberR;
         public float PredictedArrivalTime;
+        public bool QCastedMinion;
+        public Obj_AI_Base SelectedMinion;
+
         public Irelia() {
             loadMenu();
             loadSpells();
@@ -24,7 +24,8 @@ namespace Assemblies.Champions {
 
         private void beforeAttack(xSLxOrbwalker.BeforeAttackEventArgs args) {
             if (args.Unit.IsMe) {
-                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) && !args.Target.IsMinion)
+                if (isMenuEnabled(menu, "useWC") && W.IsReady() && args.Target.IsValidTarget(Q.Range) &&
+                    !args.Target.IsMinion)
                     W.Cast(true);
             }
         }
@@ -144,19 +145,21 @@ namespace Assemblies.Champions {
             }
         }
 
-       
+
         private void SuperDuperOpChaseMode(Obj_AI_Hero target) {
             if (!SelectedMinion.IsValid || !R.IsReady()) {
                 SelectedMinion = null;
                 NumberR = 0;
             }
             if (SelectedMinion.IsValidTarget(R.Range) && R.IsReady() && NumberR > 0) {
-                R.Cast(SelectedMinion.Position);
-                NumberR -= 1;
-                PredictedArrivalTime = Game.Time + (player.Distance(SelectedMinion)/R.Speed);
+                if (SelectedMinion != null) {
+                    R.Cast(SelectedMinion.Position);
+                    NumberR -= 1;
+                    PredictedArrivalTime = Game.Time + (player.Distance(SelectedMinion)/R.Speed);
+                }
             }
-            if (NumberR == 0 && Q.IsReady() && SelectedMinion.IsValidTarget(Q.Range) && !QCastedMinion && Game.Time > PredictedArrivalTime)
-            {
+            if (NumberR == 0 && Q.IsReady() && SelectedMinion.IsValidTarget(Q.Range) && !QCastedMinion &&
+                Game.Time > PredictedArrivalTime) {
                 Q.Cast(SelectedMinion);
                 QCastedMinion = true;
                 PredictedArrivalTime = Game.Time;
@@ -167,37 +170,33 @@ namespace Assemblies.Champions {
                 return;
             }
             if (SelectedMinion == null) {
-                var MinionList = MinionManager.GetMinions(player.Position, Q.Range).ToList();
-                var List2 = new List<Obj_AI_Base>();
-                foreach (var min in MinionList) {
-                    if (min.Distance(target) <= Q.Range) { List2.Add(min); }
-                }
+                List<Obj_AI_Base> MinionList = MinionManager.GetMinions(player.Position, Q.Range).ToList();
+                var List2 = MinionList.Where(min => min.Distance(target) <= Q.Range).ToList();
                 if (!List2.Any()) return;
-                var List3 = List2.OrderBy(m => m.Distance(target));
-                var minion = List3.First();
-                var NumberOfR = getNumberOfR(minion);
-                if (NumberOfR == 0 && Q.IsReady() && minion.IsValidTarget(Q.Range)) {
+                IOrderedEnumerable<Obj_AI_Base> List3 = List2.OrderBy(m => m.Distance(target));
+                Obj_AI_Base minion = List3.First();
+                int rCount = getNumberOfR(minion);
+                if (rCount == 0 && Q.IsReady() && minion.IsValidTarget(Q.Range)) {
                     Q.Cast(minion);
                     QCastedMinion = true;
                 }
                 else {
                     SelectedMinion = minion;
-                    NumberR = NumberOfR;
+                    NumberR = rCount;
                 }
             }
         }
 
-        private int getNumberOfR(Obj_AI_Base target)
-        {
-            var rCount = 0;
-            var targetHealth = target.Health;
-            while (targetHealth >= Q.GetDamage(target))
-            {
+        private int getNumberOfR(Obj_AI_Base target) {
+            int rCount = 0;
+            float targetHealth = target.Health;
+            while (targetHealth >= Q.GetDamage(target)) {
                 rCount += 1;
                 targetHealth -= Q.GetDamage(target);
             }
             return rCount;
         }
+
         private int getUltStacks() {
             foreach (BuffInstance buff in player.Buffs.Where(buff => buff.Name == "IreliaTranscendentBlades")) {
                 return buff.Count; // might need to be buff.count - 1
@@ -208,7 +207,7 @@ namespace Assemblies.Champions {
         private void onDraw(EventArgs args) {}
 
         private bool canStun(Obj_AI_Hero target) {
-            return target.Health / target.MaxHealth * 100 > player.Health / player.MaxHealth * 100;
+            return target.Health/target.MaxHealth*100 > player.Health/player.MaxHealth*100;
         }
 
         private void laneclear() {
