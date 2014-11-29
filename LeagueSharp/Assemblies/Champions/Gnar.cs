@@ -16,7 +16,6 @@ namespace Assemblies.Champions {
 
             Game.OnGameUpdate += onUpdate;
             Drawing.OnDraw += onDraw;
-            Obj_AI_Hero.OnProcessSpellCast += onSpellCast;
             Game.PrintChat("[Assemblies] - Gnar Loaded.");
         }
 
