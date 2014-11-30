@@ -2,7 +2,7 @@
 using SharpDX;
 
 namespace Assemblies.Champions {
-    internal class Polygon //Credits to Detuks
+    public class Polygon //Credits to Detuks
     {
         public List<Vector2> Points = new List<Vector2>();
 
