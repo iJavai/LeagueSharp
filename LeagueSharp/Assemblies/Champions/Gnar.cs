@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using ClipperLib;
 
 namespace Assemblies.Champions {
     internal class Gnar : Champion {
