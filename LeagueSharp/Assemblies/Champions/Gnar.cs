@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Assemblies.Utilitys;
 using LeagueSharp;
@@ -86,6 +87,9 @@ namespace Assemblies.Champions {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
                     break;
+                case xSLxOrbwalker.Mode.Harass:
+                    doHarass(target);
+                    break;
                 case xSLxOrbwalker.Mode.Flee:
                     unitFlee();
                     break;
@@ -119,6 +123,29 @@ namespace Assemblies.Champions {
                 if (isMenuEnabled(menu, "useRC")) {
                     castR(target);
                 }
+            }
+        }
+
+        private void doHarass(Obj_AI_Hero target) {
+            if (Q.IsReady() && target.IsValidTarget(Q.Range) &&
+                Q.GetPrediction(target, true).Hitchance >= HitChance.Medium) {
+                if (isMenuEnabled(menu, "useQH"))
+                    Q.Cast(target, true, true);
+            }
+            if (qMega.IsReady() && target.IsValidTarget(qMega.Range) &&
+                qMega.GetPrediction(target).Hitchance >= HitChance.Medium) {
+                if (isMenuEnabled(menu, "useQH"))
+                    qMega.Cast(target, true);
+            }
+
+            if (W.IsReady() && target.IsValidTarget(W.Range) && player.Distance(target) < W.Range) {
+                if (isMenuEnabled(menu, "useWH"))
+                    W.Cast(target, true);
+            }
+
+            if (E.IsReady() && target.IsValidTarget(E.Range)) {
+                if (isMenuEnabled(menu, "useEH"))
+                    E.Cast(target, true);
             }
         }
 
@@ -171,23 +198,28 @@ namespace Assemblies.Champions {
                 double angle = slice*i;
                 var newX = (int) (center.X + radius*Math.Cos(angle));
                 var newY = (int) (center.Y + radius*Math.Sin(angle));
-                var p = new Vector3(newX, newY, 0);
-                if (isWall(p))
-                    R.Cast(p, true);
+                var position = new Vector3(newX, newY, 0);
+                if (isWall(position))
+                    R.Cast(position, true);
             }
         }
 
         private void unitFlee() {
             if (!E.IsReady() && !eMega.IsReady()) return;
 
-            /*foreach (
-                Obj_AI_Base minion in
-                    MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.All,
-                        MinionOrderTypes.None).Where(minion => minion != null && minion.IsValid &&
-                                                               Vector3.DistanceSquared(player.Position, minion.Position) <=
-                                                               E.Range*E.Range)) {
-                E.Cast(minion, true);
-            }*/
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All,
+                MinionTeam.All,
+                MinionOrderTypes.None);
+            Obj_AI_Base bestMinion = null;
+
+            foreach (Obj_AI_Base jumpableUnit in minions) {
+                if (jumpableUnit.Distance(Game.CursorPos) <= 300 && player.Distance(jumpableUnit) <= E.Range)
+                    bestMinion = jumpableUnit;
+            }
+
+            if (bestMinion != null && bestMinion.IsValid) {
+                E.Cast(bestMinion, true);
+            }
         }
 
         private void onDraw(EventArgs args) {}

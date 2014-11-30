@@ -243,7 +243,7 @@ namespace Assemblies.Champions {
         private void onSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
             if (sender.IsMe) {
                 //Credits to Hellsing.
-                if (args.SData.Name == "kalistaexpungemarker")
+                if (args.SData.Name == "KalistaExpungeWrapper")
                     Utility.DelayAction.Add(250, xSLxOrbwalker.ResetAutoAttackTimer);
             }
         }

@@ -11,8 +11,9 @@ namespace Assemblies.Champions {
         protected Spell Q;
         protected Spell R;
         protected Spell W;
-        public static Menu menu;
+        protected Menu menu;
         public static Menu TargetSelectorMenu;
+        //public MenuWrapper menuWrapper;
         //protected Orbwalking.Orbwalker orbwalker;
 
         public Champion() {
@@ -22,6 +23,7 @@ namespace Assemblies.Champions {
         }
 
         private void addBasicMenu() {
+            //menuWrapper = new MenuWrapper("Assemblies - " + player.ChampionName);
             menu = new Menu("Assemblies - " + player.ChampionName, "Assemblies - " + player.ChampionName,
                 true);
 
