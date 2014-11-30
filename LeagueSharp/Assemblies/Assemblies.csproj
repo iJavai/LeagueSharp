@@ -37,37 +37,37 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BuffManagerLib">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\BuffManagerLib.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\BuffManagerLib.dll</HintPath>
     </Reference>
     <Reference Include="clipper_library">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\clipper_library.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="Evade">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\Evade.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\Evade.dll</HintPath>
     </Reference>
     <Reference Include="Igniter">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\Igniter.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\Igniter.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.AppDomainManager">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\LeagueSharp.AppDomainManager.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\LeagueSharp.AppDomainManager.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\SharpDX.Toolkit.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\SharpDX.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Toolkit.Graphics">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\SharpDX.Toolkit.Graphics.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\SharpDX.Toolkit.Graphics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,7 +78,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Triton">
-      <HintPath>C:\Users\Corey\Desktop\LeagueSharp\\System\Triton.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\LeagueSharp\\System\Triton.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
