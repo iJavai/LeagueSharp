@@ -24,7 +24,6 @@ namespace Assemblies.Utilitys {
             LaneFreeze,
             Lasthit,
             Flee,
-            Killsteal,
             None,
         }
 
@@ -85,8 +84,6 @@ namespace Assemblies.Utilitys {
                     return Mode.Lasthit;
                 if (Menu.Item("Flee_Key").GetValue<KeyBind>().Active)
                     return Mode.Flee;
-                if (Menu.Item("enabledKs").GetValue<bool>())
-                    return Mode.Killsteal;
                 return Mode.None;
             }
         }
@@ -178,10 +175,6 @@ namespace Assemblies.Utilitys {
                 modeFlee.AddItem(
                     new MenuItem("Flee_Key", "Key").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
                 menuModes.AddSubMenu(modeFlee);
-
-                var modeKillsteal = new Menu("killsteal", "ks_mode");
-                modeKillsteal.AddItem(new MenuItem("enabledKs", "Enabled").SetValue(true));
-                menuModes.AddSubMenu(modeKillsteal);
             }
             menu.AddSubMenu(menuModes);
             menu.AddItem(new MenuItem("xSLx_info", "Copyright by xSLx"));
