@@ -288,7 +288,7 @@ namespace Assemblies.Champions {
         private void onDraw(EventArgs args) {}
 
         //Credits to Andreluis
-        public List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius) {
+        private List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius) {
             var points = new List<Vector2>();
 
             Vector2 v1 = endVector2 - startVector2;
