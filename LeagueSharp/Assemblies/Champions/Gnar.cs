@@ -186,38 +186,35 @@ namespace Assemblies.Champions {
             }*/
             if (!R.IsReady()) return;
             int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
-            
-            switch (mode)
-            {
-                case 0:   
-                foreach (
-                    Obj_AI_Hero collisionTarget in
-                        ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                    CastRToCollision(collisionTarget);
+
+            switch (mode) {
+                case 0:
+                    foreach (
+                        Obj_AI_Hero collisionTarget in
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                        CastRToCollision(collisionTarget);
                     break;
                 case 1:
                     //Mouse position
                     foreach (
                         Obj_AI_Hero collisionTarget in
                             ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                        if (unitCheck(Game.CursorPos))
-                        {
+                        if (unitCheck(Game.CursorPos)) {
                             R.Cast(Game.CursorPos);
                         }
-                       
-                break;
+
+                    break;
                 case 2:
                     //Closest Turret
                     foreach (
                         Obj_AI_Hero collisionTarget in
-                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                    {
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width))) {
                         //975 Turret Range
                         //425 Push distance (Idk if it is correct);
-                        var Turret =
-                            ObjectManager.Get<Obj_AI_Turret>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 && tu.Health > 0);
-                        if (Turret.IsValid && unitCheck(Turret.Position))
-                        {
+                        Obj_AI_Turret Turret =
+                            ObjectManager.Get<Obj_AI_Turret>().First(
+                                tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 && tu.Health > 0);
+                        if (Turret.IsValid && unitCheck(Turret.Position)) {
                             R.Cast(Turret.Position);
                         }
                     }
@@ -226,15 +223,13 @@ namespace Assemblies.Champions {
                     //Closest Ally
                     foreach (
                         Obj_AI_Hero collisionTarget in
-                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                    {
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width))) {
                         //975 Turret Range
                         //425 Push distance (Idk if it is correct);
-                        var ally =
-                            ObjectManager.Get<Obj_AI_Hero>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 425 + 65 && tu.Health > 0);
-                        if (ally.IsValid && unitCheck(ally.Position))
-                        {
-                           
+                        Obj_AI_Hero ally =
+                            ObjectManager.Get<Obj_AI_Hero>().First(
+                                tu => tu.IsAlly && tu.Distance(collisionTarget) <= 425 + 65 && tu.Health > 0);
+                        if (ally.IsValid && unitCheck(ally.Position)) {
                             R.Cast(ally.Position);
                         }
                     }
@@ -242,23 +237,21 @@ namespace Assemblies.Champions {
             }
         }
 
-        private bool unitCheck(Vector3 EndPosition)
-        {
-            var Points = GRectangle(player.Position.To2D(), EndPosition.To2D(), R.Width);
+        private bool unitCheck(Vector3 EndPosition) {
+            List<Vector2> Points = GRectangle(player.Position.To2D(), EndPosition.To2D(), R.Width);
             var Poly = new Polygon(Points);
-             var num = 0;
-             foreach (
-                        Obj_AI_Hero collisionTarget in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-            {
-                if (Poly.Contains(collisionTarget.Position.To2D()))
-                {
+            int num = 0;
+            foreach (
+                Obj_AI_Hero collisionTarget in
+                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width))) {
+                if (Poly.Contains(collisionTarget.Position.To2D())) {
                     num++;
                 }
             }
             if (num < menu.Item("minEnemies").GetValue<Slider>().Value) return false;
             return true;
         }
+
         private void CastRToCollision(Obj_AI_Hero target) {
             Vector3 center = player.Position;
             const int points = 36;
@@ -295,12 +288,11 @@ namespace Assemblies.Champions {
         private void onDraw(EventArgs args) {}
 
         //Credits to Andreluis
-        public List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius)
-        {
+        public List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius) {
             var points = new List<Vector2>();
 
             Vector2 v1 = endVector2 - startVector2;
-            Vector2 to1Side = Vector2.Normalize(v1).Perpendicular() * radius;
+            Vector2 to1Side = Vector2.Normalize(v1).Perpendicular()*radius;
 
             points.Add(startVector2 + to1Side);
             points.Add(startVector2 - to1Side);
@@ -308,6 +300,5 @@ namespace Assemblies.Champions {
             points.Add(endVector2 + to1Side);
             return points;
         }
-
     }
 }
