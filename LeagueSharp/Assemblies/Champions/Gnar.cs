@@ -83,12 +83,21 @@ namespace Assemblies.Champions {
 
             Obj_AI_Hero target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
 
+            if (player.HasBuff("gnartransform")) {
+                Q = qMega;
+                E = eMega;
+                Game.PrintChat("Big Gnar Mode rek ppl pls");
+            }
+
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
                     break;
                 case xSLxOrbwalker.Mode.Harass:
                     doHarass(target);
+                    break;
+                case xSLxOrbwalker.Mode.LaneClear:
+                    doLaneclear();
                     break;
                 case xSLxOrbwalker.Mode.Flee:
                     unitFlee();
@@ -98,13 +107,11 @@ namespace Assemblies.Champions {
 
         private void doCombo(Obj_AI_Hero target) {
             //TODO le combo modes
-
             if (R.IsReady() && target.IsValidTarget(R.Width)) {
                 if (isMenuEnabled(menu, "useRC")) {
                     castR(target);
                 }
             }
-
             if (Q.IsReady() && target.IsValidTarget(Q.Range) &&
                 Q.GetPrediction(target, true).Hitchance >= HitChance.Medium) {
                 if (isMenuEnabled(menu, "useQC"))
@@ -150,12 +157,30 @@ namespace Assemblies.Champions {
             }
         }
 
+        private void doLaneclear() {
+            List<Obj_AI_Base> allMinions = MinionManager.GetMinions(player.ServerPosition, Q.Range,
+                MinionTypes.All, MinionTeam.NotAlly);
+            foreach (Obj_AI_Base minion in allMinions.Where(minion => minion.IsValidTarget(Q.Range))) {
+                if (Q.IsKillable(minion) && minion.Distance(player) <= Q.Range && Q.IsReady()) {
+                    if (isMenuEnabled(menu, "useQL"))
+                        Q.Cast(minion, true);
+                }
+                if (qMega.IsKillable(minion) && minion.Distance(player) <= qMega.Range && qMega.IsReady()) {
+                    if (isMenuEnabled(menu, "useQL"))
+                        qMega.Cast(minion, true);
+                }
+            }
+        }
+
         private void castR(Obj_AI_Hero target) {
             if (!R.IsReady()) return;
             int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
 
+            if (R.IsKillable(target) && isMenuEnabled(menu, "alwaysR"))
+                R.Cast(target, true);
+
             switch (mode) {
-                case 0:
+                case 0: // wall.
                     foreach (
                         Obj_AI_Hero collisionTarget in
                             ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
@@ -169,21 +194,16 @@ namespace Assemblies.Champions {
                         if (unitCheck(Game.CursorPos)) {
                             R.Cast(Game.CursorPos);
                         }
-
                     break;
                 case 2:
                     //Closest Turret
                     foreach (
-                        Obj_AI_Hero collisionTarget in
-                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width))) {
-                        //975 Turret Range
-                        //425 Push distance (Idk if it is correct);
-                        Obj_AI_Turret Turret =
-                            ObjectManager.Get<Obj_AI_Turret>().First(
-                                tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 && tu.Health > 0);
-                        if (Turret.IsValid && unitCheck(Turret.Position)) {
-                            R.Cast(Turret.Position);
-                        }
+                        Obj_AI_Turret objAiTurret in
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)).Select(
+                                collisionTarget => ObjectManager.Get<Obj_AI_Turret>().First(
+                                    tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 && tu.Health > 0))
+                                .Where(objAiTurret => objAiTurret.IsValid && unitCheck(objAiTurret.Position))) {
+                        R.Cast(objAiTurret.Position);
                     }
                     break;
                 case 3:
@@ -204,18 +224,13 @@ namespace Assemblies.Champions {
             }
         }
 
-        private bool unitCheck(Vector3 EndPosition) {
-            List<Vector2> Points = GRectangle(player.Position.To2D(), EndPosition.To2D(), R.Width);
-            var Poly = new Polygon(Points);
-            int num = 0;
-            foreach (
-                Obj_AI_Hero collisionTarget in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width))) {
-                if (Poly.Contains(collisionTarget.Position.To2D())) {
-                    num++;
-                }
-            }
-            if (num < menu.Item("minEnemies").GetValue<Slider>().Value) return false;
+        private bool unitCheck(Vector3 endPosition) {
+            List<Vector2> points = GRectangle(player.Position.To2D(), endPosition.To2D(), R.Width);
+            var polygon = new Polygon(points);
+            int count =
+                ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)).Count(
+                    collisionTarget => polygon.Contains(collisionTarget.Position.To2D()));
+            if (count < menu.Item("minEnemies").GetValue<Slider>().Value) return false;
             return true;
         }
 
@@ -255,11 +270,11 @@ namespace Assemblies.Champions {
         private void onDraw(EventArgs args) {}
 
         //Credits to Andreluis
-        public List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius) {
+        private List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius) {
             var points = new List<Vector2>();
 
-            Vector2 v1 = endVector2 - startVector2;
-            Vector2 to1Side = Vector2.Normalize(v1).Perpendicular()*radius;
+            Vector2 difference = endVector2 - startVector2;
+            Vector2 to1Side = Vector2.Normalize(difference).Perpendicular()*radius;
 
             points.Add(startVector2 + to1Side);
             points.Add(startVector2 - to1Side);
