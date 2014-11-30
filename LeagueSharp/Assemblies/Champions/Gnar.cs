@@ -6,6 +6,7 @@ using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using ClipperLib;
 
 namespace Assemblies.Champions {
     internal class Gnar : Champion {
@@ -187,6 +188,7 @@ namespace Assemblies.Champions {
             }*/
             if (!R.IsReady()) return;
             int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
+            
             switch (mode)
             {
                 case 0:   
@@ -200,7 +202,11 @@ namespace Assemblies.Champions {
                     foreach (
                         Obj_AI_Hero collisionTarget in
                             ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                        R.Cast(Game.CursorPos);
+                        if (unitCheck(Game.CursorPos))
+                        {
+                            R.Cast(Game.CursorPos);
+                        }
+                       
                 break;
                 case 2:
                     //Closest Turret
@@ -212,7 +218,7 @@ namespace Assemblies.Champions {
                         //425 Push distance (Idk if it is correct);
                         var Turret =
                             ObjectManager.Get<Obj_AI_Turret>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 && tu.Health > 0);
-                        if (Turret.IsValid)
+                        if (Turret.IsValid && unitCheck(Turret.Position))
                         {
                             R.Cast(Turret.Position);
                         }
@@ -228,8 +234,9 @@ namespace Assemblies.Champions {
                         //425 Push distance (Idk if it is correct);
                         var ally =
                             ObjectManager.Get<Obj_AI_Hero>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 + 65 && tu.Health > 0);
-                        if (ally.IsValid)
+                        if (ally.IsValid && unitCheck(ally.Position))
                         {
+                           
                             R.Cast(ally.Position);
                         }
                     }
@@ -237,6 +244,23 @@ namespace Assemblies.Champions {
             }
         }
 
+        private bool unitCheck(Vector3 EndPosition)
+        {
+            var Points = GRectangle(player.Position.To2D(), EndPosition.To2D(), R.Width);
+            var Poly = new Polygon(Points);
+             var num = 0;
+             foreach (
+                        Obj_AI_Hero collisionTarget in
+                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+            {
+                if (Poly.Contains(collisionTarget.Position.To2D()))
+                {
+                    num++;
+                }
+            }
+            if (num < menu.Item("minEnemies").GetValue<Slider>().Value) return false;
+            return true;
+        }
         private void CastRToCollision(Obj_AI_Hero target) {
             Vector3 center = player.Position;
             const int points = 36;
@@ -247,7 +271,7 @@ namespace Assemblies.Champions {
                 var newX = (int) (center.X + radius*Math.Cos(angle));
                 var newY = (int) (center.Y + radius*Math.Sin(angle));
                 var position = new Vector3(newX, newY, 0);
-                if (isWall(position))
+                if (isWall(position) && unitCheck(position))
                     R.Cast(position, true);
             }
         }
@@ -271,5 +295,21 @@ namespace Assemblies.Champions {
         }
 
         private void onDraw(EventArgs args) {}
+
+        //Credits to Andreluis
+        public List<Vector2> GRectangle(Vector2 startVector2, Vector2 endVector2, float radius)
+        {
+            var points = new List<Vector2>();
+
+            Vector2 v1 = endVector2 - startVector2;
+            Vector2 to1Side = Vector2.Normalize(v1).Perpendicular() * radius;
+
+            points.Add(startVector2 + to1Side);
+            points.Add(startVector2 - to1Side);
+            points.Add(endVector2 - to1Side);
+            points.Add(endVector2 + to1Side);
+            return points;
+        }
+
     }
 }
