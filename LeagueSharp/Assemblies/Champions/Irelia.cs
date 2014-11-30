@@ -7,10 +7,10 @@ using LeagueSharp.Common;
 
 namespace Assemblies.Champions {
     internal class Irelia : Champion {
-        public int NumberR;
-        public float PredictedArrivalTime;
-        public bool QCastedMinion;
-        public Obj_AI_Base SelectedMinion;
+        private int NumberR;
+        private float PredictedArrivalTime;
+        private bool QCastedMinion;
+        private Obj_AI_Base SelectedMinion;
 
         public Irelia() {
             loadMenu();
