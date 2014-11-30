@@ -89,6 +89,8 @@ namespace Assemblies.Champions {
                 Game.PrintChat("Big Gnar Mode rek ppl pls");
             }
 
+            doKillsteal(target);
+
             switch (xSLxOrbwalker.CurrentMode) {
                 case xSLxOrbwalker.Mode.Combo:
                     doCombo(target);
@@ -101,9 +103,6 @@ namespace Assemblies.Champions {
                     break;
                 case xSLxOrbwalker.Mode.Flee:
                     unitFlee();
-                    break;
-                case xSLxOrbwalker.Mode.Killsteal:
-                    doKillsteal(target);
                     break;
             }
         }
