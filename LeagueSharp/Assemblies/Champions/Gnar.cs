@@ -98,6 +98,13 @@ namespace Assemblies.Champions {
 
         private void doCombo(Obj_AI_Hero target) {
             //TODO le combo modes
+
+            if (R.IsReady() && target.IsValidTarget(R.Width)) {
+                if (isMenuEnabled(menu, "useRC")) {
+                    castR(target);
+                }
+            }
+
             if (Q.IsReady() && target.IsValidTarget(Q.Range) &&
                 Q.GetPrediction(target, true).Hitchance >= HitChance.Medium) {
                 if (isMenuEnabled(menu, "useQC"))
@@ -117,12 +124,6 @@ namespace Assemblies.Champions {
             if (E.IsReady() && target.IsValidTarget(E.Range)) {
                 if (isMenuEnabled(menu, "useEC"))
                     E.Cast(target, true);
-            }
-
-            if (R.IsReady() && target.IsValidTarget(R.Width)) {
-                if (isMenuEnabled(menu, "useRC")) {
-                    castR(target);
-                }
             }
         }
 
@@ -150,40 +151,6 @@ namespace Assemblies.Champions {
         }
 
         private void castR(Obj_AI_Hero target) {
-            //if (target == null || !target.IsValidTarget(R.Width)) return;
-
-            /*Obj_AI_Turret closestTower =
-                ObjectManager.Get<Obj_AI_Turret>()
-                    .Where(tur => tur.IsAlly)
-                    .OrderBy(tur => tur.Distance(player.Position))
-                    .First();
-            Obj_AI_Hero allyHero =
-                ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly).OrderBy(
-                    hero => hero.Distance(player.Position)).First();
-            if (player.GetSpellDamage(target, SpellSlot.R) - 10 > target.Health && menu.Item("alwaysR").GetValue<bool>())
-                R.Cast(target, true);
-
-            switch (menu.Item("throwPos").GetValue<StringList>().SelectedIndex) {
-                case 0: // wall
-                    foreach (
-                        Obj_AI_Hero collisionTarget in
-                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                        CastRToCollision(collisionTarget);
-                    break;
-                case 1: // mouse
-                    if (R.IsReady())
-                        R.Cast(Game.CursorPos.To2D(), true);
-                    break;
-                case 2: // closest tower
-                    //TODO: check if will land under turret
-                    if (closestTower.Distance(target) <= 800 && R.IsReady())
-                        R.Cast(closestTower.Position, true);
-                    break;
-                case 3: // closest ally
-                    if (allyHero.IsValid && R.IsReady())
-                        R.Cast(allyHero.Position, true);
-                    break;
-            }*/
             if (!R.IsReady()) return;
             int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
 
