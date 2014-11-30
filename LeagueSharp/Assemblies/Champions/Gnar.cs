@@ -150,9 +150,9 @@ namespace Assemblies.Champions {
         }
 
         private void castR(Obj_AI_Hero target) {
-            if (target == null || !target.IsValidTarget(R.Width)) return;
+            //if (target == null || !target.IsValidTarget(R.Width)) return;
 
-            Obj_AI_Turret closestTower =
+            /*Obj_AI_Turret closestTower =
                 ObjectManager.Get<Obj_AI_Turret>()
                     .Where(tur => tur.IsAlly)
                     .OrderBy(tur => tur.Distance(player.Position))
@@ -170,23 +170,24 @@ namespace Assemblies.Champions {
                             ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
                         CastRToCollision(collisionTarget);
                     break;
-
                 case 1: // mouse
                     if (R.IsReady())
                         R.Cast(Game.CursorPos.To2D(), true);
                     break;
-
                 case 2: // closest tower
                     //TODO: check if will land under turret
                     if (closestTower.Distance(target) <= 800 && R.IsReady())
                         R.Cast(closestTower.Position, true);
                     break;
-
                 case 3: // closest ally
                     if (allyHero.IsValid && R.IsReady())
                         R.Cast(allyHero.Position, true);
                     break;
-            }
+            }*/
+            foreach (
+                Obj_AI_Hero collisionTarget in
+                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                CastRToCollision(collisionTarget);
         }
 
         private void CastRToCollision(Obj_AI_Hero target) {
