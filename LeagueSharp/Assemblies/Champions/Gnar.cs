@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using Assemblies.Utilitys;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -184,6 +185,7 @@ namespace Assemblies.Champions {
                         R.Cast(allyHero.Position, true);
                     break;
             }*/
+            if (!R.IsReady()) return;
             int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
             switch (mode)
             {
