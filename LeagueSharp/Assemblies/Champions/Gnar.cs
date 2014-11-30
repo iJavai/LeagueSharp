@@ -172,6 +172,10 @@ namespace Assemblies.Champions {
             }
         }
 
+        private void doKillsteal() {
+            
+        }
+
         private void castR(Obj_AI_Hero target) {
             if (!R.IsReady()) return;
             int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
