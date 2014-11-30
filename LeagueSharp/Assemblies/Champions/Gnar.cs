@@ -231,7 +231,7 @@ namespace Assemblies.Champions {
                         //975 Turret Range
                         //425 Push distance (Idk if it is correct);
                         var ally =
-                            ObjectManager.Get<Obj_AI_Hero>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 + 65 && tu.Health > 0);
+                            ObjectManager.Get<Obj_AI_Hero>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 425 + 65 && tu.Health > 0);
                         if (ally.IsValid && unitCheck(ally.Position))
                         {
                            
