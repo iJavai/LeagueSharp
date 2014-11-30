@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SharpDX;
 
-namespace Assemblies.Champions {
+namespace Assemblies {
     internal class Polygon //Credits to Detuks
     {
         public List<Vector2> Points = new List<Vector2>();

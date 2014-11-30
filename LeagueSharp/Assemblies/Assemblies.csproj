@@ -85,7 +85,7 @@
     <Compile Include="Champions\Gnar.cs" />
     <Compile Include="Champions\Irelia.cs" />
     <Compile Include="Champions\Kalista.cs" />
-    <Compile Include="Champions\Polygon.cs" />
+    <Compile Include="Polygon.cs" />
     <Compile Include="Utilitys\AntiRengar.cs" />
     <Compile Include="Champions\Champion.cs" />
     <Compile Include="Champions\Ezreal.cs" />
