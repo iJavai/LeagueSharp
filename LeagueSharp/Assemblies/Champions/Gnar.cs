@@ -60,7 +60,7 @@ namespace Assemblies.Champions {
 
             menu.AddSubMenu(new Menu("Killsteal Options", "killsteal"));
             menu.SubMenu("killsteal").AddItem(new MenuItem("useQK", "Use Q in killsteal").SetValue(true));
-            menu.SubMenu("killsteal").AddItem(new MenuItem("useEK", "Use E in killsteal").SetValue(true));
+            menu.SubMenu("killsteal").AddItem(new MenuItem("useWK", "Use W in killsteal").SetValue(true));
 
             menu.AddSubMenu(new Menu("Flee Options", "flee"));
             menu.SubMenu("flee").AddItem(new MenuItem("useEF", "Use E in flee").SetValue(true));
@@ -85,7 +85,7 @@ namespace Assemblies.Champions {
 
             if (player.HasBuff("gnartransform")) {
                 Q = qMega;
-                E = eMega;
+                //E = eMega;
                 Game.PrintChat("Big Gnar Mode rek ppl pls");
             }
 
@@ -101,6 +101,9 @@ namespace Assemblies.Champions {
                     break;
                 case xSLxOrbwalker.Mode.Flee:
                     unitFlee();
+                    break;
+                case xSLxOrbwalker.Mode.Killsteal:
+                    doKillsteal(target);
                     break;
             }
         }
@@ -172,8 +175,21 @@ namespace Assemblies.Champions {
             }
         }
 
-        private void doKillsteal() {
-            
+        private void doKillsteal(Obj_AI_Hero target) {
+            if (Q.IsReady() && isMenuEnabled(menu, "useQK")) {
+                if (player.Distance(target) <= Q.Range && Q.IsKillable(target)) {
+                    Q.Cast(target, true);
+                }
+            }
+            if (qMega.IsReady() && isMenuEnabled(menu, "useQK")) {
+                if (player.Distance(target) <= qMega.Range && qMega.IsKillable(target)) {
+                    qMega.Cast(target, true);
+                }
+            }
+            if (W.IsReady() && isMenuEnabled(menu, "useWK")) {
+                if (player.Distance(target) <= W.Range && W.IsKillable(target))
+                    W.Cast(target, true);
+            }
         }
 
         private void castR(Obj_AI_Hero target) {
