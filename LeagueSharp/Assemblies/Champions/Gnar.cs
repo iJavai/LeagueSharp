@@ -184,10 +184,55 @@ namespace Assemblies.Champions {
                         R.Cast(allyHero.Position, true);
                     break;
             }*/
-            foreach (
-                Obj_AI_Hero collisionTarget in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
-                CastRToCollision(collisionTarget);
+            int mode = menu.Item("throwPos").GetValue<StringList>().SelectedIndex;
+            switch (mode)
+            {
+                case 0:   
+                foreach (
+                    Obj_AI_Hero collisionTarget in
+                        ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                    CastRToCollision(collisionTarget);
+                    break;
+                case 1:
+                    //Mouse position
+                    foreach (
+                        Obj_AI_Hero collisionTarget in
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                        R.Cast(Game.CursorPos);
+                break;
+                case 2:
+                    //Closest Turret
+                    foreach (
+                        Obj_AI_Hero collisionTarget in
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                    {
+                        //975 Turret Range
+                        //425 Push distance (Idk if it is correct);
+                        var Turret =
+                            ObjectManager.Get<Obj_AI_Turret>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 && tu.Health > 0);
+                        if (Turret.IsValid)
+                        {
+                            R.Cast(Turret.Position);
+                        }
+                    }
+                    break;
+                case 3:
+                    //Closest Ally
+                    foreach (
+                        Obj_AI_Hero collisionTarget in
+                            ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Width)))
+                    {
+                        //975 Turret Range
+                        //425 Push distance (Idk if it is correct);
+                        var ally =
+                            ObjectManager.Get<Obj_AI_Hero>().First(tu => tu.IsAlly && tu.Distance(collisionTarget) <= 975 + 425 + 65 && tu.Health > 0);
+                        if (ally.IsValid)
+                        {
+                            R.Cast(ally.Position);
+                        }
+                    }
+                    break;
+            }
         }
 
         private void CastRToCollision(Obj_AI_Hero target) {
